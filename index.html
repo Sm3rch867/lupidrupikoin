@@ -7,145 +7,210 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif; user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            background: #0f172a;
-            color: white;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            text-align: center;
+        body { 
+            background: #0f172a; 
+            color: white; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
         }
 
-        h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
+        /* Экраны */
+        .screen { display: none; flex-direction: column; align-items: center; flex: 1; padding: 20px; padding-bottom: 90px; }
+        .active { display: flex; }
 
-        .energy-container {
-            font-size: 20px;
-            color: #94a3b8;
-            margin-bottom: 40px;
-        }
-
-        #energy {
-            color: #facc15;
-            font-weight: bold;
-        }
-
-        /* КНОПКА-МОНЕТА */
+        /* ИГРА */
+        .game-header { margin-top: 40px; text-align: center; }
+        h1 { font-size: 54px; margin-bottom: 5px; color: #fff; }
+        .energy-bar { font-size: 20px; color: #94a3b8; margin-bottom: 50px; }
+        
         .coin-btn {
-            width: 280px;
-            height: 280px;
-            border: none;
-            border-radius: 50%;
+            width: 270px; height: 270px; border: none; border-radius: 50%;
+            background: url('coin.png') no-repeat center/cover;
+            box-shadow: 0 0 50px rgba(234, 179, 8, 0.2);
+            transition: transform 0.05s; touch-action: manipulation;
             cursor: pointer;
-            background-color: transparent;
-            
-            /* Ссылка на твой файл, который ты переименовал */
-            background-image: url('coin.png'); 
-            
-            background-size: cover;
-            background-position: center;
+        }
+        .coin-btn:active { transform: scale(0.94); }
+
+        /* ТОП ИГРОКОВ */
+        .top-title { 
+            font-size: 24px; 
+            font-weight: 800; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            color: #facc15;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard {
+            width: 100%;
+            max-width: 450px;
+            background: #1e293b;
+            border-radius: 24px;
+            overflow-y: auto;
+            border: 1px solid #334155;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .row:last-child { border-bottom: none; }
+        .rank { font-weight: bold; color: #facc15; width: 30px; }
+        .name { flex: 1; margin-left: 10px; font-weight: 500; }
+        .score { font-weight: bold; color: #fff; }
+        .me { background: rgba(250, 204, 21, 0.15); }
+
+        /* НИЖНЯЯ ПАНЕЛЬ С ФОТО/ИКОНКАМИ */
+        .navbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 75px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border: 1px solid #475569;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 60px;
+            transition: 0.2s;
+        }
+
+        .nav-img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 4px;
+            background-size: contain;
             background-repeat: no-repeat;
-            
-            transition: transform 0.05s;
-            touch-action: manipulation;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            background-position: center;
+            filter: grayscale(1);
+            opacity: 0.6;
         }
 
-        .coin-btn:active {
-            transform: scale(0.92);
-        }
+        .active-nav .nav-img { filter: grayscale(0); opacity: 1; }
+        .active-nav span { color: #facc15; }
+        
+        .nav-btn span { font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; }
 
-        .title-footer {
-            margin-top: 30px;
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            background: linear-gradient(to bottom, #ffffff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* Сюда можно подставить свои фото вместо эмодзи в будущем */
+        #img-game { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>'); }
+        #img-top { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 0 0 3.61-2.96C19.08 10.63 21 8.55 21 6V5c0-1.1-.9-2-2-2zM5 7h2v3H5V7zm14 3h-2V7h2v3z"/></svg>'); }
 
-        .regen-text {
-            margin-top: 10px;
-            color: #22c55e;
-            font-size: 14px;
-            opacity: 0.8;
-        }
     </style>
 </head>
 <body>
 
-    <div class="game-container">
-        <h1>💰 <span id="coins">0</span></h1>
-
-        <div class="energy-container">
-            ⚡ Энергия: <span id="energy">100</span>/100
+    <!-- ЭКРАН ИГРЫ -->
+    <div id="game-screen" class="screen active">
+        <div class="game-header">
+            <h1>💰 <span id="coins">0</span></h1>
+            <div class="energy-bar">⚡ <span id="energy">100</span>/100</div>
         </div>
-
+        
         <button class="coin-btn" id="coin"></button>
+        
+        <div style="margin-top: 40px; font-size: 24px; font-weight: 900; letter-spacing: 3px;">ЛУПИДРУПИКОИН</div>
+    </div>
 
-        <div class="title-footer">ЛУПИДРУПИКОИН</div>
-        <div class="regen-text">энергия восстанавливается автоматически</div>
+    <!-- ЭКРАН ТОПА -->
+    <div id="top-screen" class="screen">
+        <div class="top-title">ТОП ИГРОКОВ ЛУПИДРУПИКОИНА</div>
+        <div class="leaderboard" id="list"></div>
+    </div>
+
+    <!-- МЕНЮ -->
+    <div class="navbar">
+        <div class="nav-btn active-nav" id="btn-game" onclick="changeTab('game')">
+            <div class="nav-img" id="img-game"></div>
+            <span>Игра</span>
+        </div>
+        <div class="nav-btn" id="btn-top" onclick="changeTab('top')">
+            <div class="nav-img" id="img-top"></div>
+            <span>Топ</span>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        const name = tg.initDataUnsafe?.user ? tg.initDataUnsafe.user.first_name : "Игрок";
         let coins = Number(localStorage.getItem("coins")) || 0;
         let energy = Number(localStorage.getItem("energy")) || 100;
 
-        const coinsDisplay = document.getElementById("coins");
-        const energyDisplay = document.getElementById("energy");
+        function changeTab(tab) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav'));
+
+            if(tab === 'game') {
+                document.getElementById('game-screen').classList.add('active');
+                document.getElementById('btn-game').classList.add('active-nav');
+            } else {
+                document.getElementById('top-screen').classList.add('active');
+                document.getElementById('btn-top').classList.add('active-nav');
+                loadTop();
+            }
+        }
+
+        function loadTop() {
+            const container = document.getElementById('list');
+            container.innerHTML = '';
+
+            // Твоя строка
+            let myRow = `<div class="row me"><span class="rank">#1</span><span class="name">${name} (Вы)</span><span class="score">${coins.toLocaleString()}</span></div>`;
+            container.innerHTML += myRow;
+
+            // Заглушки для остальных
+            for(let i=2; i<=50; i++) {
+                container.innerHTML += `<div class="row"><span class="rank">#${i}</span><span class="name">Игрок_${i}</span><span class="score">${Math.floor(5000/i)}</span></div>`;
+            }
+        }
+
+        const cText = document.getElementById("coins");
+        const eText = document.getElementById("energy");
         const btn = document.getElementById("coin");
 
-        function updateUI() {
-            coinsDisplay.innerText = coins.toLocaleString();
-            energyDisplay.innerText = energy;
-            btn.style.opacity = energy <= 0 ? "0.4" : "1";
+        function update() {
+            cText.innerText = coins.toLocaleString();
+            eText.innerText = energy;
+            btn.style.opacity = energy <= 0 ? "0.3" : "1";
         }
 
-        btn.addEventListener('pointerdown', (e) => {
+        btn.addEventListener('pointerdown', () => {
             if (energy <= 0) return;
-
-            coins++;
-            energy--;
-
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('medium');
-            }
-
-            updateUI();
-            save();
-        });
-
-        function save() {
+            coins++; energy--;
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            update();
             localStorage.setItem("coins", coins);
             localStorage.setItem("energy", energy);
-        }
+        });
 
-        setInterval(() => {
-            if (energy < 100) {
-                energy++;
-                updateUI();
-                save();
-            }
-        }, 1500);
-
-        updateUI();
+        setInterval(() => { if (energy < 100) { energy++; update(); } }, 1500);
+        update();
     </script>
 </body>
 </html>
