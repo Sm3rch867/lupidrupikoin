@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>lupidrupikoin</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.game{
+    text-align:center;
+}
+
+h1{
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.energy{
+    font-size:24px;
+    color:#94a3b8;
+    margin-bottom:30px;
+}
+
+.coin{
+    width:220px;
+    height:220px;
+    border:none;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:90px;
+
+    background:linear-gradient(145deg,#facc15,#eab308);
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.4),
+    inset 0 5px 10px rgba(255,255,255,0.4);
+
+    transition:0.1s;
+}
+
+.coin:active{
+    transform:scale(0.93);
+}
+
+.info{
+    margin-top:25px;
+    font-size:24px;
+}
+
+.regen{
+    margin-top:15px;
+    color:#22c55e;
+}
+
+</style>
+</head>
+<body>
+
+<div class="game">
+
+    <h1>
+        💰 <span id="coins">0</span>
+    </h1>
+
+    <div class="energy">
+        ⚡ Энергия:
+        <span id="energy">100</span>/100
+    </div>
+
+    <button class="coin" id="coin">
+        🪙
+    </button>
+
+    <div class="info">
+        lupidrupikoin
+    </div>
+
+    <div class="regen">
+        Энергия восстанавливается автоматически
+    </div>
+
+</div>
+
+<script>
+
+let coins = localStorage.getItem("coins")
+    ? parseInt(localStorage.getItem("coins"))
+    : 0;
+
+let energy = localStorage.getItem("energy")
+    ? parseInt(localStorage.getItem("energy"))
+    : 100;
+
+const coinsText = document.getElementById("coins");
+const energyText = document.getElementById("energy");
+const coin = document.getElementById("coin");
+
+updateGame();
+
+coin.addEventListener("click", () => {
+
+    if (energy <= 0) return;
+
+    coins += 1;
+    energy -= 1;
+
+    saveGame();
+    updateGame();
+
+});
+
+function updateGame(){
+
+    coinsText.innerText = coins;
+    energyText.innerText = energy;
+
+}
+
+function saveGame(){
+
+    localStorage.setItem("coins", coins);
+    localStorage.setItem("energy", energy);
+
+}
+
+setInterval(() => {
+
+    if(energy < 100){
+
+        energy += 1;
+
+        saveGame();
+        updateGame();
+
+    }
+
+}, 1000);
+
+</script>
+
+</body>
+</html>
