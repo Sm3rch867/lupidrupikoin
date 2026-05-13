@@ -3,108 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LUPIDRUPI: FINAL FIX</title>
+    <title>LupiDrupiKoin</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --primary: #facc15; --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); }
+        :root { --primary: #facc15; --bg: #0b1120; --card: #1e293b; --text-dim: #94a3b8; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
         body { background: var(--bg); color: white; height: 100vh; overflow: hidden; }
 
-        .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; }
+        .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; width: 100%; }
         .active { display: flex; }
 
-        #coins { font-size: 42px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); margin-bottom: 5px; }
-        .stats { font-size: 13px; color: #94a3b8; display: flex; gap: 10px; margin-bottom: 20px; }
+        /* Фикс навигации: кнопки жестко зафиксированы и не прыгают */
+        .nav { 
+            position: fixed; bottom: 0; width: 100%; height: 80px; 
+            background: #111827; display: flex; align-items: center; 
+            border-top: 1px solid #1f2937; z-index: 100;
+        }
+        .nav-item { 
+            flex: 1; text-align: center; font-size: 11px; color: #64748b; 
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item span { font-size: 20px; margin-bottom: 4px; }
 
-        .coin-btn {
-            width: 220px; height: 220px; border-radius: 50%; border: 8px solid #1e293b;
-            background: url('coin.png') center/cover; margin: 10px 0; touch-action: manipulation;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        /* Стили игры */
+        #coins { font-size: 48px; font-weight: bold; color: var(--primary); margin-top: 10px; }
+        .coin-btn { 
+            width: 220px; height: 220px; border-radius: 50%; 
+            background: radial-gradient(circle, #fde047, #facc15); 
+            border: 8px solid #1e293b; margin: 30px 0; 
+            box-shadow: 0 0 30px rgba(250, 204, 21, 0.2);
+            touch-action: manipulation; transition: transform 0.05s;
+        }
+        .coin-btn:active { transform: scale(0.92); }
+
+        .energy-bar-bg { width: 100%; max-width: 300px; height: 14px; background: #1e293b; border-radius: 10px; margin-top: 5px; overflow: hidden; }
+        #energy-fill { width: 100%; height: 100%; background: var(--primary); transition: 0.3s; }
+
+        /* Лидерборд */
+        .leader-item { 
+            background: var(--card); padding: 15px; border-radius: 12px; 
+            margin-bottom: 8px; width: 100%; max-width: 400px;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .energy-box { width: 100%; max-width: 300px; margin-top: 20px; }
-        .energy-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; border: 1px solid #334155; }
-        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #eab308); transition: 0.3s; }
-
-        .item-card { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
-        .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        /* Магазин */
+        .shop-card { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .buy-btn { background: var(--primary); color: #000; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
 
         /* Колесо */
-        .wheel-container { position: relative; width: 280px; height: 280px; margin: 20px 0; display: flex; justify-content: center; align-items: center; }
-        #wheel-canvas { width: 260px; height: 260px; border-radius: 50%; border: 5px solid #1e293b; }
-        .pointer { position: absolute; top: -10px; width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; }
-
-        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; }
-        .nav-item { text-align: center; font-size: 10px; opacity: 0.5; color: white; cursor: pointer; flex: 1; }
-        .nav-item.active { opacity: 1; color: var(--primary); }
-        #admin-nav { display: none; color: #f87171; }
-
-        .leader-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; width: 100%; display: flex; justify-content: space-between; }
+        #wheel-canvas { width: 280px; height: 280px; border-radius: 50%; border: 5px solid #1e293b; margin: 20px 0; }
+        
+        #admin-nav { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- Экран Игра -->
     <div id="game-scr" class="screen active">
         <div id="coins">0</div>
-        <div class="stats"><span>Клик: +<span id="c-val">1</span></span><span>Доход: +<span id="p-val">0</span></span></div>
-        <button class="coin-btn" id="coin-tap"></button>
-        <div class="energy-box">
-            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+        <div style="color: var(--text-dim); margin-bottom: 10px;">+<span id="click-val">1</span> за тап</div>
+        <button class="coin-btn" onclick="tap()"></button>
+        <div style="width: 100%; max-width: 300px;">
+            <div style="display: flex; justify-content: space-between; font-size: 14px;">
                 <span>⚡ Энергия</span><span id="e-info">100/100</span>
             </div>
-            <div class="energy-bar"><div id="energy-fill"></div></div>
+            <div class="energy-bar-bg"><div id="energy-fill"></div></div>
         </div>
     </div>
 
-    <!-- Экран Магазин -->
     <div id="shop-scr" class="screen">
-        <h2>УЛУЧШЕНИЯ 🛒</h2><br>
-        <div class="item-card"><div><h4>Сила клика</h4><p>Ур. <span id="l-c">1</span></p></div><button class="buy-btn" onclick="buy('click')"><span id="p-c">1000</span> 💰</button></div>
-        <div class="item-card"><div><h4>Макс. Энергия</h4><p>Ур. <span id="l-e">1</span></p></div><button class="buy-btn" onclick="buy('energy')"><span id="p-e">2000</span> 💰</button></div>
-        <div class="item-card"><div><h4>Авто-майнинг</h4><p>Ур. <span id="l-p">0</span></p></div><button class="buy-btn" onclick="buy('passive')"><span id="p-p">5000</span> 💰</button></div>
+        <h2 style="margin-bottom: 20px;">МАГАЗИН 🛒</h2>
+        <div class="shop-card"><div><h4>Мульти-клик</h4><p>Lvl <span id="l-c">1</span></p></div><button class="buy-btn" onclick="buy('click')"><span id="p-c">1000</span> 💰</button></div>
+        <div class="shop-card"><div><h4>Запас энергии</h4><p>Lvl <span id="l-e">1</span></p></div><button class="buy-btn" onclick="buy('energy')"><span id="p-e">2000</span> 💰</button></div>
+        <div class="shop-card"><div><h4>Пассивный доход</h4><p>Lvl <span id="l-p">0</span></p></div><button class="buy-btn" onclick="buy('passive')"><span id="p-p">5000</span> 💰</button></div>
     </div>
 
-    <!-- Экран Бонусы -->
     <div id="bonus-scr" class="screen">
-        <button class="btn" onclick="claimDaily()">ЕЖЕДНЕВНЫЙ БОНУС (+5000 💰)</button>
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <canvas id="wheel-canvas" width="520" height="520"></canvas>
-        </div>
-        <button class="btn" id="spin-btn" onclick="startSpin()">КРУТИТЬ (<span id="s-val">0</span>)</button>
+        <button style="background: var(--primary); width:100%; padding:15px; border-radius:12px; border:none; font-weight:bold;" onclick="claimDaily()">ЕЖЕДНЕВНЫЙ БОНУС</button>
+        <canvas id="wheel-canvas" width="500" height="500"></canvas>
+        <button class="buy-btn" style="width: 200px;" onclick="spin()">КРУТИТЬ (<span id="s-val">0</span>)</button>
     </div>
 
-    <!-- Экран Топ -->
     <div id="top-scr" class="screen">
-        <h2>ЛИДЕРЫ 🏆</h2><br>
+        <h2 style="margin-bottom: 20px;">ТОП 10 ИГРОКОВ 🏆</h2>
         <div id="leaderboard" style="width: 100%;"></div>
     </div>
 
-    <!-- Экран Админ -->
     <div id="admin-scr" class="screen">
-        <h2>ADMIN PANEL 🛠</h2><br>
-        <button class="btn" onclick="addRes('c', 1000000)">+1.000.000 Монет</button>
-        <button class="btn" onclick="addRes('s', 50)">+50 Спинов</button>
-        <button class="btn" onclick="localStorage.clear(); location.reload();" style="background:#ef4444; color:white; margin-top:30px;">СБРОСИТЬ ВСЁ</button>
+        <h2>АДМИНКА 🛠</h2><br>
+        <button class="buy-btn" onclick="addMoney(1000000)" style="width:100%; margin-bottom:10px;">+1M Монет</button>
+        <button class="buy-btn" onclick="localStorage.clear(); location.reload();" style="width:100%; background:#ef4444; color:white;">СБРОСИТЬ ВСЁ</button>
     </div>
 
-    <!-- Меню -->
     <div class="nav">
-        <div class="nav-item active" id="n-game" onclick="show('game')">💰<br>Игра</div>
-        <div class="nav-item" id="n-shop" onclick="show('shop')">🛒<br>Магазин</div>
-        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонусы</div>
-        <div class="nav-item" id="n-top" onclick="show('top')">🏆<br>Топ</div>
-        <div class="nav-item" id="admin-nav" onclick="show('admin')">🛠<br>Админ</div>
+        <div class="nav-item active" id="n-game" onclick="show('game')"><span>💰</span>Игра</div>
+        <div class="nav-item" id="n-shop" onclick="show('shop')"><span>🛒</span>Магазин</div>
+        <div class="nav-item" id="n-bonus" onclick="show('bonus')"><span>🎁</span>Бонусы</div>
+        <div class="nav-item" id="n-top" onclick="show('top')"><span>🏆</span>Топ</div>
+        <div class="nav-item" id="admin-nav" onclick="show('admin')"><span>🛠</span>Админ</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        // ЗАМЕНИ НА СВОЙ ID ИЗ ТЕЛЕГРАМА
-        const MY_ID = 123456789; 
+        const ADMIN_ID = 123456789; // ЗАМЕНИ НА СВОЙ ID
+
+        // FIREBASE CONFIG - СЮДА СВОИ ДАННЫЕ
+        const firebaseConfig = {
+            apiKey: "API_KEY",
+            databaseURL: "DATABASE_URL",
+            projectId: "PROJECT_ID",
+            appId: "APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const user = tg.initDataUnsafe?.user || { id: "test", first_name: "Николаевич" };
+
+        if(user.id == ADMIN_ID) document.getElementById('admin-nav').style.display = 'flex';
 
         let coins = parseInt(localStorage.getItem('c')) || 0;
         let energy = parseInt(localStorage.getItem('e')) || 100;
@@ -112,21 +129,14 @@
         let lvlC = parseInt(localStorage.getItem('l_c')) || 1;
         let lvlE = parseInt(localStorage.getItem('l_e')) || 1;
         let lvlP = parseInt(localStorage.getItem('l_p')) || 0;
-        let spinning = false;
-
-        if(tg.initDataUnsafe?.user?.id === MY_ID) document.getElementById('admin-nav').style.display = 'block';
 
         function updateUI() {
             const maxE = 100 + (lvlE - 1) * 500;
-            if(energy > maxE) energy = maxE;
-            
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
-            document.getElementById('c-val').innerText = lvlC;
-            document.getElementById('p-val').innerText = lvlP * 10;
+            document.getElementById('click-val').innerText = lvlC;
             document.getElementById('e-info').innerText = `${energy}/${maxE}`;
             document.getElementById('energy-fill').style.width = (energy/maxE*100) + '%';
             document.getElementById('s-val').innerText = spins;
-            
             document.getElementById('l-c').innerText = lvlC;
             document.getElementById('l-e').innerText = lvlE;
             document.getElementById('l-p').innerText = lvlP;
@@ -135,34 +145,10 @@
             document.getElementById('p-p').innerText = ((lvlP+1) * 5000).toLocaleString();
         }
 
-        // Колесо
-        const canvas = document.getElementById('wheel-canvas');
-        const ctx = canvas.getContext('2d');
-        const sectors = ["1000 💰", "x2 КЛИК", "5000 💰", "MAX ЭНЕРГИЯ", "1 СПИН", "500 💰", "x5 КЛИК", "ПУСТО"];
-        
-        function drawWheel(angle = 0) {
-            const arc = (Math.PI * 2) / sectors.length;
-            ctx.clearRect(0,0,520,520);
-            sectors.forEach((s, i) => {
-                const a = angle + i * arc;
-                ctx.beginPath(); ctx.fillStyle = i % 2 ? "#1e293b" : "#334155";
-                ctx.moveTo(260,260); ctx.arc(260,260,250,a,a+arc); ctx.fill();
-                ctx.save(); ctx.translate(260,260); ctx.rotate(a + arc/2);
-                ctx.fillStyle = "white"; ctx.font = "bold 24px Arial"; ctx.fillText(s, 100, 10); ctx.restore();
-            });
-        }
-
-        function startSpin() {
-            if(spins <= 0 || spinning) return;
-            spinning = true; spins--; 
-            let angle = 0, speed = 0.5 + Math.random() * 0.2;
-            const anim = () => {
-                angle += speed; speed *= 0.985;
-                drawWheel(angle);
-                if(speed < 0.005) { spinning = false; updateUI(); save(); }
-                else requestAnimationFrame(anim);
-            };
-            anim();
+        function tap() {
+            if (energy > 0) {
+                coins += lvlC; energy--; updateUI(); save();
+            }
         }
 
         function buy(type) {
@@ -172,15 +158,25 @@
             save(); updateUI();
         }
 
-        function loadTop() {
+        function save() {
+            localStorage.setItem('c', coins); localStorage.setItem('e', energy);
+            localStorage.setItem('s', spins); localStorage.setItem('l_c', lvlC);
+            localStorage.setItem('l_e', lvlE); localStorage.setItem('l_p', lvlP);
+            db.ref('players/' + user.id).set({ name: user.first_name, coins: coins });
+        }
+
+        function loadRealTop() {
             const list = document.getElementById('leaderboard');
-            let data = [
-                {n: "Zolkin Boss", c: 9999999},
-                {n: "Nikolayevich", c: 5000000},
-                {n: "Ivan Zolo", c: 2500000},
-                {n: "ТЫ", c: coins}
-            ].sort((a,b) => b.c - a.c);
-            list.innerHTML = data.map((u,i) => `<div class="leader-item"><span>${i+1}. ${u.n}</span><b>${u.c.toLocaleString()}</b></div>`).join('');
+            db.ref('players').orderByChild('coins').limitToLast(10).on('value', (s) => {
+                let data = [];
+                s.forEach(child => { data.push(child.val()); });
+                data.sort((a,b) => b.coins - a.coins);
+                list.innerHTML = data.map((p, i) => `
+                    <div class="leader-item">
+                        <span><b>${i+1}.</b> ${p.name}</span>
+                        <span style="color:var(--primary)">${p.coins.toLocaleString()}</span>
+                    </div>`).join('');
+            });
         }
 
         function show(scr) {
@@ -188,29 +184,18 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(scr+'-scr').classList.add('active');
             document.getElementById('n-'+scr).classList.add('active');
-            if(scr === 'top') loadTop();
-            if(scr === 'bonus') drawWheel();
+            if(scr === 'top') loadRealTop();
         }
 
-        document.getElementById('coin-tap').onclick = () => {
-            if(energy > 0) { coins += lvlC; energy--; updateUI(); save(); }
-        };
-
-        function addRes(t, v) { if(t==='c') coins += v; else spins += v; save(); updateUI(); }
-        function save() {
-            localStorage.setItem('c', coins); localStorage.setItem('e', energy);
-            localStorage.setItem('s', spins); localStorage.setItem('l_c', lvlC);
-            localStorage.setItem('l_e', lvlE); localStorage.setItem('l_p', lvlP);
-        }
-
-        setInterval(() => { if(lvlP > 0) { coins += (lvlP * 10); updateUI(); } }, 3000);
-        setInterval(() => { 
+        // Авто-реген энергии и пассивный доход
+        setInterval(() => {
             const maxE = 100 + (lvlE - 1) * 500;
-            if(energy < maxE) { energy++; updateUI(); }
-        }, 1500);
+            if(energy < maxE) energy++;
+            if(lvlP > 0) coins += (lvlP * 5);
+            updateUI();
+        }, 2000);
 
         updateUI();
-        drawWheel();
     </script>
 </body>
 </html>
