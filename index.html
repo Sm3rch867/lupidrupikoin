@@ -1,90 +1,314 @@
-// 1. ИНИЦИАЛИЗАЦИЯ ЗВУКОВ
-const spinSound = new Audio('sounds/spin.mp3');
-const winSound = new Audio('sounds/win.mp3');
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ЛУПИДРУПИКОИН: FINAL BUILD</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --primary: #facc15; --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
+        body { background: var(--bg); color: white; height: 100vh; overflow: hidden; }
 
-// Флаг для разблокировки аудио на телефонах
-let audioUnlocked = false;
+        .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; }
+        .active { display: flex; }
 
-function unlockAudio() {
-    if (!audioUnlocked) {
-        // Проигрываем тишину, чтобы "разбудить" аудио-движок
-        spinSound.play().then(() => {
-            spinSound.pause();
-            spinSound.currentTime = 0;
-        }).catch(e => console.log("Audio unlock failed:", e));
-        
-        winSound.play().then(() => {
-            winSound.pause();
-            winSound.currentTime = 0;
-        }).catch(e => console.log("Audio unlock failed:", e));
-        
-        audioUnlocked = true;
-    }
-}
+        #coins { font-size: 48px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); margin-top: 20px; }
+        .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin-bottom: 20px; }
 
-// 2. ОБНОВЛЕННЫЙ ТАП С РАЗБЛОКИРОВКОЙ ЗВУКА
-const handleTap = (e) => {
-    if (e.cancelable) e.preventDefault();
-    
-    // При первом клике разблокируем звук для всего приложения
-    unlockAudio(); 
-    
-    if (energy <= 0 && !infE) return;
-    
-    const r = boost;
-    coins += r;
-    if (!infE) energy--;
-    
-    const clientX = e.touches ? e.touches[0].pageX : e.clientX;
-    const clientY = e.touches ? e.touches[0].pageY : e.clientY;
-    
-    const p = document.createElement('div');
-    p.className = 'plus-one'; p.innerText = `+${r}`;
-    p.style.left = clientX + 'px'; p.style.top = clientY + 'px';
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), 800);
-    
-    updateUI(); save();
-    tg.HapticFeedback.impactOccurred('medium');
-};
-
-// 3. ОБНОВЛЕННЫЙ СПИН С ПРОВЕРКОЙ
-function startSpin() {
-    if (spins <= 0 || spinning) return;
-    
-    spinning = true; 
-    spins--; 
-    save(); 
-    updateUI();
-    
-    // Запуск звука прокрута
-    spinSound.currentTime = 0;
-    spinSound.loop = true; // Зацикливаем, пока крутится
-    spinSound.play().catch(err => console.error("Spin sound error:", err));
-    
-    let angle = 0;
-    let speed = 0.4; 
-    
-    const anim = () => {
-        angle += speed;
-        speed *= 0.985; 
-        drawWheel(angle);
-        
-        if (speed < 0.005) { 
-            spinning = false;
-            
-            // Остановка прокрута и звук победы
-            spinSound.pause();
-            spinSound.loop = false;
-            winSound.currentTime = 0;
-            winSound.play().catch(err => console.error("Win sound error:", err));
-            
-            const final = (angle % (Math.PI * 2));
-            const idx = sectors.length - 1 - Math.floor(final / ((Math.PI * 2) / sectors.length)) % sectors.length;
-            finishSpin(idx);
-        } else {
-            requestAnimationFrame(anim);
+        .coin-btn {
+            width: 260px; height: 260px; border-radius: 50%; border: 8px solid #1e293b;
+            background: url('coin.png') center/cover; margin: 10px 0;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5); transition: transform 0.05s; touch-action: manipulation;
         }
-    };
-    anim();
-}
+        .coin-btn:active { transform: scale(0.92); }
+
+        .energy-bar { width: 100%; height: 12px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s; }
+        .energy-inf { box-shadow: 0 0 15px #facc15; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .wheel-box { position: relative; width: 280px; height: 280px; margin: 15px 0; }
+        .wheel-pointer { 
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
+            border-top: 30px solid #ef4444; z-index: 10;
+        }
+
+        .leader-item { background: var(--card); width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; }
+
+        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; }
+        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--primary); }
+
+        .btn { background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn:disabled { opacity: 0.5; cursor: default; }
+        
+        .plus-one { position: absolute; color: var(--primary); font-size: 24px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; }
+        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="game-scr" class="screen active">
+        <div id="coins">0</div>
+        <div class="stats">
+            <span>➕ <span id="click-val">1</span>/клик</span>
+            <span>🎰 Спины: <span id="spins-top">0</span></span>
+        </div>
+        <button class="coin-btn" id="coin-tap"></button>
+        <div style="width: 100%; max-width: 300px; margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                <span>⚡ Энергия</span>
+                <span><span id="e-text">1000</span>/1000</span>
+            </div>
+            <div class="energy-bar"><div id="energy-fill"></div></div>
+        </div>
+    </div>
+
+    <div id="bonus-scr" class="screen">
+        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 20px;">
+            <h3 id="d-title">День 1</h3>
+            <p id="d-desc" style="font-size: 13px; color: #94a3b8; margin: 5px 0 10px;">Награда: 1,000 + 1 Спин</p>
+            <button class="btn" id="claim-btn" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
+        </div>
+
+        <div class="wheel-box">
+            <div class="wheel-pointer"></div>
+            <canvas id="wheel-canvas" width="280" height="280"></canvas>
+        </div>
+        <button class="btn" id="spin-btn" onclick="startSpin()">КРУТИТЬ (Спины: <span id="s-btn-val">0</span>)</button>
+    </div>
+
+    <div id="top-scr" class="screen">
+        <h2 style="margin-bottom: 20px;">ТОП ИГРОКОВ 🏆</h2>
+        <div id="leaderboard" style="width: 100%;">Загрузка...</div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active" id="n-game" onclick="show('game')">💰<br>Главная</div>
+        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонусы</div>
+        <div class="nav-item" id="n-top" onclick="show('top')">🏆<br>Топ</div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // 1. ИНИЦИАЛИЗАЦИЯ (ЗВУКИ + FIREBASE)
+        const spinSound = new Audio('sounds/spin.mp3');
+        const winSound = new Audio('sounds/win.mp3');
+        let audioUnlocked = false;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
+            authDomain: "lupidrupikoin.firebaseapp.com",
+            databaseURL: "https://lupidrupikoin-default-rtdb.firebaseio.com",
+            projectId: "lupidrupikoin",
+            storageBucket: "lupidrupikoin.firebasestorage.app",
+            messagingSenderId: "71547438259",
+            appId: "1:71547438259:web:807e88ddf21799511e7aa6"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let coins = parseInt(localStorage.getItem('c')) || 0;
+        let energy = parseInt(localStorage.getItem('e')) || 1000;
+        let spins = parseInt(localStorage.getItem('s')) || 0;
+        let gameDay = parseInt(localStorage.getItem('d')) || 0;
+        let lastClaim = parseInt(localStorage.getItem('lc')) || 0;
+        
+        let boost = 1;
+        let infE = false;
+        let spinning = false;
+
+        // Разблокировка звука на мобилках
+        function unlockAudio() {
+            if (!audioUnlocked) {
+                spinSound.play().then(() => { spinSound.pause(); spinSound.currentTime = 0; });
+                winSound.play().then(() => { winSound.pause(); winSound.currentTime = 0; });
+                audioUnlocked = true;
+            }
+        }
+
+        // 2. ЛОГИКА НАГРАД (1-30 ДЕНЬ)
+        function getReward(day) {
+            if (day === 1) return { c: 1000, s: 1 };
+            if (day <= 10) return { c: day * 1000, s: (day === 10 ? 1 : 0), b: (day === 10 ? 10 : 0), t: 600 };
+            if (day <= 19) {
+                const step = (500000 - 10000) / 10;
+                return { c: Math.floor(10000 + (day - 10) * step), s: 0 };
+            }
+            if (day === 20) return { c: 500000, s: 1, b: 20, t: 300 };
+            if (day <= 29) return { c: 500000 + ((day - 20) * 50000), s: 0 };
+            if (day === 30) return { c: 1000000, s: 1, b: 30, t: 600 };
+            return { c: 1000, s: 0 };
+        }
+
+        // 3. ИСПРАВЛЕННЫЙ ТАП
+        const tapArea = document.getElementById('coin-tap');
+        const handleTap = (e) => {
+            if (e.cancelable) e.preventDefault();
+            unlockAudio();
+            if (energy <= 0 && !infE) return;
+            
+            const r = boost;
+            coins += r;
+            if (!infE) energy--;
+            
+            const clientX = e.touches ? e.touches[0].pageX : e.clientX;
+            const clientY = e.touches ? e.touches[0].pageY : e.clientY;
+            
+            const p = document.createElement('div');
+            p.className = 'plus-one'; p.innerText = `+${r}`;
+            p.style.left = clientX + 'px'; p.style.top = clientY + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
+            
+            updateUI(); save();
+            tg.HapticFeedback.impactOccurred('medium');
+        };
+
+        tapArea.addEventListener('touchstart', handleTap, {passive: false});
+        tapArea.addEventListener('mousedown', handleTap);
+
+        function claimDaily() {
+            const now = Date.now();
+            if (now - lastClaim < 86400000) return;
+            gameDay++;
+            const r = getReward(gameDay);
+            coins += r.c; spins += r.s; lastClaim = now;
+            if (r.b) activateBoost(r.b, r.t);
+            tg.showAlert(`Награда получена!`);
+            save(); updateUI();
+        }
+
+        function activateBoost(m, time) {
+            boost = m; infE = true;
+            document.getElementById('energy-fill').classList.add('energy-inf');
+            setTimeout(() => {
+                boost = 1; infE = false;
+                document.getElementById('energy-fill').classList.remove('energy-inf');
+                updateUI();
+            }, time * 1000);
+        }
+
+        // 4. КОЛЕСО ФОРТУНЫ
+        const canvas = document.getElementById('wheel-canvas');
+        const ctx = canvas.getContext('2d');
+        const sectors = [
+            { n: "+10% Коин", c: "#1e293b" }, { n: "Энергия 10м", c: "#3b82f6" },
+            { n: "+10% Коин", c: "#1e293b" }, { n: "Множитель x2", c: "#a855f7" },
+            { n: "+10% Коин", c: "#1e293b" }, { n: "ДЖЕКПОТ", c: "#facc15" },
+            { n: "+10% Коин", c: "#1e293b" }, { n: "Full Энергия", c: "#3b82f6" }
+        ];
+
+        function drawWheel(angle = 0) {
+            const arc = (Math.PI * 2) / sectors.length;
+            ctx.clearRect(0,0,280,280);
+            sectors.forEach((s, i) => {
+                const a = angle + i * arc;
+                ctx.beginPath(); ctx.fillStyle = s.c; ctx.moveTo(140,140);
+                ctx.arc(140,140,135,a,a+arc); ctx.fill();
+                ctx.save(); ctx.translate(140,140); ctx.rotate(a+arc/2);
+                ctx.fillStyle="white"; ctx.font="bold 10px Arial"; ctx.fillText(s.n, 50, 5); ctx.restore();
+            });
+        }
+
+        function startSpin() {
+            if (spins <= 0 || spinning) return;
+            unlockAudio();
+            spinning = true; spins--; save(); updateUI();
+            
+            spinSound.currentTime = 0;
+            spinSound.loop = true;
+            spinSound.play().catch(() => {});
+            
+            let angle = 0;
+            let speed = 0.4; 
+            const anim = () => {
+                angle += speed;
+                speed *= 0.985; 
+                drawWheel(angle);
+                if (speed < 0.005) {
+                    spinning = false;
+                    spinSound.pause();
+                    winSound.currentTime = 0;
+                    winSound.play().catch(() => {});
+                    const final = (angle % (Math.PI * 2));
+                    const idx = sectors.length - 1 - Math.floor(final / ((Math.PI * 2) / sectors.length)) % sectors.length;
+                    finishSpin(idx);
+                } else { requestAnimationFrame(anim); }
+            };
+            anim();
+        }
+
+        function finishSpin(idx) {
+            const p = sectors[idx].n;
+            if (p === "ДЖЕКПОТ") {
+                let j = 100000; if(gameDay>=20) j=1000000; if(gameDay>=30) j=5000000;
+                coins += j;
+            } else if (p.includes("10%")) {
+                coins += Math.max(1000, Math.floor(coins * 0.1));
+            } else if (p === "Множитель x2") {
+                activateBoost(2, 1800);
+            } else {
+                energy = 1000; if(p.includes("10м")) activateBoost(1, 600);
+            }
+            tg.showAlert(`Выпало: ${p}!`);
+            save(); updateUI();
+        }
+
+        // 5. НАВИГАЦИЯ И ТОП
+        function show(scr) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(scr+'-scr').classList.add('active');
+            document.getElementById('n-'+scr).classList.add('active');
+            if(scr === 'top') loadTop();
+        }
+
+        function loadTop() {
+            db.ref('users').orderByChild('coins').limitToLast(10).once('value', s => {
+                let html = ''; let players = [];
+                s.forEach(u => { players.push(u.val()); });
+                players.reverse().forEach((p, i) => {
+                    html += `<div class="leader-item"><b>${i+1}. ${p.username || 'Аноним'}</b> <span>${p.coins.toLocaleString()} 💰</span></div>`;
+                });
+                document.getElementById('leaderboard').innerHTML = html;
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('coins').innerText = coins.toLocaleString();
+            document.getElementById('spins-top').innerText = spins;
+            document.getElementById('s-btn-val').innerText = spins;
+            document.getElementById('e-text').innerText = energy;
+            document.getElementById('energy-fill').style.width = (energy/10)+'%';
+            document.getElementById('click-val').innerText = boost;
+            
+            const next = gameDay + 1;
+            const r = getReward(next);
+            document.getElementById('d-title').innerText = `День ${next}`;
+            document.getElementById('d-desc').innerText = `Награда: ${r.c.toLocaleString()} + ${r.s ? 'Спин' : 'Ничего'}`;
+            document.getElementById('claim-btn').disabled = (Date.now() - lastClaim < 86400000);
+        }
+
+        function save() {
+            localStorage.setItem('c', coins); localStorage.setItem('e', energy);
+            localStorage.setItem('s', spins); localStorage.setItem('d', gameDay);
+            localStorage.setItem('lc', lastClaim);
+            if(tg.initDataUnsafe?.user?.id) {
+                db.ref('users/' + tg.initDataUnsafe.user.id).update({
+                    coins: coins, username: tg.initDataUnsafe.user.first_name, spins: spins
+                });
+            }
+        }
+
+        setInterval(() => { if(energy < 1000) { energy++; updateUI(); } }, 2000);
+        drawWheel(); updateUI();
+    </script>
+</body>
+</html>
