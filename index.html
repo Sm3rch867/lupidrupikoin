@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: ADMIN VERSION FIXED</title>
+    <title>ЛУПИДРУПИКОИН: TIMER EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -44,6 +44,8 @@
         .nav-item.active { opacity: 1; color: var(--primary); }
 
         .btn { background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
+        
         .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
         .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-size: 14px; }
         
@@ -70,6 +72,12 @@
     </div>
 
     <div id="bonus-scr" class="screen">
+        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 20px;">
+            <h3 id="d-title">Следующая награда</h3>
+            <p id="d-desc" style="font-size: 13px; color: #94a3b8; margin: 5px 0 10px;">Заходи каждый день!</p>
+            <button class="btn" id="claim-btn" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
+        </div>
+
         <div class="wheel-box">
             <div class="wheel-pointer"></div>
             <canvas id="wheel-canvas" width="280" height="280"></canvas>
@@ -120,12 +128,12 @@
         let coins = parseInt(localStorage.getItem('c')) || 0;
         let energy = parseInt(localStorage.getItem('e')) || 1000;
         let spins = parseInt(localStorage.getItem('s')) || 0;
+        let lastClaim = parseInt(localStorage.getItem('lc')) || 0;
         
         let boost = 1;
         let infE = false;
         let spinning = false;
 
-        // ПРИНУДИТЕЛЬНАЯ СИНХРОНИЗАЦИЯ С БАЗОЙ
         function syncWithDB() {
             if(tg.initDataUnsafe?.user?.id) {
                 db.ref('users/' + tg.initDataUnsafe.user.id).once('value', s => {
@@ -133,11 +141,45 @@
                         const d = s.val();
                         coins = d.coins || 0;
                         spins = d.spins || 0;
+                        lastClaim = d.lastClaim || 0;
                         updateUI();
                         saveLocal();
                     }
                 });
             }
+        }
+
+        // ТАЙМЕР ЕЖЕДНЕВНОГО БОНУСА
+        function updateTimer() {
+            const btn = document.getElementById('claim-btn');
+            const now = Date.now();
+            const wait = 24 * 60 * 60 * 1000; // 24 часа
+            const timeLeft = (lastClaim + wait) - now;
+
+            if (timeLeft > 0) {
+                btn.disabled = true;
+                const h = Math.floor(timeLeft / (1000 * 60 * 60));
+                const m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                btn.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            } else {
+                btn.disabled = false;
+                btn.innerText = "ЗАБРАТЬ БОНУС";
+            }
+        }
+        setInterval(updateTimer, 1000);
+
+        function claimDaily() {
+            const now = Date.now();
+            if (now - lastClaim < 24 * 60 * 60 * 1000) return;
+
+            coins += 5000; 
+            spins += 1;
+            lastClaim = now;
+
+            tg.showAlert("Вы получили 5,000 монет и 1 Спин!");
+            saveAll();
+            updateUI();
         }
 
         function unlockAudio() {
@@ -153,13 +195,11 @@
             if (e.cancelable) e.preventDefault();
             unlockAudio();
             if (energy <= 0 && !infE) return;
-            
             coins += boost;
             if (!infE) energy--;
             
             const clientX = e.touches ? e.touches[0].pageX : e.clientX;
             const clientY = e.touches ? e.touches[0].pageY : e.clientY;
-            
             const p = document.createElement('div');
             p.className = 'plus-one'; p.innerText = `+${boost}`;
             p.style.left = clientX + 'px'; p.style.top = clientY + 'px';
@@ -177,15 +217,12 @@
             const tID = document.getElementById('target-id').value.trim();
             const aC = parseInt(document.getElementById('add-coins').value) || 0;
             const aS = parseInt(document.getElementById('add-spins').value) || 0;
-
             if(!tID) return tg.showAlert("Введите ID!");
-
             db.ref('users/' + tID).once('value', s => {
                 if(s.exists()){
                     const data = s.val();
                     db.ref('users/' + tID).update({
-                        coins: (data.coins || 0) + aC,
-                        spins: (data.spins || 0) + aS
+                        coins: (data.coins || 0) + aC, spins: (data.spins || 0) + aS
                     }).then(() => {
                         tg.showAlert("Выдано!");
                         if(tID == tg.initDataUnsafe?.user?.id) syncWithDB();
@@ -195,7 +232,6 @@
             });
         }
 
-        // КОЛЕСО
         const canvas = document.getElementById('wheel-canvas');
         const ctx = canvas.getContext('2d');
         const sectors = [
@@ -218,19 +254,9 @@
         }
 
         function startSpin() {
-            // Проверяем актуальное количество спинов перед запуском
-            if (spins <= 0 || spinning) {
-                return tg.showAlert("У тебя нет спинов!");
-            }
-            
-            unlockAudio();
-            spinning = true; 
-            spins--; 
-            updateUI();
-            saveAll(); 
-
+            if (spins <= 0 || spinning) return tg.showAlert("Нет спинов!");
+            unlockAudio(); spinning = true; spins--; updateUI(); saveAll(); 
             spinSound.currentTime = 0; spinSound.loop = true; spinSound.play().catch(()=>null);
-            
             let angle = 0; let speed = 0.4; 
             const anim = () => {
                 angle += speed; speed *= 0.985; drawWheel(angle);
@@ -251,7 +277,6 @@
             else if (p.includes("10%")) coins += Math.max(1000, Math.floor(coins * 0.1));
             else if (p === "Множитель x2") activateBoost(2, 600);
             else energy = 1000;
-            
             tg.showAlert(`Выпало: ${p}!`);
             updateUI(); saveAll();
         }
@@ -261,10 +286,7 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(scr+'-scr').classList.add('active');
             document.getElementById('n-'+scr).classList.add('active');
-            
-            // Синхронизируем данные при переключении вкладок
             syncWithDB();
-            
             if(scr === 'top') {
                 loadTop();
                 if(tg.initDataUnsafe?.user?.id == ADMIN_ID) document.getElementById('admin-box').style.display = 'block';
@@ -295,16 +317,16 @@
         }
 
         function saveLocal() {
-            localStorage.setItem('c', coins);
-            localStorage.setItem('e', energy);
-            localStorage.setItem('s', spins);
+            localStorage.setItem('c', coins); localStorage.setItem('e', energy);
+            localStorage.setItem('s', spins); localStorage.setItem('lc', lastClaim);
         }
 
         function saveAll() {
             saveLocal();
             if(tg.initDataUnsafe?.user?.id) {
                 db.ref('users/' + tg.initDataUnsafe.user.id).update({
-                    coins: coins, username: tg.initDataUnsafe.user.first_name, spins: spins
+                    coins: coins, username: tg.initDataUnsafe.user.first_name, 
+                    spins: spins, lastClaim: lastClaim
                 });
             }
         }
@@ -312,7 +334,6 @@
         function activateBoost(m, t) { boost = m; setTimeout(() => { boost = 1; updateUI(); }, t * 1000); }
         setInterval(() => { if(energy < 1000) { energy++; updateUI(); } }, 2000);
         
-        // Начальная синхронизация
         syncWithDB();
         drawWheel(); 
         updateUI();
