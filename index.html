@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: ADMIN EDITION</title>
+    <title>ЛУПИДРУПИКОИН: ADMIN VERSION</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -44,8 +44,10 @@
         .nav-item.active { opacity: 1; color: var(--primary); }
 
         .btn { background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
+        
+        /* Стили админки */
         .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
-        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-size: 14px; }
         
         .plus-one { position: absolute; color: var(--primary); font-size: 24px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; }
         @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
@@ -86,12 +88,11 @@
     <div id="top-scr" class="screen">
         <h2 style="margin-bottom: 20px;">ТОП ИГРОКОВ 🏆</h2>
         
-        <!-- АДМИН ПАНЕЛЬ -->
         <div id="admin-box" class="admin-panel">
             <h4 style="color: #ef4444; margin-bottom: 10px;">АДМИН-МЕНЮ</h4>
-            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока из списка">
-            <input type="number" id="add-coins" class="admin-input" placeholder="Сколько монет">
-            <input type="number" id="add-spins" class="admin-input" placeholder="Сколько спинов">
+            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока (из списка ниже)">
+            <input type="number" id="add-coins" class="admin-input" placeholder="Количество монет">
+            <input type="number" id="add-spins" class="admin-input" placeholder="Количество спинов">
             <button class="btn" style="background: #ef4444; color: white;" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
         </div>
 
@@ -108,8 +109,8 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // !!! ВСТАВЬ СВОЙ ID СЮДА !!!
-        const ADMIN_ID = 00000000; 
+        // ТВОЙ АДМИН ID
+        const ADMIN_ID = 5932857353; 
 
         const spinSound = new Audio('sounds/spin.mp3');
         const winSound = new Audio('sounds/win.mp3');
@@ -145,7 +146,7 @@
             }
         }
 
-        // РЕАЛИЗАЦИЯ ТАПА
+        // ТАПЫ (ИСПРАВЛЕНО ДЛЯ ТЕЛЕФОНОВ)
         const tapArea = document.getElementById('coin-tap');
         const handleTap = (e) => {
             if (e.cancelable) e.preventDefault();
@@ -172,13 +173,13 @@
         tapArea.addEventListener('touchstart', handleTap, {passive: false});
         tapArea.addEventListener('mousedown', handleTap);
 
-        // АДМИН-ФУНКЦИЯ
+        // ФУНКЦИЯ ВЫДАЧИ (АДМИНКА)
         function adminGive() {
-            const tID = document.getElementById('target-id').value;
+            const tID = document.getElementById('target-id').value.trim();
             const aC = parseInt(document.getElementById('add-coins').value) || 0;
             const aS = parseInt(document.getElementById('add-spins').value) || 0;
 
-            if(!tID) return tg.showAlert("Введите ID игрока!");
+            if(!tID) return tg.showAlert("Сначала введи ID игрока!");
 
             db.ref('users/' + tID).once('value', s => {
                 if(s.exists()){
@@ -187,15 +188,15 @@
                         coins: (data.coins || 0) + aC,
                         spins: (data.spins || 0) + aS
                     });
-                    tg.showAlert("Ресурсы выданы!");
-                    loadTop();
+                    tg.showAlert(`Готово! Выдано: ${aC} монет и ${aS} спинов.`);
+                    loadTop(); // Обновляем список
                 } else {
-                    tg.showAlert("Игрок не найден!");
+                    tg.showAlert("Игрок с таким ID не найден в базе.");
                 }
             });
         }
 
-        // КОЛЕСО
+        // КОЛЕСО И НАГРАДЫ
         const canvas = document.getElementById('wheel-canvas');
         const ctx = canvas.getContext('2d');
         const sectors = [
@@ -254,6 +255,7 @@
             document.getElementById('n-'+scr).classList.add('active');
             if(scr === 'top') {
                 loadTop();
+                // Показываем админку только владельцу ID
                 if(tg.initDataUnsafe?.user?.id == ADMIN_ID) {
                     document.getElementById('admin-box').style.display = 'block';
                 }
