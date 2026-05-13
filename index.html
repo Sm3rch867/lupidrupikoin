@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LUPIDRUPIKOIN: ADMIN UPDATE</title>
+    <title>LUPIDRUPIKOIN: ADMIN SYNC FIX</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -38,7 +38,6 @@
 
         .leader-item { background: var(--card); width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; flex-direction: column; }
         
-        /* Admin Panel Styles */
         .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
         .admin-title { color: #ef4444; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center; }
         .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 14px; }
@@ -99,7 +98,6 @@
     <div id="top-scr" class="screen">
         <h2>ТОП ИГРОКОВ 🏆</h2>
         
-        <!-- АДМИН-ПАНЕЛЬ (Видишь только ты) -->
         <div id="admin-box" class="admin-panel">
             <div class="admin-title">УПРАВЛЕНИЕ РЕСУРСАМИ</div>
             <input type="text" id="adm-target-id" class="admin-input" placeholder="Введите ID игрока">
@@ -175,7 +173,6 @@
             
             if(scr === 'top') {
                 loadTop();
-                // Показываем админку только владельцу
                 if(tg.initDataUnsafe?.user?.id == ADMIN_ID) {
                     document.getElementById('admin-box').style.display = 'block';
                 }
@@ -190,7 +187,6 @@
 
                 s.forEach(u => { const v = u.val(); v.id = u.key; players.push(v); });
                 players.reverse().forEach((p, i) => {
-                    // ID показываем только если текущий пользователь - админ
                     let idInfo = (currentUserID == ADMIN_ID) ? `<div style="font-size:10px; color:#64748b;">ID: ${p.id}</div>` : '';
                     
                     html += `<div class="leader-item">
@@ -205,7 +201,6 @@
             });
         }
 
-        // Новая функция админа для выдачи ресурсов
         function adminGive() {
             const targetID = document.getElementById('adm-target-id').value.trim();
             const addC = parseInt(document.getElementById('adm-add-coins').value) || 0;
@@ -217,12 +212,25 @@
                 if(!s.exists()) return tg.showAlert("Игрок с таким ID не найден!");
                 
                 const data = s.val();
+                const newCoins = (data.coins || 0) + addC;
+                const newSpins = (data.spins || 0) + addS;
+
                 db.ref('users/' + targetID).update({
-                    coins: (data.coins || 0) + addC,
-                    spins: (data.spins || 0) + addS
+                    coins: newCoins,
+                    spins: newSpins
                 }).then(() => {
                     tg.showAlert(`Успешно выдано!\nID: ${targetID}\nМонеты: +${addC}\nСпины: +${addS}`);
-                    loadTop(); // Обновляем список
+                    
+                    // ФИКС: Если выдаем СЕБЕ, обновляем локальные переменные мгновенно
+                    if(targetID == tg.initDataUnsafe?.user?.id) {
+                        coins = newCoins;
+                        spins = newSpins;
+                        localStorage.setItem('c', coins);
+                        localStorage.setItem('s', spins);
+                        updateUI();
+                    }
+                    
+                    loadTop();
                 });
             });
         }
