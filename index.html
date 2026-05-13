@@ -90,7 +90,7 @@
     </div>
 
     <div id="top-screen" class="screen">
-        <div class="section-title">Рейтинг</div>
+        <div class="section-title">Мировой Рейтинг</div>
         <div id="leaderboard" style="width:100%"></div>
     </div>
 
@@ -170,7 +170,7 @@
             document.getElementById("multi-lvl").innerText = "Lvl " + multi;
             document.getElementById("coin").style.backgroundImage = `url('${skin}')`;
             
-            // Обновление кнопок скинов
+            // Кнопки скинов
             const skins = ['gold', 'diamond'];
             skins.forEach(s => {
                 const btn = document.getElementById("skin-" + s);
@@ -203,11 +203,19 @@
 
         function loadTop() {
             db.ref('users').orderByChild('coins').limitToLast(10).once('value', s => {
+                let players = [];
+                s.forEach(u => {
+                    players.push(u.val());
+                });
+                // Переворачиваем массив, чтобы богатые были сверху
+                players.reverse();
+                
                 let html = '';
-                let arr = [];
-                s.forEach(u => arr.push(u.val()));
-                arr.reverse().forEach(u => {
-                    html += `<div class="card"><b>${u.username}</b><span>${u.coins.toLocaleString()} 💰</span></div>`;
+                players.forEach((p, index) => {
+                    html += `<div class="card">
+                        <b>${index + 1}. ${p.username}</b>
+                        <span>${p.coins.toLocaleString()} 💰</span>
+                    </div>`;
                 });
                 document.getElementById("leaderboard").innerHTML = html;
             });
