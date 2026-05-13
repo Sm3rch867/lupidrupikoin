@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LUPIDRUPIKOIN: FINAL FIX</title>
+    <title>LUPIDRUPIKOIN: ADMIN UPDATE</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -28,20 +28,20 @@
         .energy-bar { width: 100%; height: 12px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s; }
 
-        /* Shop Styles */
         .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
         .shop-info h4 { color: var(--primary); font-size: 16px; }
         .shop-info p { font-size: 12px; color: #94a3b8; }
         .buy-btn { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .buy-btn:disabled { background: #334155; opacity: 0.5; }
 
-        /* Wheel Styles */
         .wheel-box { position: relative; width: 280px; height: 280px; margin: 15px 0; }
         .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; }
 
         .leader-item { background: var(--card); width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; flex-direction: column; }
+        
+        /* Admin Panel Styles */
         .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
-        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        .admin-title { color: #ef4444; font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center; }
+        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 14px; }
 
         .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; }
         .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; }
@@ -98,11 +98,16 @@
 
     <div id="top-scr" class="screen">
         <h2>ТОП ИГРОКОВ 🏆</h2>
+        
+        <!-- АДМИН-ПАНЕЛЬ (Видишь только ты) -->
         <div id="admin-box" class="admin-panel">
-            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
-            <input type="number" id="add-coins" class="admin-input" placeholder="Монеты">
-            <button class="btn" style="background:#ef4444;color:white" onclick="adminGive()">ВЫДАТЬ</button>
+            <div class="admin-title">УПРАВЛЕНИЕ РЕСУРСАМИ</div>
+            <input type="text" id="adm-target-id" class="admin-input" placeholder="Введите ID игрока">
+            <input type="number" id="adm-add-coins" class="admin-input" placeholder="Кол-во монет (0)">
+            <input type="number" id="adm-add-spins" class="admin-input" placeholder="Кол-во спинов (0)">
+            <button class="btn" style="background:#ef4444; color:white;" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
         </div>
+
         <div id="leaderboard" style="width: 100%;">Загрузка...</div>
     </div>
 
@@ -117,7 +122,8 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const ADMIN_ID = 5932857353;
+        const ADMIN_ID = 5932857353; 
+
         const firebaseConfig = {
             apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
             authDomain: "lupidrupikoin.firebaseapp.com",
@@ -166,22 +172,58 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(scr+'-scr').classList.add('active');
             document.getElementById('n-'+scr).classList.add('active');
-            if(scr === 'top') loadTop();
+            
+            if(scr === 'top') {
+                loadTop();
+                // Показываем админку только владельцу
+                if(tg.initDataUnsafe?.user?.id == ADMIN_ID) {
+                    document.getElementById('admin-box').style.display = 'block';
+                }
+            }
             if(scr === 'bonus') drawWheel();
-            if(scr === 'top' && tg.initDataUnsafe?.user?.id == ADMIN_ID) document.getElementById('admin-box').style.display = 'block';
         }
 
         function loadTop() {
             db.ref('users').orderByChild('coins').limitToLast(15).once('value', s => {
                 let html = ''; let players = [];
+                const currentUserID = tg.initDataUnsafe?.user?.id;
+
                 s.forEach(u => { const v = u.val(); v.id = u.key; players.push(v); });
                 players.reverse().forEach((p, i) => {
+                    // ID показываем только если текущий пользователь - админ
+                    let idInfo = (currentUserID == ADMIN_ID) ? `<div style="font-size:10px; color:#64748b;">ID: ${p.id}</div>` : '';
+                    
                     html += `<div class="leader-item">
-                        <b>${i+1}. ${p.username || 'Аноним'}</b>
-                        <div>${Math.floor(p.coins || 0).toLocaleString()} 💰 | ID: ${p.id}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b>${i+1}. ${p.username || 'Аноним'}</b>
+                            <span>${Math.floor(p.coins || 0).toLocaleString()} 💰</span>
+                        </div>
+                        ${idInfo}
                     </div>`;
                 });
                 document.getElementById('leaderboard').innerHTML = html || 'Нет данных';
+            });
+        }
+
+        // Новая функция админа для выдачи ресурсов
+        function adminGive() {
+            const targetID = document.getElementById('adm-target-id').value.trim();
+            const addC = parseInt(document.getElementById('adm-add-coins').value) || 0;
+            const addS = parseInt(document.getElementById('adm-add-spins').value) || 0;
+
+            if(!targetID) return tg.showAlert("Введите ID игрока!");
+
+            db.ref('users/' + targetID).once('value', s => {
+                if(!s.exists()) return tg.showAlert("Игрок с таким ID не найден!");
+                
+                const data = s.val();
+                db.ref('users/' + targetID).update({
+                    coins: (data.coins || 0) + addC,
+                    spins: (data.spins || 0) + addS
+                }).then(() => {
+                    tg.showAlert(`Успешно выдано!\nID: ${targetID}\nМонеты: +${addC}\nСпины: +${addS}`);
+                    loadTop(); // Обновляем список
+                });
             });
         }
 
