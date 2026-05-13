@@ -1,155 +1,151 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ЛУПИДРУПИКОИН</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ЛУПИДРУПИКОИН</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-        user-select: none; /* Запрещаем выделение текста */
-    }
+        body {
+            background: #0f172a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+        }
 
-    body {
-        background: #0f172a;
-        color: white;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-    }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
 
-    .game {
-        text-align: center;
-    }
+        .energy-container {
+            font-size: 20px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
 
-    h1 {
-        font-size: 42px;
-        margin-bottom: 10px;
-    }
+        #energy {
+            color: #facc15;
+            font-weight: bold;
+        }
 
-    .energy {
-        font-size: 24px;
-        color: #94a3b8;
-        margin-bottom: 30px;
-    }
+        /* КНОПКА-МОНЕТА */
+        .coin-btn {
+            width: 280px;
+            height: 280px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            background-color: transparent;
+            
+            /* Ссылка на твой файл, который ты переименовал */
+            background-image: url('coin.png'); 
+            
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            transition: transform 0.05s;
+            touch-action: manipulation;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
 
-    /* СТИЛИ НОВОЙ МОНЕТКИ */
-    .coin {
-        width: 250px;
-        height: 250px;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        
-        /* Загружаем твою картинку с лепреконом */
-        background-image: url('ChatGPT_Image_12_мая_2026_г.__21_23_24-removebg-preview.jpg');
-        background-size: cover;
-        background-position: center;
-        background-color: transparent;
+        .coin-btn:active {
+            transform: scale(0.92);
+        }
 
-        /* Эффект свечения */
-        box-shadow: 0 0 30px rgba(234, 179, 8, 0.3);
-        
-        transition: transform 0.1s;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-    }
+        .title-footer {
+            margin-top: 30px;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(to bottom, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    .coin:active {
-        transform: scale(0.95);
-    }
-
-    .info {
-        margin-top: 25px;
-        font-size: 28px;
-        font-weight: bold;
-        letter-spacing: 2px;
-        text-transform: uppercase; /* Делаем текст капсом через CSS */
-    }
-
-    .regen {
-        margin-top: 15px;
-        color: #22c55e;
-        font-size: 14px;
-    }
-</style>
+        .regen-text {
+            margin-top: 10px;
+            color: #22c55e;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
 
-<div class="game">
-    <h1>
-        💰 <span id="coins">0</span>
-    </h1>
+    <div class="game-container">
+        <h1>💰 <span id="coins">0</span></h1>
 
-    <div class="energy">
-        ⚡ Энергия: <span id="energy">100</span>/100
+        <div class="energy-container">
+            ⚡ Энергия: <span id="energy">100</span>/100
+        </div>
+
+        <button class="coin-btn" id="coin"></button>
+
+        <div class="title-footer">ЛУПИДРУПИКОИН</div>
+        <div class="regen-text">энергия восстанавливается автоматически</div>
     </div>
 
-    <!-- Кнопка теперь без эмодзи внутри, так как есть фон -->
-    <button class="coin" id="coin"></button>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-    <div class="info">
-        ЛУПИДРУПИКОИН
-    </div>
+        let coins = Number(localStorage.getItem("coins")) || 0;
+        let energy = Number(localStorage.getItem("energy")) || 100;
 
-    <div class="regen">
-        Энергия восстанавливается автоматически
-    </div>
-</div>
+        const coinsDisplay = document.getElementById("coins");
+        const energyDisplay = document.getElementById("energy");
+        const btn = document.getElementById("coin");
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    let coins = localStorage.getItem("coins") ? parseInt(localStorage.getItem("coins")) : 0;
-    let energy = localStorage.getItem("energy") ? parseInt(localStorage.getItem("energy")) : 100;
-
-    const coinsText = document.getElementById("coins");
-    const energyText = document.getElementById("energy");
-    const coinBtn = document.getElementById("coin");
-
-    function updateUI() {
-        coinsText.innerText = coins;
-        energyText.innerText = energy;
-        coinBtn.style.opacity = energy <= 0 ? "0.5" : "1";
-    }
-
-    coinBtn.addEventListener("click", () => {
-        if (energy <= 0) return;
-
-        coins += 1;
-        energy -= 1;
-
-        if (tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('medium');
+        function updateUI() {
+            coinsDisplay.innerText = coins.toLocaleString();
+            energyDisplay.innerText = energy;
+            btn.style.opacity = energy <= 0 ? "0.4" : "1";
         }
 
-        saveGame();
-        updateUI();
-    });
+        btn.addEventListener('pointerdown', (e) => {
+            if (energy <= 0) return;
 
-    function saveGame() {
-        localStorage.setItem("coins", coins);
-        localStorage.setItem("energy", energy);
-    }
+            coins++;
+            energy--;
 
-    setInterval(() => {
-        if (energy < 100) {
-            energy += 1;
-            saveGame();
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+
             updateUI();
+            save();
+        });
+
+        function save() {
+            localStorage.setItem("coins", coins);
+            localStorage.setItem("energy", energy);
         }
-    }, 1000);
 
-    updateUI();
-</script>
+        setInterval(() => {
+            if (energy < 100) {
+                energy++;
+                updateUI();
+                save();
+            }
+        }, 1500);
 
+        updateUI();
+    </script>
 </body>
 </html>
