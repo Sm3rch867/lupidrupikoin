@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: BIG COIN EDITION</title>
+    <title>ЛУПИДРУПИКОИН: REAL TYCOON</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -42,14 +42,61 @@
         #coins { font-size: 46px; font-weight: bold; color: var(--primary); text-shadow: 0 0 25px rgba(250, 204, 21, 0.5); margin-top: 15px; }
         .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin: 8px 0; justify-content: center; font-weight: 500; }
 
-        /* Огромный красивый коин */
-        .coin-btn {
-            width: 280px; height: 280px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.08);
-            background: url('coin.png') center/cover; margin: 25px 0;
-            box-shadow: 0 0 60px rgba(250, 204, 21, 0.25), inset 0 0 20px rgba(0,0,0,0.6); 
-            transition: transform 0.05s; touch-action: manipulation;
+        /* Контейнер для позиционирования монеты и её заднего фона */
+        .coin-container {
+            position: relative;
+            width: 340px;
+            height: 340px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .coin-btn:active { transform: scale(0.94); }
+
+        /* Эффект второй монеты на заднем плане (из концепта) */
+        .coin-container::before {
+            content: '';
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            right: 15px;
+            top: 25px;
+            background: url('coin.png') center/cover;
+            opacity: 0.25;
+            filter: blur(2px) brightness(0.6);
+            transform: scale(0.9) translateZ(-1px);
+            pointer-events: none;
+        }
+
+        /* Огромный коин с собственным неоновым космическим фоном */
+        .coin-btn {
+            position: relative;
+            width: 280px; 
+            height: 280px; 
+            border-radius: 50%; 
+            border: 6px solid rgba(255, 255, 255, 0.12);
+            /* Фон монеты перекликается с основным, но более плотный и контрастный */
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(250, 204, 21, 0.15) 0%, transparent 60%),
+                url('coin.png') center/cover;
+            background-blend-mode: screen; /* Красиво смешивает неоновое свечение и текстуру коина */
+            box-shadow: 
+                0 0 50px rgba(59, 130, 246, 0.25), 
+                0 0 80px rgba(250, 204, 21, 0.15),
+                inset 0 0 25px rgba(0,0,0,0.8); 
+            transition: transform 0.05s, box-shadow 0.1s; 
+            touch-action: manipulation;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .coin-btn:active { 
+            transform: scale(0.94); 
+            box-shadow: 
+                0 0 30px rgba(59, 130, 246, 0.4), 
+                inset 0 0 30px rgba(0,0,0,0.9);
+        }
 
         .energy-bar { width: 100%; height: 14px; background: rgba(30, 41, 59, 0.8); border-radius: 10px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #3b82f6); transition: 0.3s; }
@@ -93,8 +140,12 @@
             <span>👆 <span id="click-val">1</span>/клик</span>
             <span>💤 <span id="ps-val">0</span>/5с</span>
         </div>
-        <button class="coin-btn" id="coin-tap"></button>
-        <div style="width: 100%; max-width: 300px; margin-top: 10px;">
+        
+        <div class="coin-container">
+            <button class="coin-btn" id="coin-tap"></button>
+        </div>
+
+        <div style="width: 100%; max-width: 300px; margin-top: 5px;">
             <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; margin-bottom: 4px;">
                 <span style="color: #94a3b8;">⚡ Энергия</span>
                 <span><span id="e-text">100</span> / <span id="max-e-text">100</span></span>
@@ -163,7 +214,7 @@
 
         let spinning = false, currentAngle = 0;
 
-        // ИДЕАЛЬНЫЙ МАТЕМАТИЧЕСКИЙ БАЛАНС
+        // Баланс
         const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
         const getClickCost = (l) => Math.floor(150 * Math.pow(1.1784, l - 1));
 
@@ -172,7 +223,6 @@
 
         const getEnergyMax = (l) => 100 + (l - 1) * 100;
         const getEnergyCost = (l) => {
-            // Исправлено: Массив цен теперь соответствует уровням со 2-го по 5-й правильно
             const costs = [0, 25000, 250000, 1250000, 5000000];
             return costs[l] || 5000000;
         };
