@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: TIMER EDITION</title>
+    <title>ЛУПИДРУПИКОИН: FULL EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -15,39 +15,43 @@
         .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; }
         .active { display: flex; }
 
-        #coins { font-size: 48px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); margin-top: 10px; }
-        
-        /* Timers Overlay */
-        .timers-container { display: flex; gap: 10px; margin-bottom: 10px; min-height: 25px; }
-        .timer-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; animation: pulse 1.5s infinite; }
-        .t-x2 { background: var(--boost); color: white; }
-        .t-inf { background: var(--energy); color: white; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        /* Таймеры бустов */
+        .timers-container { display: flex; gap: 10px; margin-bottom: 10px; height: 30px; }
+        .timer-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; }
+        .t-x2 { background: var(--boost); box-shadow: 0 0 10px var(--boost); }
+        .t-inf { background: var(--energy); box-shadow: 0 0 10px var(--energy); }
 
-        .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin-bottom: 20px; }
+        #coins { font-size: 48px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
+        .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin: 10px 0; }
 
         .coin-btn {
-            width: 240px; height: 240px; border-radius: 50%; border: 8px solid #1e293b;
-            background: url('coin.png') center/cover; margin: 10px 0;
+            width: 250px; height: 250px; border-radius: 50%; border: 8px solid #1e293b;
+            background: url('coin.png') center/cover; margin: 15px 0;
             box-shadow: 0 0 40px rgba(0,0,0,0.5); transition: transform 0.05s; touch-action: manipulation;
         }
         .coin-btn:active { transform: scale(0.92); }
 
         .energy-bar { width: 100%; height: 12px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.2s; }
+        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s; }
 
-        .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .buy-btn { background: #22c55e; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; }
-        
-        .wheel-box { position: relative; width: 280px; height: 280px; margin: 15px 0; }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; }
+        /* Магазин */
+        .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
+        .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
+
+        /* Колесо */
+        .wheel-box { position: relative; width: 280px; height: 280px; margin: 20px 0; }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; }
+
+        /* Админ-панель */
+        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
+        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; }
 
         .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; }
         .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; }
         .nav-item.active { opacity: 1; color: var(--primary); }
 
         .btn { background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
-        .plus-one { position: absolute; color: var(--primary); font-size: 24px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 100; }
+        .plus-one { position: absolute; color: var(--primary); font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 100; }
         @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
     </style>
 </head>
@@ -55,16 +59,16 @@
 
     <div id="game-scr" class="screen active">
         <div class="timers-container">
-            <div id="timer-x2" class="timer-badge t-x2">🔥 X2: 10:00</div>
-            <div id="timer-inf" class="timer-badge t-inf">⚡ Безлимит: 10:00</div>
+            <div id="t-x2" class="timer-badge t-x2">🔥 X2: 10:00</div>
+            <div id="t-inf" class="timer-badge t-inf">⚡ Безлимит: 10:00</div>
         </div>
         <div id="coins">0</div>
         <div class="stats">
             <span>➕ <span id="click-val">1</span>/клик</span>
-            <span>🎰 <span id="spins-top">0</span> спинов</span>
+            <span>🎰 Спины: <span id="spins-top">0</span></span>
         </div>
         <button class="coin-btn" id="coin-tap"></button>
-        <div style="width: 100%; max-width: 300px; margin-top: 20px;">
+        <div style="width: 100%; max-width: 300px; margin-top: 10px;">
             <div style="display: flex; justify-content: space-between; font-size: 14px;">
                 <span>⚡ Энергия</span>
                 <span><span id="e-text">100</span>/<span id="max-e-text">100</span></span>
@@ -76,28 +80,35 @@
     <div id="shop-scr" class="screen">
         <h2 style="margin-bottom: 20px;">МАГАЗИН 🛒</h2>
         <div class="shop-item">
-            <div><h4>Сила клика</h4><p id="lvl-c">Ур: 1</p></div>
-            <button class="buy-btn" onclick="buy('c')"><span id="pr-c">150</span> 💰</button>
+            <div><h4>Сила клика</h4><p id="l-c">Ур: 1</p></div>
+            <button class="buy-btn" onclick="buy('c')"><span id="p-c">150</span> 💰</button>
         </div>
         <div class="shop-item">
-            <div><h4>Энергия</h4><p id="lvl-e">Ур: 1</p></div>
-            <button class="buy-btn" onclick="buy('e')"><span id="pr-e">200</span> 💰</button>
+            <div><h4>Макс. Энергия</h4><p id="l-e">Ур: 1</p></div>
+            <button class="buy-btn" onclick="buy('e')"><span id="p-e">200</span> 💰</button>
         </div>
     </div>
 
     <div id="bonus-scr" class="screen">
-        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 20px; text-align: center;">
-            <button class="btn" id="claim-btn" onclick="claimDaily()">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
+        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 10px; text-align: center;">
+            <button class="btn" id="claim-btn" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
         </div>
         <div class="wheel-box">
             <div class="wheel-pointer"></div>
             <canvas id="wheel-canvas" width="280" height="280"></canvas>
         </div>
-        <button class="btn" id="spin-btn" onclick="startSpin()">КРУТИТЬ КОЛЕСО (<span id="s-btn-val">0</span>)</button>
+        <button class="btn" id="spin-btn" onclick="startSpin()">КРУТИТЬ (Спины: <span id="s-btn-val">0</span>)</button>
     </div>
 
     <div id="top-scr" class="screen">
         <h2 style="margin-bottom: 20px;">ТОП ИГРОКОВ 🏆</h2>
+        <div id="admin-box" class="admin-panel">
+            <h4 style="color:#ef4444; margin-bottom:10px">АДМИН-МЕНЮ</h4>
+            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
+            <input type="number" id="add-coins" class="admin-input" placeholder="Кол-во монет">
+            <input type="number" id="add-spins" class="admin-input" placeholder="Кол-во спинов">
+            <button class="btn" style="background:#ef4444; color:white" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
+        </div>
         <div id="leaderboard" style="width: 100%;">Загрузка...</div>
     </div>
 
@@ -112,7 +123,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Настройки Firebase
+        const ADMIN_ID = 5932857353;
         const firebaseConfig = {
             apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
             authDomain: "lupidrupikoin.firebaseapp.com",
@@ -123,7 +134,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Состояние
         let coins = parseInt(localStorage.getItem('c')) || 0;
         let energy = parseInt(localStorage.getItem('e')) || 100;
         let spins = parseInt(localStorage.getItem('s')) || 0;
@@ -131,19 +141,19 @@
         let lvlC = parseInt(localStorage.getItem('l_c')) || 1;
         let lvlE = parseInt(localStorage.getItem('l_e')) || 1;
 
-        let x2Time = 0; // в секундах
-        let infTime = 0; // в секундах
+        let x2Time = 0;
+        let infTime = 0;
         let spinning = false;
 
         const sectors = [
             { n: "+5% Кеш", c: "#1e293b", w: 20 },
             { n: "X2 Монеты", c: "#ef4444", w: 10 },
             { n: "Беск. Энергия", c: "#3b82f6", w: 10 },
-            { n: "+15% Кеш", c: "#334155", w: 7 },
-            { n: "+5% Кеш", c: "#1e293b", w: 20 },
+            { n: "+15% Кеш", c: "#334155", w: 10 },
+            { n: "+5% Кеш", c: "#1e293b", w: 15 },
             { n: "X2 Монеты", c: "#ef4444", w: 10 },
             { n: "Беск. Энергия", c: "#3b82f6", w: 10 },
-            { n: "+15% Кеш", c: "#334155", w: 8 },
+            { n: "+15% Кеш", c: "#334155", w: 10 },
             { n: "ДЖЕКПОТ 50%", c: "#facc15", w: 5 }
         ];
 
@@ -157,23 +167,25 @@
                 ctx.beginPath(); ctx.fillStyle = s.c; ctx.moveTo(140,140);
                 ctx.arc(140,140,135,a,a+arc); ctx.fill();
                 ctx.save(); ctx.translate(140,140); ctx.rotate(a+arc/2);
-                ctx.fillStyle="white"; ctx.font="bold 9px Arial"; ctx.fillText(s.n, 60, 5); ctx.restore();
+                ctx.fillStyle="white"; ctx.font="bold 9px Arial"; ctx.fillText(s.n, 55, 5); ctx.restore();
             });
         }
 
         function buy(type) {
             if(type === 'c') {
-                let price = lvlC * 150;
-                if(coins >= price) { coins -= price; lvlC++; }
+                let cost = lvlC * 150;
+                if(coins >= cost) { coins -= cost; lvlC++; }
+                else tg.showAlert("Недостаточно монет!");
             } else {
-                let price = lvlE * 200;
-                if(coins >= price) { coins -= price; lvlE++; energy += 100; }
+                let cost = lvlE * 200;
+                if(coins >= cost) { coins -= cost; lvlE++; energy += 100; }
+                else tg.showAlert("Недостаточно монет!");
             }
             updateUI(); saveAll();
         }
 
         function startSpin() {
-            if (spins <= 0 || spinning) return;
+            if (spins <= 0 || spinning) return tg.showAlert("Нет спинов!");
             spinning = true; spins--; updateUI();
             
             let rand = Math.random() * 100;
@@ -202,7 +214,7 @@
             else if(p.includes("X2")) x2Time = 600;
             else if(p.includes("Беск")) infTime = 600;
             
-            tg.showAlert(`Выпало: ${p}!`);
+            tg.showAlert(`Приз: ${p}!`);
             updateUI(); saveAll();
         }
 
@@ -211,7 +223,7 @@
             if (energy <= 0 && infTime <= 0) return;
 
             let power = lvlC;
-            if (x2Time > 0) power *= 2; // Твоя просьба: 5x2 = 10
+            if (x2Time > 0) power *= 2; 
 
             coins += power;
             if (infTime <= 0) energy--;
@@ -224,31 +236,16 @@
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 800);
             
-            updateUI();
+            updateUI(); saveAll();
             tg.HapticFeedback.impactOccurred('light');
         }
 
         document.getElementById('coin-tap').addEventListener('touchstart', handleTap, {passive: false});
 
-        // Таймеры и Реген
         setInterval(() => {
-            // Реген энергии 1 в сек
             if(energy < lvlE * 100) energy++;
-            
-            // Буст X2
-            if(x2Time > 0) {
-                x2Time--;
-                document.getElementById('timer-x2').style.display = 'block';
-                document.getElementById('timer-x2').innerText = `🔥 X2: ${fmt(x2Time)}`;
-            } else { document.getElementById('timer-x2').style.display = 'none'; }
-
-            // Буст Инфинити
-            if(infTime > 0) {
-                infTime--;
-                document.getElementById('timer-inf').style.display = 'block';
-                document.getElementById('timer-inf').innerText = `⚡ Безлимит: ${fmt(infTime)}`;
-            } else { document.getElementById('timer-inf').style.display = 'none'; }
-
+            if(x2Time > 0) x2Time--;
+            if(infTime > 0) infTime--;
             updateUI();
         }, 1000);
 
@@ -267,10 +264,37 @@
             document.getElementById('max-e-text').innerText = lvlE * 100;
             document.getElementById('energy-fill').style.width = (energy/(lvlE*100)*100)+'%';
             
-            document.getElementById('lvl-c').innerText = `Ур: ${lvlC}`;
-            document.getElementById('pr-c').innerText = lvlC * 150;
-            document.getElementById('lvl-e').innerText = `Ур: ${lvlE}`;
-            document.getElementById('pr-e').innerText = lvlE * 200;
+            document.getElementById('l-c').innerText = `Ур: ${lvlC}`;
+            document.getElementById('p-c').innerText = lvlC * 150;
+            document.getElementById('l-e').innerText = `Ур: ${lvlE}`;
+            document.getElementById('p-e').innerText = lvlE * 200;
+
+            document.getElementById('t-x2').style.display = x2Time > 0 ? 'block' : 'none';
+            document.getElementById('t-x2').innerText = `🔥 X2: ${fmt(x2Time)}`;
+            document.getElementById('t-inf').style.display = infTime > 0 ? 'block' : 'none';
+            document.getElementById('t-inf').innerText = `⚡ Безлимит: ${fmt(infTime)}`;
+        }
+
+        function claimDaily() {
+            const now = Date.now();
+            if (now - lastClaim < 86400000) return tg.showAlert("Бонус еще не готов!");
+            coins += 5000; spins += 1; lastClaim = now;
+            tg.showAlert("Вы получили 5,000 монет и 1 Спин!");
+            updateUI(); saveAll();
+        }
+
+        function adminGive() {
+            const tID = document.getElementById('target-id').value.trim();
+            const aC = parseInt(document.getElementById('add-coins').value) || 0;
+            const aS = parseInt(document.getElementById('add-spins').value) || 0;
+            if(!tID) return tg.showAlert("Введите ID!");
+            db.ref('users/' + tID).once('value', s => {
+                if(s.exists()){
+                    const d = s.val();
+                    db.ref('users/' + tID).update({ coins: (d.coins || 0) + aC, spins: (d.spins || 0) + aS });
+                    tg.showAlert("Ресурсы выданы!");
+                }
+            });
         }
 
         function show(scr) {
@@ -278,27 +302,31 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(scr+'-scr').classList.add('active');
             document.getElementById('n-'+scr).classList.add('active');
+            if(scr === 'top') {
+                loadTop();
+                if(tg.initDataUnsafe?.user?.id == ADMIN_ID) document.getElementById('admin-box').style.display = 'block';
+            }
             if(scr === 'bonus') drawWheel();
-            if(scr === 'top') loadTop();
         }
 
         function saveAll() {
             localStorage.setItem('c', coins); localStorage.setItem('e', energy);
-            localStorage.setItem('s', spins); localStorage.setItem('l_c', lvlC); 
-            localStorage.setItem('l_e', lvlE);
+            localStorage.setItem('s', spins); localStorage.setItem('lc', lastClaim);
+            localStorage.setItem('l_c', lvlC); localStorage.setItem('l_e', lvlE);
             if(tg.initDataUnsafe?.user?.id) {
-                db.ref('users/' + tg.initDataUnsafe.user.id).update({ coins, spins, lvlC, lvlE });
+                db.ref('users/' + tg.initDataUnsafe.user.id).update({ 
+                    coins, spins, lastClaim, lvlC, lvlE, 
+                    username: tg.initDataUnsafe.user.first_name 
+                });
             }
         }
 
         function loadTop() {
-            db.ref('users').orderByChild('coins').limitToLast(10).once('value', s => {
-                let h = ''; let players = [];
-                s.forEach(u => { players.push(u.val()); });
-                players.reverse().forEach((p, i) => {
-                    h += `<div style="padding:10px;background:rgba(255,255,255,0.05);margin-bottom:5px;border-radius:10px;display:flex;justify-content:space-between">
-                        <span>${i+1}. ${p.username || 'Игрок'}</span><b>${Math.floor(p.coins).toLocaleString()}</b>
-                    </div>`;
+            db.ref('users').orderByChild('coins').limitToLast(15).once('value', s => {
+                let h = ''; let pArr = [];
+                s.forEach(u => { let d = u.val(); d.id = u.key; pArr.push(d); });
+                pArr.reverse().forEach((p, i) => {
+                    h += `<div class="shop-item"><div><b>${i+1}. ${p.username || 'Аноним'}</b><br><small>ID: ${p.id}</small></div><b>${Math.floor(p.coins).toLocaleString()} 💰</b></div>`;
                 });
                 document.getElementById('leaderboard').innerHTML = h;
             });
