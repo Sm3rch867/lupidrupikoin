@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: WHEEL FIX</title>
+    <title>LUPIDRUPI - FIXED WHEEL</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -11,84 +11,56 @@
         :root { --primary: #facc15; --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); --boost: #ef4444; --energy: #3b82f6; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
         body { background: var(--bg); color: white; height: 100vh; overflow: hidden; }
-
         .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; }
         .active { display: flex; }
-
         .timers-container { display: flex; gap: 10px; margin-bottom: 10px; height: 35px; justify-content: center; width: 100%; }
-        .timer-badge { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; display: none; }
-        .t-x2 { background: var(--boost); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
-        .t-inf { background: var(--energy); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-
-        #coins { font-size: 48px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
+        .timer-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; animation: pulse 1s infinite alternate; }
+        .t-x2 { background: var(--boost); box-shadow: 0 0 10px var(--boost); }
+        .t-inf { background: var(--energy); box-shadow: 0 0 10px var(--energy); }
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.7; } }
+        #coins { font-size: 48px; font-weight: bold; color: var(--primary); }
         .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin: 10px 0; }
-
-        .coin-btn {
-            width: 240px; height: 240px; border-radius: 50%; border: 8px solid #1e293b;
-            background: url('coin.png') center/cover; margin: 15px 0;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5); transition: transform 0.05s; touch-action: manipulation;
-        }
-        .coin-btn:active { transform: scale(0.92); }
-
-        .energy-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s; }
-
-        .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
+        .coin-btn { width: 220px; height: 220px; border-radius: 50%; border: 8px solid #1e293b; background: #facc15 url('coin.png') center/cover; margin: 15px 0; transition: transform 0.05s; touch-action: manipulation; }
+        .coin-btn:active { transform: scale(0.95); }
+        .energy-bar { width: 100%; height: 12px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+        #energy-fill { width: 100%; height: 100%; background: var(--primary); transition: 0.3s; }
+        .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
-
         .wheel-box { position: relative; width: 280px; height: 280px; margin: 20px 0; }
-        .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; filter: drop-shadow(0 2px 5px black); }
-
-        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
-        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; }
-
-        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; }
-        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 100; }
+        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; }
+        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; }
         .nav-item.active { opacity: 1; color: var(--primary); }
-
-        .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; }
-        .plus-one { position: absolute; color: var(--primary); font-size: 28px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 100; }
-        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
+        .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: bold; width: 100%; }
+        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #ef4444; margin-bottom: 20px; }
+        .plus-one { position: absolute; color: var(--primary); font-size: 30px; font-weight: bold; animation: float 0.7s forwards; pointer-events: none; }
+        @keyframes float { to { transform: translateY(-80px); opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div id="game-scr" class="screen active">
         <div class="timers-container">
-            <div id="t-x2" class="timer-badge t-x2">🔥 X2</div>
-            <div id="t-inf" class="timer-badge t-inf">⚡ INF</div>
+            <div id="t-x2" class="timer-badge t-x2">🔥 X2 КЛИК</div>
+            <div id="t-inf" class="timer-badge t-inf">⚡ БЕЗЛИМИТ</div>
         </div>
         <div id="coins">0</div>
-        <div class="stats">
-            <span>➕ <span id="click-val">1</span>/клик</span>
-            <span>🎰 Спины: <span id="spins-top">0</span></span>
-        </div>
+        <div class="stats"><span>Клик: <span id="click-val">1</span></span><span>🎰: <span id="spins-top">0</span></span></div>
         <button class="coin-btn" id="coin-tap"></button>
-        <div style="width: 100%; max-width: 300px; margin-top: 15px;">
-            <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                <span>⚡ Энергия</span>
-                <span><span id="e-text">100</span>/<span id="max-e-text">100</span></span>
-            </div>
+        <div style="width: 100%; max-width: 280px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px;"><span>Энергия</span><span id="e-text">100/100</span></div>
             <div class="energy-bar"><div id="energy-fill"></div></div>
         </div>
     </div>
 
     <div id="shop-scr" class="screen">
-        <h2 style="margin-bottom: 25px;">МАГАЗИН 🛒</h2>
-        <div class="shop-item">
-            <div><h4>Сила клика</h4><p id="l-c" style="color:#94a3b8">Ур: 1</p></div>
-            <button class="buy-btn" onclick="buy('c')"><span id="p-c">150</span> 💰</button>
-        </div>
-        <div class="shop-item">
-            <div><h4>Макс. Энергия</h4><p id="l-e" style="color:#94a3b8">Ур: 1</p></div>
-            <button class="buy-btn" onclick="buy('e')"><span id="p-e">200</span> 💰</button>
-        </div>
+        <h2 style="margin-bottom: 20px;">МАГАЗИН</h2>
+        <div class="shop-item"><div><h4>Сила клика</h4><p id="l-c">Ур: 1</p></div><button class="buy-btn" onclick="buy('c')"><span id="p-c">150</span> 💰</button></div>
+        <div class="shop-item"><div><h4>Макс. Энергия</h4><p id="l-e">Ур: 1</p></div><button class="buy-btn" onclick="buy('e')"><span id="p-e">200</span> 💰</button></div>
     </div>
 
     <div id="bonus-scr" class="screen">
-        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 10px; text-align: center;">
-            <button class="btn" onclick="claimDaily()">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
-        </div>
+        <button class="btn" style="margin-bottom: 20px;" onclick="claimDaily()">ЕЖЕДНЕВНЫЙ БОНУС</button>
         <div class="wheel-box">
             <div class="wheel-pointer"></div>
             <canvas id="wheel-canvas" width="280" height="280"></canvas>
@@ -97,29 +69,26 @@
     </div>
 
     <div id="top-scr" class="screen">
-        <h2 style="margin-bottom: 20px;">ТОП ИГРОКОВ 🏆</h2>
         <div id="admin-box" class="admin-panel">
-            <h4 style="color:#ef4444; margin-bottom:10px">🛡 АДМИН-МЕНЮ</h4>
-            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
-            <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
-            <input type="number" id="add-spins" class="admin-input" placeholder="Добавить спинов">
-            <button class="btn" style="background:#ef4444; color:white" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
+            <h4 style="color:#ef4444;">АДМИН</h4>
+            <input type="text" id="target-id" style="width:100%; padding:10px; margin:5px 0;" placeholder="ID">
+            <input type="number" id="add-coins" style="width:100%; padding:10px; margin:5px 0;" placeholder="Монеты">
+            <button class="btn" style="background:#ef4444; color:white;" onclick="adminGive()">ВЫДАТЬ</button>
         </div>
-        <div id="leaderboard" style="width: 100%;">Загрузка...</div>
+        <div id="leaderboard" style="width: 100%;"></div>
     </div>
 
     <div class="nav">
-        <div class="nav-item active" id="n-game" onclick="show('game')">💰<br>Главная</div>
-        <div class="nav-item" id="n-shop" onclick="show('shop')">🛒<br>Магазин</div>
-        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонусы</div>
-        <div class="nav-item" id="n-top" onclick="show('top')">🏆<br>Топ</div>
+        <div class="nav-item active" onclick="show('game')">💰<br>Игра</div>
+        <div class="nav-item" onclick="show('shop')">🛒<br>Шоп</div>
+        <div class="nav-item" onclick="show('bonus')">🎁<br>Бонус</div>
+        <div class="nav-item" onclick="show('top')">🏆<br>Топ</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const ADMIN_ID = 5932857353;
         const firebaseConfig = {
             apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
             authDomain: "lupidrupikoin.firebaseapp.com",
@@ -133,13 +102,10 @@
         let coins = parseInt(localStorage.getItem('c')) || 0;
         let energy = parseInt(localStorage.getItem('e')) || 100;
         let spins = parseInt(localStorage.getItem('s')) || 0;
-        let lastClaim = parseInt(localStorage.getItem('lc')) || 0;
         let lvlC = parseInt(localStorage.getItem('l_c')) || 1;
         let lvlE = parseInt(localStorage.getItem('l_e')) || 1;
-
-        let x2Time = 0;
-        let infTime = 0;
-        let spinning = false;
+        let lastClaim = parseInt(localStorage.getItem('lc')) || 0;
+        let x2Time = 0, infTime = 0, spinning = false, currentAngle = 0;
 
         const sectors = [
             { n: "+10% Кеш", c: "#1e293b", w: 20 },
@@ -155,189 +121,177 @@
 
         function drawWheel(angle = 0) {
             const canvas = document.getElementById('wheel-canvas');
-            if(!canvas) return;
             const ctx = canvas.getContext('2d');
             const arc = (Math.PI * 2) / sectors.length;
-            ctx.clearRect(0,0,280,280);
+            ctx.clearRect(0, 0, 280, 280);
             
             sectors.forEach((s, i) => {
-                // angle идет от 0 вверх, смещаем отрисовку на -Math.PI/2 (чтобы сектор 0 начинался сверху)
-                const a = angle + i * arc - Math.PI / 2;
-                ctx.beginPath(); ctx.fillStyle = s.c; ctx.moveTo(140,140);
-                ctx.arc(140,140,135,a,a+arc); ctx.fill();
-                
-                ctx.save(); ctx.translate(140,140); ctx.rotate(a + arc/2);
-                ctx.fillStyle="white"; ctx.font="bold 11px Arial"; ctx.textAlign="right"; 
-                ctx.fillText(s.n, 120, 4); ctx.restore();
+                // Математический фикс: -Math.PI/2 ставит первый сектор в начало сверху
+                const sectorAngle = angle + i * arc - Math.PI / 2;
+                ctx.beginPath();
+                ctx.fillStyle = s.c;
+                ctx.moveTo(140, 140);
+                ctx.arc(140, 140, 135, sectorAngle, sectorAngle + arc);
+                ctx.fill();
+                ctx.save();
+                ctx.translate(140, 140);
+                ctx.rotate(sectorAngle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "white";
+                ctx.font = "bold 11px Arial";
+                ctx.fillText(s.n, 125, 5);
+                ctx.restore();
             });
         }
 
-        function buy(type) {
-            let cost = (type === 'c') ? lvlC * 150 : lvlE * 200;
-            if(coins >= cost) {
-                coins -= cost;
-                if(type === 'c') lvlC++; else { lvlE++; energy += 100; }
-                updateUI(); saveAll();
-            } else tg.showAlert("Мало монет!");
-        }
-
         function startSpin() {
-            if (spins <= 0 || spinning) return tg.showAlert("Нет спинов!");
-            spinning = true; spins--; updateUI();
-            
+            if (spins <= 0 || spinning) return;
+            spinning = true;
+            spins--;
+            updateUI();
+
+            // 1. Выбираем приз заранее
             let rand = Math.random() * 100;
-            let cum = 0; let targetIdx = 0;
+            let cum = 0, targetIdx = 0;
             for(let i=0; i<sectors.length; i++) {
                 cum += sectors[i].w;
                 if(rand <= cum) { targetIdx = i; break; }
             }
 
-            const arcSize = 360 / sectors.length;
-            // Рассчитываем целевой угол, при котором центр выпавшего сектора встанет под верхний указатель
-            // Колесо крутится по часовой стрелке, значит угол идет в плюс
-            const targetAngle = 360 - (targetIdx * arcSize) - (arcSize / 2);
-            const totalRotation = (360 * 8) + targetAngle; // 8 кругов для динамики
+            // 2. Считаем угол: сектор должен оказаться под стрелкой (360 градусов)
+            const sectorDeg = 360 / sectors.length;
+            // Угол, на который нужно повернуть, чтобы центр сектора targetIdx был вверху
+            const finalAngle = 360 - (targetIdx * sectorDeg) - (sectorDeg / 2);
+            const totalRotation = (360 * 10) + finalAngle; 
 
-            let currentRotation = 0;
-            let speed = 18;
+            let start = null;
+            const duration = 5000;
 
-            const animate = () => {
-                currentRotation += speed;
-                if (currentRotation >= totalRotation - 400) speed *= 0.982;
+            function animate(now) {
+                if (!start) start = now;
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
                 
-                if (speed < 0.15) {
-                    spinning = false;
-                    // Принудительно ставим колесо в идеальный финальный угол
-                    drawWheel((targetAngle * Math.PI) / 180);
-                    finishSpin(targetIdx);
-                } else {
-                    drawWheel((currentRotation * Math.PI) / 180);
+                // Ease Out эффект
+                const ease = 1 - Math.pow(1 - progress, 3);
+                const stepAngle = ease * totalRotation;
+                
+                drawWheel((stepAngle * Math.PI) / 180);
+
+                if (progress < 1) {
                     requestAnimationFrame(animate);
+                } else {
+                    spinning = false;
+                    currentAngle = (finalAngle * Math.PI) / 180;
+                    finishSpin(targetIdx);
                 }
-            };
-            animate();
+            }
+            requestAnimationFrame(animate);
         }
 
         function finishSpin(idx) {
             const prize = sectors[idx].n;
-            if(prize === "+10% Кеш") coins += Math.max(100, Math.floor(coins * 0.10));
-            else if(prize === "+20% Кеш") coins += Math.max(200, Math.floor(coins * 0.20));
-            else if(prize === "ДЖЕКПОТ 50%") coins += Math.max(1000, Math.floor(coins * 0.50));
-            else if(prize === "X2 Клик") x2Time = 600;
-            else if(prize === "Безлимит") infTime = 600;
-            
-            tg.showAlert(`🎰 Выпало: ${prize}`);
-            updateUI(); saveAll();
+            if (prize === "+10% Кеш") coins += Math.max(100, Math.floor(coins * 0.1));
+            else if (prize === "+20% Кеш") coins += Math.max(200, Math.floor(coins * 0.2));
+            else if (prize === "ДЖЕКПОТ 50%") coins += Math.max(1000, Math.floor(coins * 0.5));
+            else if (prize === "X2 Клик") x2Time = 600;
+            else if (prize === "Безлимит") infTime = 600;
+
+            tg.showAlert("🎰 Выпало: " + prize);
+            saveAll();
+            updateUI();
         }
 
         function handleTap(e) {
             if (e.cancelable) e.preventDefault();
             if (energy <= 0 && infTime <= 0) return;
-            let p = (x2Time > 0) ? lvlC * 2 : lvlC;
-            coins += p; if (infTime <= 0) energy--;
+            let p = x2Time > 0 ? lvlC * 2 : lvlC;
+            coins += p;
+            if (infTime <= 0) energy--;
             const x = e.touches ? e.touches[0].pageX : e.clientX;
             const y = e.touches ? e.touches[0].pageY : e.clientY;
-            const el = document.createElement('div');
-            el.className = 'plus-one'; el.innerText = `+${p}`;
-            el.style.left = x + 'px'; el.style.top = y + 'px';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 800);
-            updateUI(); saveAll();
+            const div = document.createElement('div');
+            div.className = 'plus-one'; div.innerText = `+${p}`;
+            div.style.left = x + 'px'; div.style.top = y + 'px';
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 700);
+            updateUI();
             tg.HapticFeedback.impactOccurred('light');
         }
 
-        document.getElementById('coin-tap').addEventListener('touchstart', handleTap, {passive: false});
+        document.getElementById('coin-tap').addEventListener('touchstart', handleTap, {passive:false});
 
-        setInterval(() => {
-            if(energy < lvlE * 100) energy++;
-            if(x2Time > 0) x2Time--;
-            if(infTime > 0) infTime--;
-            updateUI();
-        }, 1000);
-
-        function fmt(s) {
-            let m = Math.floor(s/60); let sec = s % 60;
-            return `${m}:${sec.toString().padStart(2,'0')}`;
+        function buy(t) {
+            let cost = t === 'c' ? lvlC * 150 : lvlE * 200;
+            if (coins >= cost) {
+                coins -= cost;
+                if (t === 'c') lvlC++; else { lvlE++; energy += 100; }
+                updateUI(); saveAll();
+            }
         }
 
         function updateUI() {
-            document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
-            document.getElementById('click-val').innerText = (x2Time > 0) ? lvlC * 2 : lvlC;
+            document.getElementById('coins').innerText = coins.toLocaleString();
+            document.getElementById('click-val').innerText = x2Time > 0 ? lvlC * 2 : lvlC;
+            document.getElementById('e-text').innerText = `${energy}/${lvlE * 100}`;
+            document.getElementById('energy-fill').style.width = (energy / (lvlE * 100) * 100) + '%';
             document.getElementById('spins-top').innerText = spins;
             document.getElementById('s-btn-val').innerText = spins;
-            document.getElementById('e-text').innerText = energy;
-            document.getElementById('max-e-text').innerText = lvlE * 100;
-            document.getElementById('energy-fill').style.width = (energy/(lvlE*100)*100)+'%';
             document.getElementById('l-c').innerText = `Ур: ${lvlC}`;
             document.getElementById('p-c').innerText = lvlC * 150;
             document.getElementById('l-e').innerText = `Ур: ${lvlE}`;
             document.getElementById('p-e').innerText = lvlE * 200;
             document.getElementById('t-x2').style.display = x2Time > 0 ? 'block' : 'none';
-            document.getElementById('t-x2').innerText = `🔥 X2: ${fmt(x2Time)}`;
             document.getElementById('t-inf').style.display = infTime > 0 ? 'block' : 'none';
-            document.getElementById('t-inf').innerText = `⚡ INF: ${fmt(infTime)}`;
+        }
+
+        function saveAll() {
+            const uid = tg.initDataUnsafe?.user?.id;
+            localStorage.setItem('c', coins);
+            localStorage.setItem('s', spins);
+            localStorage.setItem('l_c', lvlC);
+            localStorage.setItem('l_e', lvlE);
+            if (uid) {
+                db.ref('users/' + uid).update({
+                    coins, spins, lvlC, lvlE,
+                    username: tg.initDataUnsafe.user.first_name || "User"
+                });
+            }
+        }
+
+        function show(s) {
+            document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+            document.getElementById(s + '-scr').classList.add('active');
+            if (s === 'bonus') drawWheel(currentAngle);
+            if (s === 'top') loadTop();
+        }
+
+        function loadTop() {
+            db.ref('users').orderByChild('coins').limitToLast(10).once('value', s => {
+                let html = '';
+                s.forEach(u => {
+                    const d = u.val();
+                    html = `<div class="shop-item"><b>${d.username}</b> <span>${d.coins.toLocaleString()} 💰</span></div>` + html;
+                });
+                document.getElementById('leaderboard').innerHTML = html;
+            });
         }
 
         function claimDaily() {
             const now = Date.now();
-            if (now - lastClaim < 86400000) return tg.showAlert("Заходи завтра!");
+            if (now - lastClaim < 86400000) return tg.showAlert("Завтра!");
             coins += 5000; spins += 1; lastClaim = now;
-            tg.showAlert("Бонус: 5,000 монет и 1 Спин!");
+            localStorage.setItem('lc', lastClaim);
             updateUI(); saveAll();
+            tg.showAlert("Получено 5,000 монет и 1 Спин!");
         }
 
-        function adminGive() {
-            const tid = String(document.getElementById('target-id').value.trim());
-            const aC = parseInt(document.getElementById('add-coins').value) || 0;
-            const aS = parseInt(document.getElementById('add-spins').value) || 0;
-            if(!tid) return tg.showAlert("ID?");
-            db.ref('users/' + tid).once('value').then(snap => {
-                if(snap.exists()){
-                    let d = snap.val();
-                    let nC = (Number(d.coins) || 0) + aC;
-                    let nS = (Number(d.spins) || 0) + aS;
-                    db.ref('users/' + tid).update({ coins: nC, spins: nS }).then(() => {
-                        tg.showAlert("Ок!");
-                        if(tid === String(tg.initDataUnsafe?.user?.id)) { coins=nC; spins=nS; updateUI(); }
-                    });
-                } else tg.showAlert("Нет такого ID");
-            });
-        }
-
-        function show(scr) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(scr+'-scr').classList.add('active');
-            document.getElementById('n-'+scr).classList.add('active');
-            if(scr === 'top') {
-                loadTop();
-                if(String(tg.initDataUnsafe?.user?.id) === String(ADMIN_ID)) document.getElementById('admin-box').style.display='block';
-            }
-            if(scr === 'bonus') drawWheel(0);
-        }
-
-        function saveAll() {
-            localStorage.setItem('c', coins); localStorage.setItem('e', energy);
-            localStorage.setItem('s', spins); localStorage.setItem('lc', lastClaim);
-            localStorage.setItem('l_c', lvlC); localStorage.setItem('l_e', lvlE);
-            if(tg.initDataUnsafe?.user?.id) {
-                db.ref('users/' + tg.initDataUnsafe.user.id).update({ 
-                    coins, spins, lastClaim, lvlC, lvlE, 
-                    username: tg.initDataUnsafe.user.first_name || "Игрок"
-                });
-            }
-        }
-
-        function loadTop() {
-            db.ref('users').orderByChild('coins').limitToLast(15).once('value', s => {
-                let h = ''; let pArr = [];
-                s.forEach(u => { let d = u.val(); d.id = u.key; pArr.push(d); });
-                pArr.reverse().forEach((p, i) => {
-                    h += `<div class="shop-item"><div><b>${i+1}. ${p.username}</b><br><small>ID: ${p.id}</small></div><b>${Math.floor(p.coins).toLocaleString()}</b></div>`;
-                });
-                document.getElementById('leaderboard').innerHTML = h;
-            });
-        }
+        setInterval(() => {
+            if (energy < lvlE * 100) energy++;
+            if (x2Time > 0) x2Time--;
+            if (infTime > 0) infTime--;
+            updateUI();
+        }, 1000);
 
         drawWheel(0);
         updateUI();
