@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: FINAL FIX</title>
+    <title>ЛУПИДРУПИКОИН: PERFECT EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -15,44 +15,43 @@
         .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; }
         .active { display: flex; }
 
-        /* Таймеры бустов на главной */
+        /* Таймеры на главной */
         .timers-container { display: flex; gap: 10px; margin-bottom: 10px; height: 35px; justify-content: center; width: 100%; }
         .timer-badge { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; display: none; animation: pulse 1.5s infinite; }
-        .t-x2 { background: var(--boost); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); border: 1px solid #fca5a5; }
-        .t-inf { background: var(--energy); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); border: 1px solid #93c5fd; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .t-x2 { background: var(--boost); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+        .t-inf { background: var(--energy); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        #coins { font-size: 48px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); margin-top: 5px; }
+        #coins { font-size: 48px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
         .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin: 10px 0; }
 
         .coin-btn {
-            width: 250px; height: 250px; border-radius: 50%; border: 8px solid #1e293b;
+            width: 240px; height: 240px; border-radius: 50%; border: 8px solid #1e293b;
             background: url('coin.png') center/cover; margin: 15px 0;
             box-shadow: 0 0 40px rgba(0,0,0,0.5); transition: transform 0.05s; touch-action: manipulation;
         }
         .coin-btn:active { transform: scale(0.92); }
 
-        .energy-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; border: 1px solid #334155; }
-        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s linear; }
+        .energy-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s; }
 
         .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
-        .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
 
+        /* Колесо */
         .wheel-box { position: relative; width: 280px; height: 280px; margin: 20px 0; }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; }
 
-        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
-        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; font-size: 14px; }
+        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
+        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; }
 
-        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; z-index: 1000; }
-        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-5px); }
+        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; }
+        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--primary); }
 
-        .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
-
-        .plus-one { position: absolute; color: var(--primary); font-size: 28px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 100; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
+        .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; }
+        .plus-one { position: absolute; color: var(--primary); font-size: 28px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 100; }
+        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -69,9 +68,9 @@
         </div>
         <button class="coin-btn" id="coin-tap"></button>
         <div style="width: 100%; max-width: 300px; margin-top: 15px;">
-            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 14px;">
                 <span>⚡ Энергия</span>
-                <span><span id="e-text">100</span> / <span id="max-e-text">100</span></span>
+                <span><span id="e-text">100</span>/<span id="max-e-text">100</span></span>
             </div>
             <div class="energy-bar"><div id="energy-fill"></div></div>
         </div>
@@ -80,18 +79,18 @@
     <div id="shop-scr" class="screen">
         <h2 style="margin-bottom: 25px;">МАГАЗИН 🛒</h2>
         <div class="shop-item">
-            <div><h4>Сила клика</h4><p id="l-c" style="color: #94a3b8; font-size: 13px;">Ур: 1</p></div>
+            <div><h4>Сила клика</h4><p id="l-c" style="color:#94a3b8">Ур: 1</p></div>
             <button class="buy-btn" onclick="buy('c')"><span id="p-c">150</span> 💰</button>
         </div>
         <div class="shop-item">
-            <div><h4>Макс. Энергия</h4><p id="l-e" style="color: #94a3b8; font-size: 13px;">Ур: 1</p></div>
+            <div><h4>Макс. Энергия</h4><p id="l-e" style="color:#94a3b8">Ур: 1</p></div>
             <button class="buy-btn" onclick="buy('e')"><span id="p-e">200</span> 💰</button>
         </div>
     </div>
 
     <div id="bonus-scr" class="screen">
-        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 10px; text-align: center; border: 1px dashed var(--primary);">
-            <button class="btn" id="claim-btn" onclick="claimDaily()">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
+        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 10px; text-align: center;">
+            <button class="btn" onclick="claimDaily()">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
         </div>
         <div class="wheel-box">
             <div class="wheel-pointer"></div>
@@ -103,13 +102,13 @@
     <div id="top-scr" class="screen">
         <h2 style="margin-bottom: 20px;">ТОП ИГРОКОВ 🏆</h2>
         <div id="admin-box" class="admin-panel">
-            <h4 style="color:#ef4444; margin-bottom:12px; text-align: center;">🛡 АДМИН-ПАНЕЛЬ</h4>
-            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока (из топа)">
-            <input type="number" id="add-coins" class="admin-input" placeholder="Сколько добавить монет">
-            <input type="number" id="add-spins" class="admin-input" placeholder="Сколько добавить спинов">
+            <h4 style="color:#ef4444; margin-bottom:10px">🛡 АДМИН-МЕНЮ</h4>
+            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
+            <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
+            <input type="number" id="add-spins" class="admin-input" placeholder="Добавить спинов">
             <button class="btn" style="background:#ef4444; color:white" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
         </div>
-        <div id="leaderboard" style="width: 100%;">Загрузка рейтинга...</div>
+        <div id="leaderboard" style="width: 100%;">Загрузка...</div>
     </div>
 
     <div class="nav">
@@ -123,7 +122,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const ADMIN_ID = 5932857353; 
+        const ADMIN_ID = 5932857353;
         const firebaseConfig = {
             apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
             authDomain: "lupidrupikoin.firebaseapp.com",
@@ -144,17 +143,17 @@
         let x2Time = 0;
         let infTime = 0;
         let spinning = false;
+        let currentWheelAngle = 0;
 
-        // 9 секторов по твоим редкостям
         const sectors = [
             { n: "+5% Кеш", c: "#1e293b", w: 20 },
-            { n: "X2 Клик", c: "#ef4444", w: 12 },
-            { n: "Безлимит", c: "#3b82f6", w: 12 },
+            { n: "X2 Клик", c: "#ef4444", w: 10 },
+            { n: "Безлимит", c: "#3b82f6", w: 10 },
             { n: "+15% Кеш", c: "#334155", w: 10 },
             { n: "+5% Кеш", c: "#1e293b", w: 15 },
-            { n: "X2 Клик", c: "#ef4444", w: 8 },
-            { n: "Безлимит", c: "#3b82f6", w: 8 },
-            { n: "+15% Кеш", c: "#475569", w: 10 },
+            { n: "X2 Клик", c: "#ef4444", w: 10 },
+            { n: "Безлимит", c: "#3b82f6", w: 10 },
+            { n: "+15% Кеш", c: "#334155", w: 10 },
             { n: "ДЖЕКПОТ 50%", c: "#facc15", w: 5 }
         ];
 
@@ -169,7 +168,7 @@
                 ctx.beginPath(); ctx.fillStyle = s.c; ctx.moveTo(140,140);
                 ctx.arc(140,140,135,a,a+arc); ctx.fill();
                 ctx.save(); ctx.translate(140,140); ctx.rotate(a+arc/2);
-                ctx.fillStyle="white"; ctx.font="bold 10px Arial"; ctx.fillText(s.n, 60, 5); ctx.restore();
+                ctx.fillStyle="white"; ctx.font="bold 10px Arial"; ctx.textAlign="right"; ctx.fillText(s.n, 120, 5); ctx.restore();
             });
         }
 
@@ -177,19 +176,20 @@
             if(type === 'c') {
                 let cost = lvlC * 150;
                 if(coins >= cost) { coins -= cost; lvlC++; }
-                else return tg.showAlert("Недостаточно монет!");
+                else return tg.showAlert("Мало монет!");
             } else {
                 let cost = lvlE * 200;
                 if(coins >= cost) { coins -= cost; lvlE++; energy += 100; }
-                else return tg.showAlert("Недостаточно монет!");
+                else return tg.showAlert("Мало монет!");
             }
             updateUI(); saveAll();
         }
 
         function startSpin() {
-            if (spins <= 0 || spinning) return tg.showAlert("Нет доступных спинов!");
+            if (spins <= 0 || spinning) return tg.showAlert("Нет спинов!");
             spinning = true; spins--; updateUI();
             
+            // 1. Сразу определяем ПРИЗ по весам
             let rand = Math.random() * 100;
             let cum = 0; let targetIdx = 0;
             for(let i=0; i<sectors.length; i++) {
@@ -197,26 +197,45 @@
                 if(rand <= cum) { targetIdx = i; break; }
             }
 
-            let angle = 0;
-            let extraDeg = (360 - (targetIdx * (360/sectors.length))) + 3600; 
-            let speed = 0.5;
-            const anim = () => {
-                angle += speed; speed *= 0.987; drawWheel(angle);
-                if (speed < 0.005) { spinning = false; finishSpin(targetIdx); }
-                else requestAnimationFrame(anim);
+            // 2. Расчет угла: чтобы сектор targetIdx был наверху
+            const sectorDegree = 360 / sectors.length;
+            const targetPos = 360 - (targetIdx * sectorDegree) - (sectorDegree / 2);
+            const totalRotation = (360 * 8) + targetPos; // 8 оборотов + позиция
+
+            let startTimestamp = null;
+            const duration = 5000; // 5 секунд вращения
+
+            const animate = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                
+                // Функция плавного замедления (Ease Out)
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const currentRotation = easeOut * totalRotation;
+                
+                currentWheelAngle = (currentRotation * Math.PI) / 180;
+                drawWheel(currentWheelAngle);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    spinning = false;
+                    finishSpin(targetIdx);
+                }
             };
-            anim();
+            requestAnimationFrame(animate);
         }
 
         function finishSpin(idx) {
-            const p = sectors[idx].n;
-            if(p.includes("5%")) coins += Math.floor(coins * 0.05);
-            else if(p.includes("15%")) coins += Math.floor(coins * 0.15);
-            else if(p.includes("50%")) coins += Math.floor(coins * 0.50);
-            else if(p.includes("X2")) x2Time = 600;
-            else if(p.includes("Безлимит")) infTime = 600;
+            const prize = sectors[idx].n;
             
-            tg.showAlert(`Поздравляем! Ваш приз: ${p}`);
+            if(prize === "+5% Кеш") coins += Math.floor(coins * 0.05) || 50;
+            else if(prize === "+15% Кеш") coins += Math.floor(coins * 0.15) || 150;
+            else if(prize === "ДЖЕКПОТ 50%") coins += Math.floor(coins * 0.50) || 1000;
+            else if(prize === "X2 Клик") x2Time = 600;
+            else if(prize === "Безлимит") infTime = 600;
+            
+            tg.showAlert(`🎰 Выпало: ${prize}`);
             updateUI(); saveAll();
         }
 
@@ -234,7 +253,7 @@
             const clientY = e.touches ? e.touches[0].pageY : e.clientY;
             const p = document.createElement('div');
             p.className = 'plus-one'; p.innerText = `+${power}`;
-            p.style.left = (clientX - 10) + 'px'; p.style.top = (clientY - 20) + 'px';
+            p.style.left = clientX + 'px'; p.style.top = clientY + 'px';
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 800);
             
@@ -244,7 +263,6 @@
 
         document.getElementById('coin-tap').addEventListener('touchstart', handleTap, {passive: false});
 
-        // Главный цикл: Реген + Таймеры
         setInterval(() => {
             if(energy < lvlE * 100) energy++;
             if(x2Time > 0) x2Time--;
@@ -272,54 +290,39 @@
             document.getElementById('l-e').innerText = `Ур: ${lvlE}`;
             document.getElementById('p-e').innerText = lvlE * 200;
 
-            // Видимость таймеров
-            const tX2 = document.getElementById('t-x2');
-            const tInf = document.getElementById('t-inf');
-            if(x2Time > 0) { tX2.style.display = 'block'; tX2.innerText = `🔥 X2: ${fmt(x2Time)}`; } else { tX2.style.display = 'none'; }
-            if(infTime > 0) { tInf.style.display = 'block'; tInf.innerText = `⚡ Безлимит: ${fmt(infTime)}`; } else { tInf.style.display = 'none'; }
+            document.getElementById('t-x2').style.display = x2Time > 0 ? 'block' : 'none';
+            document.getElementById('t-x2').innerText = `🔥 X2: ${fmt(x2Time)}`;
+            document.getElementById('t-inf').style.display = infTime > 0 ? 'block' : 'none';
+            document.getElementById('t-inf').innerText = `⚡ Безлимит: ${fmt(infTime)}`;
         }
 
         function claimDaily() {
             const now = Date.now();
-            if (now - lastClaim < 86400000) {
-                const left = 86400000 - (now - lastClaim);
-                return tg.showAlert(`Бонус будет доступен через ${Math.floor(left/3600000)}ч.`);
-            }
+            if (now - lastClaim < 86400000) return tg.showAlert("Приходи завтра!");
             coins += 5000; spins += 1; lastClaim = now;
-            tg.showAlert("Вы получили ежедневную награду: 5,000 монет и 1 Спин!");
+            tg.showAlert("Получено: 5,000 монет и 1 Спин!");
             updateUI(); saveAll();
         }
 
-        // ЖЕЛЕЗОБЕТОННАЯ АДМИНКА
         function adminGive() {
-            const inputID = document.getElementById('target-id').value.trim();
-            const tID = String(inputID); // Принудительно строка
-            const addC = parseInt(document.getElementById('add-coins').value) || 0;
-            const addS = parseInt(document.getElementById('add-spins').value) || 0;
-            
-            if(!tID) return tg.showAlert("Введите ID игрока!");
+            const target = String(document.getElementById('target-id').value.trim());
+            const aC = parseInt(document.getElementById('add-coins').value) || 0;
+            const aS = parseInt(document.getElementById('add-spins').value) || 0;
+            if(!target) return tg.showAlert("Введите ID!");
 
-            db.ref('users/' + tID).once('value').then(snap => {
+            db.ref('users/' + target).once('value').then(snap => {
                 if(snap.exists()){
-                    let data = snap.val();
-                    let nC = (Number(data.coins) || 0) + addC;
-                    let nS = (Number(data.spins) || 0) + addS;
-
-                    db.ref('users/' + tID).update({ coins: nC, spins: nS }).then(() => {
-                        tg.showAlert("Ресурсы успешно начислены!");
-                        
-                        // Если админ выдал сам себе
-                        if(tID === String(tg.initDataUnsafe?.user?.id)) {
-                            coins = nC; spins = nS; updateUI();
+                    let d = snap.val();
+                    let nC = (Number(d.coins) || 0) + aC;
+                    let nS = (Number(d.spins) || 0) + aS;
+                    db.ref('users/' + target).update({ coins: nC, spins: nS }).then(() => {
+                        tg.showAlert("Выдано!");
+                        if(target === String(tg.initDataUnsafe?.user?.id)) { 
+                            coins = nC; spins = nS; updateUI(); 
                         }
-                        
-                        document.getElementById('add-coins').value = '';
-                        document.getElementById('add-spins').value = '';
                     });
-                } else {
-                    tg.showAlert("Игрок с таким ID не найден в базе данных.");
-                }
-            }).catch(e => tg.showAlert("Ошибка БД: " + e.message));
+                } else tg.showAlert("ID не найден");
+            });
         }
 
         function show(scr) {
@@ -329,11 +332,9 @@
             document.getElementById('n-'+scr).classList.add('active');
             if(scr === 'top') {
                 loadTop();
-                if(String(tg.initDataUnsafe?.user?.id) === String(ADMIN_ID)) {
-                    document.getElementById('admin-box').style.display = 'block';
-                }
+                if(String(tg.initDataUnsafe?.user?.id) === String(ADMIN_ID)) document.getElementById('admin-box').style.display = 'block';
             }
-            if(scr === 'bonus') drawWheel();
+            if(scr === 'bonus') drawWheel(currentWheelAngle);
         }
 
         function saveAll() {
@@ -343,26 +344,22 @@
             if(tg.initDataUnsafe?.user?.id) {
                 db.ref('users/' + tg.initDataUnsafe.user.id).update({ 
                     coins, spins, lastClaim, lvlC, lvlE, 
-                    username: tg.initDataUnsafe.user.first_name || "Игрок"
+                    username: tg.initDataUnsafe.user.first_name || "Аноним"
                 });
             }
         }
 
         function loadTop() {
             db.ref('users').orderByChild('coins').limitToLast(15).once('value', s => {
-                let list = ''; let players = [];
-                s.forEach(u => { let d = u.val(); d.id = u.key; players.push(d); });
-                players.reverse().forEach((p, i) => {
-                    list += `<div class="shop-item" style="padding: 10px 15px;">
-                        <div><b>${i+1}. ${p.username}</b><br><small style="color:#64748b">ID: ${p.id}</small></div>
-                        <b style="color:var(--primary)">${Math.floor(p.coins).toLocaleString()} 💰</b>
-                    </div>`;
+                let h = ''; let pArr = [];
+                s.forEach(u => { let d = u.val(); d.id = u.key; pArr.push(d); });
+                pArr.reverse().forEach((p, i) => {
+                    h += `<div class="shop-item"><div><b>${i+1}. ${p.username}</b><br><small>ID: ${p.id}</small></div><b>${Math.floor(p.coins).toLocaleString()}</b></div>`;
                 });
-                document.getElementById('leaderboard').innerHTML = list;
+                document.getElementById('leaderboard').innerHTML = h;
             });
         }
 
-        // Старт
         drawWheel();
         updateUI();
     </script>
