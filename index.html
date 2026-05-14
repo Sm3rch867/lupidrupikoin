@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: REAL TYCOON</title>
+    <title>ЛУПИДРУПИКОИН</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -18,12 +18,13 @@
         #coins { font-size: 42px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); margin-top: 10px; }
         .stats { font-size: 13px; color: #94a3b8; display: flex; gap: 10px; margin: 5px 0; justify-content: center; }
 
+        /* Увеличенный размер коина */
         .coin-btn {
-            width: 220px; height: 220px; border-radius: 50%; border: 8px solid #1e293b;
+            width: 280px; height: 280px; border-radius: 50%; border: 8px solid #1e293b;
             background: url('coin.png') center/cover; margin: 15px 0;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5); transition: transform 0.05s; touch-action: manipulation;
+            box-shadow: 0 0 50px rgba(0,0,0,0.6); transition: transform 0.05s; touch-action: manipulation;
         }
-        .coin-btn:active { transform: scale(0.92); }
+        .coin-btn:active { transform: scale(0.94); }
 
         .energy-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #3b82f6); transition: 0.3s; }
@@ -94,7 +95,7 @@
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">💰<br>Игра</div>
         <div class="nav-item" id="n-shop" onclick="show('shop')">🛒<br>Магазин</div>
-        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонус</div>
+        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонусы</div>
         <div class="nav-item" id="n-top" onclick="show('top')">🏆<br>Топ</div>
     </div>
 
@@ -126,7 +127,7 @@
 
         let spinning = false, currentAngle = 0;
 
-        // ИДЕАЛЬНЫЙ МАТЕМАТИЧЕСКИЙ БАЛАНС
+        // Математический баланс
         const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
         const getClickCost = (l) => Math.floor(150 * Math.pow(1.1784, l - 1));
 
@@ -135,7 +136,6 @@
 
         const getEnergyMax = (l) => 100 + (l - 1) * 100;
         const getEnergyCost = (l) => {
-            // Исправлено: Массив цен теперь соответствует уровням со 2-го по 5-й правильно
             const costs = [0, 25000, 250000, 1250000, 5000000];
             return costs[l] || 5000000;
         };
