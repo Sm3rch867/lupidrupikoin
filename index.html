@@ -3,132 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: REAL TYCOON</title>
+    <title>ЛУПИДРУПИКОИН: BIG COIN EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { 
-            --primary: #facc15; 
-            --bg: #090d16; 
-            --card: rgba(17, 24, 39, 0.75); 
-            --boost: #ef4444; 
-            --energy: #3b82f6; 
-        }
+        :root { --primary: #facc15; --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); --boost: #ef4444; --energy: #3b82f6; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
         
+        /* Заменяем старый фон body на изображение (или градиент) */
         body { 
-            background: 
-                radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.18) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(250, 204, 21, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 10% 60%, rgba(239, 68, 68, 0.08) 0%, transparent 40%),
-                var(--bg);
+            background: linear-gradient(to bottom right, #1e3a8a, #0f172a); 
             color: white; 
             height: 100vh; 
             overflow: hidden; 
         }
 
-        .screen { 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            height: calc(100vh - 80px); 
-            padding: 20px; 
-            overflow-y: auto; 
-            backdrop-filter: blur(10px);
-        }
+        .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; }
         .active { display: flex; }
 
-        #coins { font-size: 46px; font-weight: bold; color: var(--primary); text-shadow: 0 0 25px rgba(250, 204, 21, 0.5); margin-top: 15px; }
-        .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin: 8px 0; justify-content: center; font-weight: 500; }
+        #coins { font-size: 42px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); margin-top: 10px; }
+        .stats { font-size: 13px; color: #94a3b8; display: flex; gap: 10px; margin: 5px 0; justify-content: center; }
 
-        /* Контейнер для позиционирования монеты и её заднего фона */
-        .coin-container {
-            position: relative;
-            width: 340px;
-            height: 340px;
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Эффект второй монеты на заднем плане (из концепта) */
-        .coin-container::before {
-            content: '';
-            position: absolute;
-            width: 240px;
-            height: 240px;
-            border-radius: 50%;
-            right: 15px;
-            top: 25px;
-            background: url('coin.png') center/cover;
-            opacity: 0.25;
-            filter: blur(2px) brightness(0.6);
-            transform: scale(0.9) translateZ(-1px);
-            pointer-events: none;
-        }
-
-        /* Огромный коин с собственным неоновым космическим фоном */
+        /* Увеличенный размер коина */
         .coin-btn {
-            position: relative;
-            width: 280px; 
-            height: 280px; 
-            border-radius: 50%; 
-            border: 6px solid rgba(255, 255, 255, 0.12);
-            /* Фон монеты перекликается с основным, но более плотный и контрастный */
-            background: 
-                radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.35) 0%, transparent 60%),
-                radial-gradient(circle at 70% 70%, rgba(250, 204, 21, 0.15) 0%, transparent 60%),
-                url('coin.png') center/cover;
-            background-blend-mode: screen; /* Красиво смешивает неоновое свечение и текстуру коина */
-            box-shadow: 
-                0 0 50px rgba(59, 130, 246, 0.25), 
-                0 0 80px rgba(250, 204, 21, 0.15),
-                inset 0 0 25px rgba(0,0,0,0.8); 
-            transition: transform 0.05s, box-shadow 0.1s; 
-            touch-action: manipulation;
-            cursor: pointer;
-            z-index: 2;
+            width: 280px; height: 280px; border-radius: 50%; border: 8px solid #1e293b;
+            background: url('coin.png') center/cover; margin: 15px 0;
+            box-shadow: 0 0 50px rgba(0,0,0,0.6); transition: transform 0.05s; touch-action: manipulation;
         }
-        .coin-btn:active { 
-            transform: scale(0.94); 
-            box-shadow: 
-                0 0 30px rgba(59, 130, 246, 0.4), 
-                inset 0 0 30px rgba(0,0,0,0.9);
-        }
+        .coin-btn:active { transform: scale(0.94); }
 
-        .energy-bar { width: 100%; height: 14px; background: rgba(30, 41, 59, 0.8); border-radius: 10px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .energy-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #3b82f6); transition: 0.3s; }
 
-        .shop-item { 
-            background: var(--card); 
-            width: 100%; 
-            padding: 14px; 
-            border-radius: 16px; 
-            margin-bottom: 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .shop-info h4 { font-size: 16px; font-weight: 600; }
-        .shop-info p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
-        .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 16px; border-radius: 12px; font-weight: bold; font-size: 13px; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); }
-        .buy-btn:disabled { background: #334155; opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+        .shop-item { background: var(--card); width: 100%; padding: 12px; border-radius: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
+        .shop-info h4 { font-size: 15px; }
+        .shop-info p { font-size: 12px; color: #94a3b8; }
+        .buy-btn { background: #22c55e; color: white; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; font-size: 13px; }
+        .buy-btn:disabled { background: #334155; opacity: 0.6; cursor: not-allowed; }
 
-        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: rgba(15, 23, 42, 0.85); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); z-index: 1000; }
+        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: rgba(30, 41, 59, 0.9); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; z-index: 1000; }
         .nav-item { text-align: center; font-size: 11px; opacity: 0.4; color: white; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 5px 10px; border-radius: 12px; }
-        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-10px) scale(1.1); text-shadow: 0 0 15px rgba(250, 204, 21, 0.6); }
+        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-10px) scale(1.1); text-shadow: 0 0 10px rgba(250, 204, 21, 0.6); }
 
-        .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3); }
-        .btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.3s; }
+        .btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
         
-        .plus-one { position: absolute; color: var(--primary); font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 2px 10px rgba(250,204,21,0.5); z-index: 1000; }
-        @keyframes floatUp { to { transform: translateY(-120px); opacity: 0; } }
+        .plus-one { position: absolute; color: var(--primary); font-size: 24px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 1000; }
+        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
         
-        .admin-panel { display: none; background: rgba(30, 41, 59, 0.9); padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #ef4444; margin-bottom: 20px;}
+        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #ef4444; margin-bottom: 20px;}
         .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; outline: none; }
     </style>
 </head>
@@ -140,14 +64,10 @@
             <span>👆 <span id="click-val">1</span>/клик</span>
             <span>💤 <span id="ps-val">0</span>/5с</span>
         </div>
-        
-        <div class="coin-container">
-            <button class="coin-btn" id="coin-tap"></button>
-        </div>
-
-        <div style="width: 100%; max-width: 300px; margin-top: 5px;">
-            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; margin-bottom: 4px;">
-                <span style="color: #94a3b8;">⚡ Энергия</span>
+        <button class="coin-btn" id="coin-tap"></button>
+        <div style="width: 100%; max-width: 300px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>⚡ Энергия</span>
                 <span><span id="e-text">100</span> / <span id="max-e-text">100</span></span>
             </div>
             <div class="energy-bar"><div id="energy-fill"></div></div>
@@ -155,19 +75,19 @@
     </div>
 
     <div id="shop-scr" class="screen">
-        <h2 style="margin-bottom: 20px; text-shadow: 0 0 15px rgba(255,255,255,0.2);">МАГАЗИН 🛒</h2>
+        <h2 style="margin-bottom: 15px;">МАГАЗИН 🛒</h2>
         <div id="shop-list" style="width: 100%;"></div>
     </div>
 
     <div id="bonus-scr" class="screen">
-        <button class="btn" id="daily-btn" onclick="claimDaily()" style="margin-bottom: 25px;">ЗАБРАТЬ БОНУС</button>
-        <p style="color: #94a3b8; margin-bottom: 15px; font-weight: 500;">Колесо удачи:</p>
+        <button class="btn" id="daily-btn" onclick="claimDaily()" style="margin-bottom: 20px;">ЗАБРАТЬ БОНУС</button>
+        <p style="color: #94a3b8; margin-bottom: 10px;">Колесо удачи:</p>
         <canvas id="wheel-canvas" width="280" height="280"></canvas>
-        <button class="btn" id="spin-btn" onclick="startSpin()" style="margin-top: 20px;">КРУТИТЬ</button>
+        <button class="btn" id="spin-btn" onclick="startSpin()" style="margin-top: 15px;">КРУТИТЬ</button>
     </div>
 
     <div id="top-scr" class="screen">
-        <h2 style="margin-bottom: 20px; text-shadow: 0 0 15px rgba(255,255,255,0.2);">ЛИДЕРЫ 🏆</h2>
+        <h2 style="margin-bottom: 20px;">ЛИДЕРЫ 🏆</h2>
         <div id="admin-box" class="admin-panel">
             <h4 style="color:#ef4444; margin-bottom:10px">🛡 АДМИН-МЕНЮ</h4>
             <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
@@ -214,7 +134,7 @@
 
         let spinning = false, currentAngle = 0;
 
-        // Баланс
+        // Математический баланс
         const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
         const getClickCost = (l) => Math.floor(150 * Math.pow(1.1784, l - 1));
 
@@ -441,22 +361,3 @@
                 let html = ''; let arr = [];
                 s.forEach(u => { const d = u.val(); d.id = u.key; arr.push(d); });
                 arr.reverse().forEach((p, i) => {
-                    html += `<div class="shop-item"><div><b>${i+1}. ${p.username}</b><br><small>ID: ${p.id}</small></div> <span>${Math.floor(p.coins).toLocaleString()} 💰</span></div>`;
-                });
-                document.getElementById('leaderboard').innerHTML = html;
-            });
-        }
-
-        setInterval(() => {
-            const maxE = getEnergyMax(lvlE);
-            if (energy < maxE) energy++;
-            coins += (getPassPower(lvlP) / 5); 
-            updateUI();
-            saveAll();
-        }, 1000);
-
-        initOffline();
-        updateUI();
-    </script>
-</body>
-</html>
