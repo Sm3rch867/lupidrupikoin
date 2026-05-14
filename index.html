@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ЛУПИДРУПИКОИН: FULL EDITION</title>
+    <title>ЛУПИДРУПИКОИН: FIX EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -15,7 +15,6 @@
         .screen { display: none; flex-direction: column; align-items: center; height: calc(100vh - 80px); padding: 20px; overflow-y: auto; }
         .active { display: flex; }
 
-        /* Таймеры бустов */
         .timers-container { display: flex; gap: 10px; margin-bottom: 10px; height: 30px; }
         .timer-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; }
         .t-x2 { background: var(--boost); box-shadow: 0 0 10px var(--boost); }
@@ -25,7 +24,7 @@
         .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin: 10px 0; }
 
         .coin-btn {
-            width: 250px; height: 250px; border-radius: 50%; border: 8px solid #1e293b;
+            width: 240px; height: 240px; border-radius: 50%; border: 8px solid #1e293b;
             background: url('coin.png') center/cover; margin: 15px 0;
             box-shadow: 0 0 40px rgba(0,0,0,0.5); transition: transform 0.05s; touch-action: manipulation;
         }
@@ -34,17 +33,14 @@
         .energy-bar { width: 100%; height: 12px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s; }
 
-        /* Магазин */
         .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
         .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
 
-        /* Колесо */
         .wheel-box { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; }
 
-        /* Админ-панель */
         .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
-        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; }
+        .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; outline: none; }
 
         .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; }
         .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; }
@@ -104,9 +100,9 @@
         <h2 style="margin-bottom: 20px;">ТОП ИГРОКОВ 🏆</h2>
         <div id="admin-box" class="admin-panel">
             <h4 style="color:#ef4444; margin-bottom:10px">АДМИН-МЕНЮ</h4>
-            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
-            <input type="number" id="add-coins" class="admin-input" placeholder="Кол-во монет">
-            <input type="number" id="add-spins" class="admin-input" placeholder="Кол-во спинов">
+            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока (цифры)">
+            <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
+            <input type="number" id="add-spins" class="admin-input" placeholder="Добавить спинов">
             <button class="btn" style="background:#ef4444; color:white" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
         </div>
         <div id="leaderboard" style="width: 100%;">Загрузка...</div>
@@ -283,16 +279,32 @@
             updateUI(); saveAll();
         }
 
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ АДМИНКИ
         function adminGive() {
             const tID = document.getElementById('target-id').value.trim();
             const aC = parseInt(document.getElementById('add-coins').value) || 0;
             const aS = parseInt(document.getElementById('add-spins').value) || 0;
+            
             if(!tID) return tg.showAlert("Введите ID!");
-            db.ref('users/' + tID).once('value', s => {
-                if(s.exists()){
-                    const d = s.val();
-                    db.ref('users/' + tID).update({ coins: (d.coins || 0) + aC, spins: (d.spins || 0) + aS });
-                    tg.showAlert("Ресурсы выданы!");
+
+            db.ref('users/' + tID).once('value', snapshot => {
+                if(snapshot.exists()){
+                    let currentData = snapshot.val();
+                    let newCoins = (parseInt(currentData.coins) || 0) + aC;
+                    let newSpins = (parseInt(currentData.spins) || 0) + aS;
+
+                    db.ref('users/' + tID).update({
+                        coins: newCoins,
+                        spins: newSpins
+                    }).then(() => {
+                        tg.showAlert(`Успешно! Игроку ${tID} добавлено ресурсов.`);
+                        document.getElementById('add-coins').value = '';
+                        document.getElementById('add-spins').value = '';
+                    }).catch(err => {
+                        tg.showAlert("Ошибка БД: " + err.message);
+                    });
+                } else {
+                    tg.showAlert("Пользователь с таким ID не найден!");
                 }
             });
         }
