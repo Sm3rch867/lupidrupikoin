@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LUPIDRUPI - PROBABILITY WHEEL</title>
+    <title>ЛУПИДРУПИКОИН: PERFECT EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -16,47 +16,48 @@
         .active { display: flex; }
 
         .timers-container { display: flex; gap: 10px; margin-bottom: 10px; height: 35px; justify-content: center; width: 100%; }
-        .timer-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; }
-        .t-x2 { background: var(--boost); box-shadow: 0 0 10px var(--boost); }
-        .t-inf { background: var(--energy); box-shadow: 0 0 10px var(--energy); }
+        .timer-badge { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; display: none; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+        .t-x2 { background: var(--boost); }
+        .t-inf { background: var(--energy); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
 
         #coins { font-size: 48px; font-weight: bold; color: var(--primary); text-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
         .stats { font-size: 14px; color: #94a3b8; display: flex; gap: 15px; margin: 10px 0; }
 
         .coin-btn {
-            width: 220px; height: 220px; border-radius: 50%; border: 8px solid #1e293b;
+            width: 240px; height: 240px; border-radius: 50%; border: 8px solid #1e293b;
             background: url('coin.png') center/cover; margin: 15px 0;
             box-shadow: 0 0 40px rgba(0,0,0,0.5); transition: transform 0.05s; touch-action: manipulation;
         }
-        .coin-btn:active { transform: scale(0.95); }
+        .coin-btn:active { transform: scale(0.92); }
 
-        .energy-bar { width: 100%; height: 12px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 5px; }
-        #energy-fill { width: 100%; height: 100%; background: var(--primary); transition: 0.3s; }
+        .energy-bar { width: 100%; height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #fbbf24); transition: 0.3s; }
 
-        .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
+        .shop-item { background: var(--card); width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
+        .buy-btn { background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
         .wheel-box { position: relative; width: 280px; height: 280px; margin: 20px 0; }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 100; filter: drop-shadow(0 2px 5px black); }
+        .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 100; filter: drop-shadow(0 2px 5px black); }
 
-        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #ef4444; margin-bottom: 20px; }
+        .admin-panel { display: none; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; width: 100%; border: 2px solid #ef4444; }
         .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; }
 
-        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; }
-        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: white; cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--primary); }
+        /* Кастомное интерактивное меню с вылетом вверх */
+        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: #1e293b; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #334155; z-index: 1000; }
+        .nav-item { text-align: center; font-size: 11px; opacity: 0.4; color: white; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 5px 10px; border-radius: 12px; }
+        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-10px) scale(1.1); text-shadow: 0 0 10px rgba(250, 204, 21, 0.6); }
 
         .btn { background: var(--primary); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; }
-        .plus-one { position: absolute; color: var(--primary); font-size: 30px; font-weight: bold; animation: float 0.7s forwards; pointer-events: none; }
-        @keyframes float { to { transform: translateY(-80px); opacity: 0; } }
+        .plus-one { position: absolute; color: var(--primary); font-size: 28px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 100; }
+        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div id="game-scr" class="screen active">
         <div class="timers-container">
-            <div id="t-x2" class="timer-badge t-x2">🔥 X2 КЛИК</div>
-            <div id="t-inf" class="timer-badge t-inf">⚡ БЕЗЛИМИТ</div>
+            <div id="t-x2" class="timer-badge t-x2">🔥 X2</div>
+            <div id="t-inf" class="timer-badge t-inf">⚡ INF</div>
         </div>
         <div id="coins">0</div>
         <div class="stats">
@@ -64,8 +65,8 @@
             <span>🎰 Спины: <span id="spins-top">0</span></span>
         </div>
         <button class="coin-btn" id="coin-tap"></button>
-        <div style="width: 100%; max-width: 280px;">
-            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+        <div style="width: 100%; max-width: 300px; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; font-size: 14px;">
                 <span>⚡ Энергия</span>
                 <span><span id="e-text">100</span>/<span id="max-e-text">100</span></span>
             </div>
@@ -74,7 +75,7 @@
     </div>
 
     <div id="shop-scr" class="screen">
-        <h2 style="margin-bottom: 20px;">МАГАЗИН 🛒</h2>
+        <h2 style="margin-bottom: 25px;">МАГАЗИН 🛒</h2>
         <div class="shop-item">
             <div><h4>Сила клика</h4><p id="l-c" style="color:#94a3b8">Ур: 1</p></div>
             <button class="buy-btn" onclick="buy('c')"><span id="p-c">150</span> 💰</button>
@@ -86,7 +87,9 @@
     </div>
 
     <div id="bonus-scr" class="screen">
-        <button class="btn" style="margin-bottom: 20px;" onclick="claimDaily()">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
+        <div style="background: var(--card); padding: 15px; border-radius: 15px; width: 100%; margin-bottom: 10px; text-align: center; border: 1px solid #334155;">
+            <button class="btn" onclick="claimDaily()">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
+        </div>
         <div class="wheel-box">
             <div class="wheel-pointer"></div>
             <canvas id="wheel-canvas" width="280" height="280"></canvas>
@@ -101,16 +104,17 @@
             <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
             <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
             <input type="number" id="add-spins" class="admin-input" placeholder="Добавить спинов">
-            <button class="btn" style="background:#ef4444; color:white" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
+            <button class="btn" style="background:#22c55e; color:white; margin-bottom:10px;" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
+            <button class="btn" style="background:#ef4444; color:white;" onclick="adminWipe()">🛑 ОБНУЛИТЬ ИГРОКА (ПОЛНЫЙ СБРОС)</button>
         </div>
         <div id="leaderboard" style="width: 100%;">Загрузка...</div>
     </div>
 
     <div class="nav">
-        <div class="nav-item active" onclick="show('game')">💰<br>Игра</div>
-        <div class="nav-item" onclick="show('shop')">🛒<br>Шоп</div>
-        <div class="nav-item" onclick="show('bonus')">🎁<br>Бонус</div>
-        <div class="nav-item" onclick="show('top')">🏆<br>Топ</div>
+        <div class="nav-item active" id="n-game" onclick="show('game')">💰<br>Главная</div>
+        <div class="nav-item" id="n-shop" onclick="show('shop')">🛒<br>Магазин</div>
+        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонусы</div>
+        <div class="nav-item" id="n-top" onclick="show('top')">🏆<br>Топ</div>
     </div>
 
     <script>
@@ -131,24 +135,23 @@
         let coins = parseInt(localStorage.getItem('c')) || 0;
         let energy = parseInt(localStorage.getItem('e')) || 100;
         let spins = parseInt(localStorage.getItem('s')) || 0;
+        let lastClaim = parseInt(localStorage.getItem('lc')) || 0;
         let lvlC = parseInt(localStorage.getItem('l_c')) || 1;
         let lvlE = parseInt(localStorage.getItem('l_e')) || 1;
-        let lastClaim = parseInt(localStorage.getItem('lc')) || 0;
-        
+
         let x2Time = 0, infTime = 0, spinning = false, currentAngle = 0;
 
-        // 10 секторов. У каждого прописан индивидуальный вес (w). Сумма всех весов = 100.
-        // Названия строго соответствуют твоему списку.
+        // Настройка секторов и распределения весов (Шансов)
         const sectors = [
-            { n: "+10% Кеш", c: "#1e293b", w: 25 }, // Тип 1 (часть 1)
-            { n: "+20% Кеш", c: "#334155", w: 15 }, // Тип 2 (часть 1)
-            { n: "X2 Клик",  c: "#ef4444", w: 7 },  // Тип 3 (часть 1)
-            { n: "Безлимит", c: "#3b82f6", w: 5 },  // Тип 4 (часть 1)
-            { n: "+10% Кеш", c: "#1e293b", w: 25 }, // Тип 1 (часть 2) -> Итого у +10% шанс 50%
-            { n: "+20% Кеш", c: "#334155", w: 10 }, // Тип 2 (часть 2) -> Итого у +20% шанс 25%
-            { n: "X2 Клик",  c: "#ef4444", w: 6 },  // Тип 3 (часть 2) -> Итого у X2 шанс 13%
-            { n: "Безлимит", c: "#3b82f6", w: 5 },  // Тип 4 (часть 2) -> Итого у Безлимита шанс 10%
-            { n: "ДЖЕКПОТ 50%", c: "#facc15", w: 2 } // Тип 5 -> Шанс всего 2%
+            { n: "+10% Кеш", c: "#1e293b", w: 25 }, 
+            { n: "+20% Кеш", c: "#334155", w: 15 }, 
+            { n: "X2 Клик",  c: "#ef4444", w: 7 },  
+            { n: "Безлимит", c: "#3b82f6", w: 5 },  
+            { n: "+10% Кеш", c: "#1e293b", w: 25 }, 
+            { n: "+20% Кеш", c: "#334155", w: 10 }, 
+            { n: "X2 Клик",  c: "#ef4444", w: 6 },  
+            { n: "Безлимит", c: "#3b82f6", w: 5 },  
+            { n: "ДЖЕКПОТ 50%", c: "#facc15", w: 2 } 
         ];
 
         function drawWheel(angle = 0) {
@@ -173,7 +176,6 @@
             if (spins <= 0 || spinning) return tg.showAlert("Нет спинов!");
             spinning = true; spins--; updateUI();
 
-            // Алгоритм взвешенного случайного выбора (Дроп-система)
             let rand = Math.random() * 100;
             let cum = 0, targetIdx = 0;
             for(let i = 0; i < sectors.length; i++) {
@@ -282,27 +284,60 @@
             const tid = String(document.getElementById('target-id').value.trim());
             const aC = parseInt(document.getElementById('add-coins').value) || 0;
             const aS = parseInt(document.getElementById('add-spins').value) || 0;
-            if(!tid) return tg.showAlert("ID?");
+            if(!tid) return tg.showAlert("ID игрока?");
             db.ref('users/' + tid).once('value').then(snap => {
                 if(snap.exists()){
                     let d = snap.val();
                     let nC = (Number(d.coins) || 0) + aC;
                     let nS = (Number(d.spins) || 0) + aS;
                     db.ref('users/' + tid).update({ coins: nC, spins: nS }).then(() => {
-                        tg.showAlert("Успешно выдано!");
+                        tg.showAlert("Успешно добавлено!");
                         if(tid === String(tg.initDataUnsafe?.user?.id)) { coins=nC; spins=nS; updateUI(); }
                     });
                 } else tg.showAlert("ID не найден");
             });
         }
 
+        /* ПОЛНЫЙ СБРОС ИГРОКА ИЗ АДМИНКИ */
+        function adminWipe() {
+            const tid = String(document.getElementById('target-id').value.trim());
+            if(!tid) return tg.showAlert("Введите ID для сброса!");
+            
+            if(confirm(`Вы уверены, что хотите ПОЛНОСТЬЮ ОБНУЛИТЬ игрока ${tid}?`)) {
+                db.ref('users/' + tid).update({
+                    coins: 0,
+                    spins: 0,
+                    lvlC: 1,
+                    lvlE: 1,
+                    lastClaim: 0
+                }).then(() => {
+                    tg.showAlert(`Игрок ${tid} успешно обнулен!`);
+                    
+                    // Если админ обнулил сам себя, мгновенно применяем локально
+                    if(tid === String(tg.initDataUnsafe?.user?.id)) {
+                        coins = 0; spins = 0; lvlC = 1; lvlE = 1; energy = 100; lastClaim = 0;
+                        localStorage.clear();
+                        updateUI();
+                    }
+                }).catch(() => {
+                    tg.showAlert("Ошибка при работе с базой данных");
+                });
+            }
+        }
+
         function show(s) {
             document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
             document.getElementById(s + '-scr').classList.add('active');
+            document.getElementById('n-' + s).classList.add('active');
+            
             if (s === 'bonus') drawWheel(currentAngle);
             if (s === 'top') {
                 loadTop();
-                if(String(tg.initDataUnsafe?.user?.id) === String(ADMIN_ID)) document.getElementById('admin-box').style.display='block';
+                if(String(tg.initDataUnsafe?.user?.id) === String(ADMIN_ID)) {
+                    document.getElementById('admin-box').style.display = 'block';
+                }
             }
         }
 
@@ -315,18 +350,18 @@
             localStorage.setItem('l_e', lvlE);
             if (uid) {
                 db.ref('users/' + uid).update({
-                    coins, spins, lvlC, lvlE,
+                    coins, spins, lvlC, lvlE, lastClaim,
                     username: tg.initDataUnsafe.user.first_name || "Игрок"
                 });
             }
         }
 
         function loadTop() {
-            db.ref('users').orderByChild('coins').limitToLast(10).once('value', s => {
+            db.ref('users').orderByChild('coins').limitToLast(15).once('value', s => {
                 let html = ''; let arr = [];
                 s.forEach(u => { const d = u.val(); d.id = u.key; arr.push(d); });
                 arr.reverse().forEach((p, i) => {
-                    html += `<div class="shop-item"><b>${i+1}. ${p.username}</b> <span>${Math.floor(p.coins).toLocaleString()} 💰</span></div>`;
+                    html += `<div class="shop-item"><div><b>${i+1}. ${p.username}</b><br><small>ID: ${p.id}</small></div> <span>${Math.floor(p.coins).toLocaleString()} 💰</span></div>`;
                 });
                 document.getElementById('leaderboard').innerHTML = html;
             });
