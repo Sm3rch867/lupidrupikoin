@@ -83,6 +83,9 @@
         <div id="admin-box" class="admin-panel">
             <h4 style="color:#ef4444; margin-bottom:10px">🛡 АДМИН-МЕНЮ</h4>
             <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
+            <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
+            <input type="number" id="add-spins" class="admin-input" placeholder="Добавить спинов">
+            <button class="btn" style="background:#22c55e; color:white; margin-bottom:10px;" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
             <button class="btn" style="background:#ef4444; color:white;" onclick="adminWipe()">🛑 СБРОС ИГРОКА (ПОЛНЫЙ СБРОС)</button>
         </div>
         <div id="leaderboard" style="width:100%">Загрузка...</div>
@@ -123,7 +126,7 @@
 
         let spinning = false, currentAngle = 0;
 
-        // ИДЕАЛЬНЫЙ МАТЕМАТИЧЕСКИЙ БАЛАНС (100 уровней, макс 1 млрд / 1 млн)
+        // ИДЕАЛЬНЫЙ МАТЕМАТИЧЕСКИЙ БАЛАНС
         const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
         const getClickCost = (l) => Math.floor(150 * Math.pow(1.1784, l - 1));
 
@@ -132,8 +135,9 @@
 
         const getEnergyMax = (l) => 100 + (l - 1) * 100;
         const getEnergyCost = (l) => {
-            const costs = [0, 40000, 200000, 1000000, 5000000];
-            return costs[l - 1] || 5000000;
+            // Исправлено: Массив цен теперь соответствует уровням со 2-го по 5-й правильно
+            const costs = [0, 25000, 250000, 1250000, 5000000];
+            return costs[l] || 5000000;
         };
 
         const sectors = [
@@ -280,6 +284,24 @@
             coins += 5000; spins += 1; lastClaim = now;
             updateUI(); saveAll();
             tg.showAlert("Получено 5,000 монет и 1 Спин!");
+        }
+
+        function adminGive() {
+            const tid = String(document.getElementById('target-id').value.trim());
+            const aC = parseInt(document.getElementById('add-coins').value) || 0;
+            const aS = parseInt(document.getElementById('add-spins').value) || 0;
+            if(!tid) return tg.showAlert("ID игрока?");
+            db.ref('users/' + tid).once('value').then(snap => {
+                if(snap.exists()){
+                    let d = snap.val();
+                    let nC = (Number(d.coins) || 0) + aC;
+                    let nS = (Number(d.spins) || 0) + aS;
+                    db.ref('users/' + tid).update({ coins: nC, spins: nS }).then(() => {
+                        tg.showAlert("Успешно добавлено!");
+                        if(tid === String(tg.initDataUnsafe?.user?.id)) { coins=nC; spins=nS; updateUI(); }
+                    });
+                } else tg.showAlert("ID не найден");
+            });
         }
 
         function adminWipe() {
