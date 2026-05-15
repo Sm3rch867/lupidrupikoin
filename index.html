@@ -12,7 +12,6 @@
             --primary: #facc15; 
             --bg: #060913; 
             --card: rgba(17, 24, 39, 0.75); 
-            --boost: #ef4444; 
             --energy: #3b82f6; 
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
@@ -36,18 +35,18 @@
             z-index: -1;
         }
 
-        /* ИСПРАВЛЕННЫЙ СКРОЛЛ */
+        /* ИСПРАВЛЕННЫЕ ЭКРАНЫ СО СКРОЛЛОМ */
         .screen { 
             display: none; 
             flex-direction: column; 
             align-items: center; 
-            height: calc(100vh - 145px); 
+            height: calc(100vh - 75px); /* Высота до панели навигации */
             padding: 20px; 
-            overflow-y: auto; /* Включаем вертикальную прокрутку */
-            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
-            padding-bottom: 100px; /* Дополнительный отступ снизу, чтобы навигация не закрывала кнопки */
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 120px; /* Отступ, чтобы нижние кнопки не перекрывались панелью */
         }
-        .screen::-webkit-scrollbar { display: none; } /* Скрываем полосу прокрутки для чистоты дизайна */
+        .screen::-webkit-scrollbar { display: none; }
         .active { display: flex; }
 
         .header { 
@@ -72,9 +71,10 @@
 
         .coin-btn {
             width: 260px; height: 260px; border-radius: 50%; border: 8px solid rgba(255, 255, 255, 0.05);
-            background: url('coin.png') center/cover; margin: auto 0;
+            background: url('coin.png') center/cover; margin: 40px 0;
             box-shadow: 0 0 40px rgba(250, 204, 21, 0.1);
             transition: transform 0.05s; touch-action: manipulation;
+            flex-shrink: 0;
         }
         .coin-btn:active { transform: scale(0.92); }
 
@@ -82,7 +82,7 @@
         
         .upgrade-card {
             background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; width: 100%;
+            display: flex; justify-content: space-between; align-items: center; width: 100%; flex-shrink: 0;
         }
 
         .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
@@ -98,12 +98,12 @@
         .buy { background: #22c55e; }
         .collect { background: #3b82f6; }
 
-        .wheel-wrapper { position: relative; width: 280px; height: 280px; margin: 20px 0; }
+        .wheel-wrapper { position: relative; width: 280px; height: 280px; margin: 20px 0; flex-shrink: 0; }
         #wheel-canvas { width: 100%; height: 100%; }
         .wheel-arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 24px; z-index: 5; color: var(--primary); }
 
-        .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(6, 9, 19, 0.95); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); z-index: 100; }
-        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: #fff; flex: 1; }
+        .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: rgba(6, 9, 19, 0.95); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); z-index: 100; }
+        .nav-item { text-align: center; font-size: 11px; opacity: 0.5; color: #fff; flex: 1; padding-top: 10px; }
         .nav-item.active { opacity: 1; color: var(--primary); }
 
         .plus-one { position: absolute; color: var(--primary); font-size: 28px; font-weight: bold; pointer-events: none; animation: floatUp 0.7s forwards; z-index: 100; }
@@ -128,7 +128,7 @@
     </div>
 
     <div id="game-scr" class="screen active">
-        <div style="font-size: 14px; margin: 15px 0;">Сила клика: <span id="click-val">1</span></div>
+        <div style="font-size: 14px; margin-top: 10px;">Сила клика: <span id="click-val">1</span></div>
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
@@ -147,14 +147,15 @@
 
     <div id="bonus-scr" class="screen">
         <div class="shop-section-title">БОНУС 24Ч</div>
-        <button class="btn" id="daily-btn" onclick="claimDaily()" style="width:100%">ЗАБРАТЬ ПОДАРОК</button>
-        <div id="daily-status-text" style="font-size:12px; margin-top:5px; color:#94a3b8"></div>
+        <button class="btn" id="daily-btn" onclick="claimDaily()" style="width:100%; flex-shrink:0;">ЗАБРАТЬ ПОДАРОК</button>
+        <div id="daily-status-text" style="font-size:12px; margin-top:5px; color:#94a3b8; margin-bottom: 20px;"></div>
+        
         <div class="shop-section-title">РУЛЕТКА</div>
         <div class="wheel-wrapper">
             <div class="wheel-arrow">▼</div>
             <canvas id="wheel-canvas" width="300" height="300"></canvas>
         </div>
-        <button class="btn" id="spin-btn" onclick="startSpin()">КРУТИТЬ (Спины: <span id="spins-count">0</span>)</button>
+        <button class="btn" id="spin-btn" onclick="startSpin()" style="width:100%; flex-shrink:0;">КРУТИТЬ (Спины: <span id="spins-count">0</span>)</button>
     </div>
 
     <div id="top-scr" class="screen">
@@ -354,10 +355,10 @@
                 let h = ''; let a = [];
                 s.forEach(u => a.push(u.val()));
                 a.reverse().forEach((p, i) => {
-                    // ИСПРАВЛЕННЫЙ ТОП: ID показывается только тебе
-                    const displayName = (currentUserId === MY_ADMIN_ID) ? `${p.username} <small style="opacity:0.6; font-size:9px;">(ID: ${p.id || '?'})</small>` : p.username;
+                    // ID показывается ТОЛЬКО тебе
+                    const idInfo = (currentUserId === MY_ADMIN_ID) ? ` <small style="opacity:0.6; font-size:9px;">(ID: ${p.id || '?'})</small>` : '';
                     h += `<div style="background:var(--card); padding:12px; margin-bottom:8px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
-                        <span><b style="color:var(--primary)">${i+1}.</b> ${displayName}</span> 
+                        <span><b style="color:var(--primary)">${i+1}.</b> ${p.username}${idInfo}</span> 
                         <b style="font-size:14px;">${Math.floor(p.coins).toLocaleString()} 💰</b>
                     </div>`;
                 });
