@@ -316,9 +316,9 @@
 
         // Базовые статические данные карточек
         const CARDS_DATA = {
-            lupi_67: { img: '67lupi.png', cost: 670000, income: 67000 },
-            lupi_drupi: { img: 'lupidrupi.jpg', cost: 1000000, income: 20000 },
-            delo_lupi: { img: 'delovolupi.png', cost: 5000000, income: 50000 }
+            lupi_67: { img: '67lupi.png', cost: 67000000, income: 67000 },
+            lupi_drupi: { img: 'lupidrupi.jpg', cost: 10000000, income: 20000 },
+            delo_lupi: { img: 'delovolupi.png', cost: 50000000, income: 50000 }
         };
 
         // Переменные состояния аккаунта
@@ -469,7 +469,7 @@
                             <button class="action-btn collect" ${currentFarm <= 0 ? 'disabled' : ''} onclick="collectCard('${id}')">
                                 Получить
                             </button>
-                            <div class="card-counter">Снизу: ${currentFarm.toLocaleString()} 💰</div>
+                            <div class="card-counter">${currentFarm.toLocaleString()} 💰</div>
                         </div>
                     `;
                 }
