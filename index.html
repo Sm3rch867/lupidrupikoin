@@ -210,6 +210,24 @@
         /* Админка */
         .admin-panel { display: none; background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #ef4444; margin-bottom: 20px;}
         .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; outline: none; }
+
+        /* Стили для Mogged Тест-Камеры */
+        .admin-video-box {
+            display: none;
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 2px solid #00ffcc;
+        }
+        #admin-camera-view {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
     </style>
 </head>
 <body>
@@ -285,7 +303,14 @@
             <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
             <input type="number" id="add-spins" class="admin-input" placeholder="Добавить спинов">
             <button class="btn" style="background:#22c55e; color:white; margin-bottom:10px;" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
+            
+            <button class="btn" style="background:#00ffcc; color:black; margin-bottom:10px; width: 100%;" onclick="adminMoggedTest()">🤖 ЗАПУСТИТЬ MOGGED ТЕСТ (+2МЛН)</button>
+            
             <button class="btn" style="background:#ef4444; color:white;" onclick="adminWipe()">🛑 СБРОС ИГРОКА</button>
+
+            <div id="admin-video-container" class="admin-video-box">
+                <video id="admin-camera-view" autoplay playsinline muted></video>
+            </div>
         </div>
 
         <div id="leaderboard" style="width:100%">Загрузка топа...</div>
@@ -363,7 +388,7 @@
             { text: "+10000 💰", weight: 15, action: () => { coins += 10000; } },
             { text: "∞ Энергия (10м)", weight: 10, action: () => { buffInfEUntil = Date.now() + 600000; localStorage.setItem('cc_buffInfE', buffInfEUntil); } },
             { text: "+500000 💰", weight: 8, action: () => { coins += 500000; } },
-            { text: "Джекпот 🏆", weight: 7, action: () => { coins += 10000000; } } // Текст укорочен для отображения на Canvas
+            { text: "Джекпот 🏆", weight: 7, action: () => { coins += 10000000; } } 
         ];
 
         // Расчет текущего фарма на конкретной инвестиционной карточке
@@ -375,7 +400,6 @@
         }
 
         function updateUI() {
-            // Проверка и калькуляция силы клика с учетом баффа x2
             let currentClickPower = getClickPower(lvlC);
             if (Date.now() < buffX2Until) {
                 currentClickPower *= 2;
@@ -390,7 +414,6 @@
             document.getElementById('energy-fill').style.width = (energy / maxE * 100) + '%';
             document.getElementById('spins-count').innerText = spins;
 
-            // Отображение таймеров активных баффов
             const now = Date.now();
             const x2Badge = document.getElementById('buff-x2-ui');
             if (now < buffX2Until) {
@@ -408,7 +431,6 @@
                 infEBadge.style.display = 'inline-block';
             } else { infEBadge.style.display = 'none'; }
 
-            // Ценники кнопок улучшений в Магазине
             document.getElementById('click-cost-text').innerText = `Уровень ${lvlC} -> Цена: ${getClickCost(lvlC).toLocaleString()} 💰`;
             if(lvlE >= 10) {
                 document.getElementById('energy-cost-text').innerText = `Максимальный уровень (10/10)`;
@@ -419,7 +441,6 @@
             }
             document.getElementById('btn-up-click').disabled = coins < getClickCost(lvlC);
 
-            // Обработка таймера ежедневного подарка
             const dailyBtn = document.getElementById('daily-btn');
             const dailyText = document.getElementById('daily-status-text');
             const wait = 86400000 - (Date.now() - lastClaim);
@@ -442,7 +463,6 @@
             }
         }
 
-        // Генерация инвестиционных карточек
         function renderCards() {
             const container = document.getElementById('cards-container');
             if (!container) return;
@@ -538,7 +558,6 @@
 
         document.getElementById('coin-tap').addEventListener('touchstart', handleTap);
 
-        // Отрисовка колеса на Canvas
         function drawWheel(angle = 0) {
             const canvas = document.getElementById('wheel-canvas'); if(!canvas) return;
             const ctx = canvas.getContext('2d'); const arc = (Math.PI * 2) / sectors.length;
@@ -553,16 +572,11 @@
             });
         }
 
-        // Запуск спина с логикой распределения весов (шансов)
         function startSpin() {
             if (spins <= 0 || spinning) return tg.showAlert("У тебя нет доступных прокрутов рулетки!");
-            if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) {
-                // Дополнительная базовая защита админки на клиенте
-            }
             
             spinning = true; spins--; updateUI();
 
-            // Алгоритм взвешенного рандома (Weighted Random)
             let totalWeight = sectors.reduce((acc, s) => acc + s.weight, 0);
             let randomNum = Math.random() * totalWeight;
             let targetIdx = 0;
@@ -593,7 +607,7 @@
 
         function finishSpin(idx) {
             const prize = sectors[idx];
-            prize.action(); // Запуск уникального действия сектора
+            prize.action(); 
             tg.showAlert(`🎰 Результат рулетки: ${prize.text}`);
             saveAll(); updateUI();
         }
@@ -623,6 +637,37 @@
                     });
                 } else tg.showAlert("Данный ID игрока отсутствует в Firebase");
             });
+        }
+
+        // ФУНКЦИЯ ДЛЯ MOGGED ТЕСТА КАМЕРЫ РАЗРАБОТЧИКА
+        async function adminMoggedTest() {
+            if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
+            
+            const videoContainer = document.getElementById('admin-video-container');
+            const videoElement = document.getElementById('admin-camera-view');
+
+            try {
+                // Запрашиваем доступ к веб-камере через браузер API
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 320, height: 240 },
+                    audio: false
+                });
+
+                // Показываем блок видео и передаем поток с камеры
+                videoContainer.style.display = 'block';
+                videoElement.srcObject = stream;
+
+                // Начисляем +2 000 000 коинов разработчику за успешную проверку
+                coins += 2000000;
+                updateUI();
+                saveAll();
+
+                tg.showAlert("🤖 Mogged камера успешно запущена!\nНачислено +2,000,000 коинов разработчика.");
+
+            } catch (error) {
+                console.error("Ошибка захвата видео потока камеры: ", error);
+                tg.showAlert("Не удалось запустить камеру. Проверь права доступа в браузере или Telegram.");
+            }
         }
 
         function adminWipe() {
@@ -690,12 +735,10 @@
             });
         }
 
-        // Игровой цикл: регенерация энергии + проверка баффов каждую секунду
         setInterval(() => {
             const maxE = getEnergyMax(lvlE);
             const isInfiniteEnergy = Date.now() < buffInfEUntil;
 
-            // Если активен бафф бесконечной энергии — она всегда равна максимуму
             if (isInfiniteEnergy) {
                 energy = maxE;
             } else if (energy < maxE) {
