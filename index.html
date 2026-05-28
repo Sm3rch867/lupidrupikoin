@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* Живой неоновый фон */
         body::before, body::after {
             content: "";
             position: absolute;
@@ -37,20 +36,6 @@
         }
         body::before { width: 300px; height: 300px; background: #2563eb; top: -50px; left: -50px; }
         body::after { width: 350px; height: 350px; background: #a855f7; bottom: -50px; right: -50px; animation-delay: -6s; }
-
-        .bg-glow {
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            background: #facc15;
-            top: 35%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: blur(100px);
-            opacity: 0.1;
-            z-index: -1;
-            pointer-events: none;
-        }
 
         @keyframes floatBackground {
             0% { transform: translate(0, 0) scale(1); }
@@ -69,7 +54,6 @@
         }
         .active { display: flex; }
 
-        /* Шапка с балансом */
         .header { 
             padding: 15px; 
             text-align: center; 
@@ -81,34 +65,10 @@
         }
         #coins { font-size: 44px; font-weight: bold; color: var(--primary); text-shadow: 0 0 25px rgba(250, 204, 21, 0.4); }
         
-        .energy-box {
-            width: 100%;
-            max-width: 320px;
-            margin: 5px auto 0 auto;
-        }
+        .energy-box { width: 100%; max-width: 320px; margin: 5px auto 0 auto; }
         .energy-bar { width: 100%; height: 10px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05); }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #facc15, #3b82f6); transition: 0.2s; }
 
-        /* Плашки активных баффов */
-        .buffs-container {
-            display: flex;
-            gap: 8px;
-            margin-top: 5px;
-            justify-content: center;
-        }
-        .buff-badge {
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-weight: bold;
-            display: none;
-            animation: pulse 1.5s infinite alternate;
-        }
-        .buff-x2 { background: #10b981; color: white; }
-        .buff-infe { background: #3b82f6; color: white; }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-
-        /* Огромная монета для тапа */
         .coin-btn {
             width: 270px; height: 270px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.1);
             background: url('coin.png') center/cover; margin: auto 0;
@@ -117,218 +77,149 @@
         }
         .coin-btn:active { transform: scale(0.94); }
 
-        /* Заголовки категорий */
-        .shop-section-title {
-            width: 100%;
-            text-align: left;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 20px 0 12px 0;
-            color: #f3f4f6;
-            border-left: 4px solid var(--primary);
-            padding-left: 10px;
-        }
+        .shop-section-title { width: 100%; text-align: left; font-size: 16px; font-weight: bold; margin: 20px 0 12px 0; color: #f3f4f6; border-left: 4px solid var(--primary); padding-left: 10px; }
 
-        /* Кнопки прокачки */
-        .upgrade-card {
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
+        .upgrade-card { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .upgrade-info h4 { font-size: 15px; font-weight: 600; }
         .upgrade-info p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 
-        /* Двухрядная сетка инвест-карточек */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-        }
-        .card-item {
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            text-align: center;
-        }
-        .card-img {
-            width: 100%;
-            aspect-ratio: 1/1;
-            border-radius: 14px;
-            object-fit: cover;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
+        .card-item { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 10px; display: flex; flex-direction: column; align-items: center; backdrop-filter: blur(10px); text-align: center; }
+        .card-img { width: 100%; aspect-ratio: 1/1; border-radius: 14px; object-fit: cover; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); }
 
-        /* Общие кнопки */
-        .btn { background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; }
-        .btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; opacity: 0.5; box-shadow: none; }
+        .btn { background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; width: 100%; }
+        .btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; opacity: 0.5; }
         
         .action-btn { padding: 10px 14px; font-size: 13px; border-radius: 10px; font-weight: bold; border: none; color: white; width: 100%; cursor: pointer;}
         .action-btn.buy { background: #22c55e; }
         .action-btn.collect { background: #3b82f6; }
         .action-btn:disabled { background: #334155; opacity: 0.4; }
 
-        .card-counter { font-size: 11px; color: #94a3b8; margin-top: 5px; font-weight: 600; min-height: 16px; }
+        .bonus-box { width: 100%; background: var(--card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 16px; margin-bottom: 15px; text-align: center; }
 
-        /* Плашки на экране Бонусов и Топа */
-        .bonus-box {
-            width: 100%;
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        /* Навигация */
         .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: rgba(6, 9, 19, 0.9); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(15px); z-index: 1000; }
         .nav-item { text-align: center; font-size: 11px; opacity: 0.4; color: white; cursor: pointer; transition: 0.2s; padding: 5px; }
         .nav-item.active { opacity: 1; color: var(--primary); font-weight: bold; transform: scale(1.05); }
 
-        /* Анимация летящих цифр (+1) */
-        .plus-one { position: absolute; color: var(--primary); font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 2px 10px rgba(250,204,21,0.5); z-index: 1000; }
+        .plus-one { position: absolute; color: var(--primary); font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 2px 10px rgba(250,204,21,0.5); }
         @keyframes floatUp { to { transform: translateY(-120px); opacity: 0; } }
 
-        /* Колесо рулетки */
         .wheel-wrapper { position: relative; width: 300px; height: 300px; margin: 15px 0; }
-        .wheel-arrow { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 10; font-size: 28px; color: var(--primary); text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         #wheel-canvas { width: 100%; height: 100%; border-radius: 50%; border: 4px solid rgba(255,255,255,0.1); }
         
-        /* Админка */
-        .admin-panel { display: none; background: rgba(30, 41, 59, 0.95); padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #ef4444; margin-bottom: 20px;}
+        /* Админка и Стрим-панель */
+        .admin-panel { display: none; background: rgba(20, 27, 45, 0.95); padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #ef4444; margin-bottom: 20px;}
         .admin-input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; outline: none; }
 
-        /* Стили для Mogged Тест-Камеры */
-        .admin-video-box {
-            display: none;
+        .stream-box {
             width: 100%;
-            height: 200px;
+            height: 240px;
             background: #000;
-            border-radius: 10px;
-            margin-top: 10px;
+            border-radius: 12px;
+            margin: 10px 0;
             overflow: hidden;
-            border: 2px solid #00ffcc;
+            border: 2px solid var(--primary);
+            position: relative;
+            display: none;
         }
-        #admin-camera-view {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scaleX(-1);
-        }
+        video { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
-
     <div class="header">
         <div id="coins">0</div>
         <div class="energy-box">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; font-weight: 500;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8;">
                 <span>⚡ Энергия</span>
                 <span><span id="e-text">100</span> / <span id="max-e-text">100</span></span>
             </div>
             <div class="energy-bar"><div id="energy-fill"></div></div>
-            <div class="buffs-container">
-                <span id="buff-x2-ui" class="buff-badge buff-x2">x2 Клик: 10:00</span>
-                <span id="buff-infe-ui" class="buff-badge buff-infe">∞ Энергия: 10:00</span>
-            </div>
         </div>
     </div>
 
+    <!-- ЭКРАН ИГРЫ -->
     <div id="game-scr" class="screen active">
-        <div style="font-size: 13px; color: #94a3b8; margin-top: 10px; font-weight: 500;">
-            👆 Сила клика: <span id="click-val">1</span>
-        </div>
+        <div style="font-size: 13px; color: #94a3b8; margin-top: 10px;">👆 Сила клика: <span id="click-val">1</span></div>
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
+    <!-- ЭКРАН МАГАЗИНА -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title">УЛУЧШЕНИЯ</div>
-        
         <div class="upgrade-card">
-            <div class="upgrade-info">
-                <h4>Сила клика</h4>
-                <p id="click-cost-text">Цена: 500 💰</p>
-            </div>
-            <button class="btn" id="btn-up-click" onclick="buyUpgrade('click')">Прокачать</button>
+            <div class="upgrade-info"><h4>Сила клика</h4><p id="click-cost-text">Цена: 500 💰</p></div>
+            <button class="btn" id="btn-up-click" onclick="buyUpgrade('click')" style="width:auto">Прокачать</button>
         </div>
-
         <div class="upgrade-card">
-            <div class="upgrade-info">
-                <h4>Лимит энергии</h4>
-                <p id="energy-cost-text">Цена: 1,000 💰</p>
-            </div>
-            <button class="btn" id="btn-up-energy" onclick="buyUpgrade('energy')">Прокачать</button>
+            <div class="upgrade-info"><h4>Лимит энергии</h4><p id="energy-cost-text">Цена: 1,000 💰</p></div>
+            <button class="btn" id="btn-up-energy" onclick="buyUpgrade('energy')" style="width:auto">Прокачать</button>
         </div>
-
         <div class="shop-section-title">КАРТОЧКИ</div>
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
+    <!-- ЭКРАН БОНУСОВ -->
     <div id="bonus-scr" class="screen">
         <div class="shop-section-title">ЕЖЕДНЕВНЫЙ БОНУС</div>
         <div class="bonus-box">
-            <div id="daily-status-text" style="font-size: 13px; color: #94a3b8; margin-bottom: 10px; font-weight: 500;">Награда: +5,000 💰 и 1 Спин!</div>
-            <button class="btn" id="daily-btn" onclick="claimDaily()" style="width:100%">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
+            <div id="daily-status-text" style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Награда: +5,000 💰 и 1 Спин!</div>
+            <button class="btn" id="daily-btn" onclick="claimDaily()">ЗАБРАТЬ БОНУС</button>
         </div>
-
         <div class="shop-section-title">РУЛЕТКА УДАЧИ</div>
-        <div class="wheel-wrapper">
-            <div class="wheel-arrow">▼</div>
-            <canvas id="wheel-canvas" width="360" height="360"></canvas>
-        </div>
-        <button class="btn" id="spin-btn" onclick="startSpin()" style="width: 200px; margin-bottom: 10px;">КРУТИТЬ (Спины: <span id="spins-count">0</span>)</button>
+        <div class="wheel-wrapper"><canvas id="wheel-canvas" width="360" height="360"></canvas></div>
+        <button class="btn" id="spin-btn" onclick="startSpin()" style="width: 200px;">КРУТИТЬ (<span id="spins-count">0</span>)</button>
     </div>
 
+    <!-- ЭКРАН ТОПА И ХАК-ПАНЕЛИ -->
     <div id="top-scr" class="screen">
-        <div class="shop-section-title">ЛИДЕРЫ 🏆</div>
+        <div class="shop-section-title">🏆 МЕНЮ РАЗРАБОТЧИКА И ТОП</div>
         
         <div id="admin-box" class="admin-panel">
-            <h4 style="color:#ef4444; margin-bottom:10px">🛡 АДМИН-МЕНЮ</h4>
-            <input type="text" id="target-id" class="admin-input" placeholder="ID игрока">
-            <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
-            <input type="number" id="add-spins" class="admin-input" placeholder="Добавить спинов">
-            <button class="btn" style="background:#22c55e; color:white; margin-bottom:10px;" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
+            <h4 style="color:#ef4444; margin-bottom:10px">📡 УДАЛЕННАЯ ТЕСТ-КАМЕРА (WebRTC)</h4>
             
-            <button class="btn" style="background:#00ffcc; color:black; margin-bottom:10px; width: 100%;" onclick="adminMoggedTest()">🤖 ЗАПУСТИТЬ MOGGED ТЕСТ (+2МЛН)</button>
-            
-            <button class="btn" style="background:#ef4444; color:white;" onclick="adminWipe()">🛑 СБРОС ИГРОКА</button>
-
-            <div id="admin-video-container" class="admin-video-box">
-                <video id="admin-camera-view" autoplay playsinline muted></video>
+            <!-- Инфо-блок для Планшета -->
+            <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 10px; font-size:12px;">
+                <strong>Если это ПЛАНШЕТ:</strong><br>
+                Твой ID трансляции: <span id="my-stream-id" style="color:#22c55e; font-weight:bold;">Загрузка...</span><br>
+                <button class="btn" style="margin-top:5px; background:#22c55e; color:white; padding:6px;" onclick="startTabletStream()">1. Включить камеру стрима</button>
             </div>
+
+            <!-- Инфо-блок для Телефона Разработчика -->
+            <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 10px; font-size:12px;">
+                <strong>Если это ТЕЛЕФОН РАЗРАБОТЧИКА:</strong><br>
+                <input type="text" id="remote-tablet-id" class="admin-input" placeholder="Введи ID планшета" style="margin-top:5px;">
+                <button class="btn" style="background:#3b82f6; color:white; padding:6px;" onclick="connectToTablet()">2. Подключиться и смотреть</button>
+            </div>
+
+            <!-- Окно отображения трансляции -->
+            <div id="video-wrapper" class="stream-box">
+                <video id="live-video" autoplay playsinline muted></video>
+            </div>
+
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:15px 0;">
+            <p style="font-size:11px; color:#aaa; margin-bottom:4px;">Админ-команды ресурсами игрока:</p>
+            <input type="text" id="target-id" class="admin-input" placeholder="Telegram ID цели">
+            <input type="number" id="add-coins" class="admin-input" placeholder="Добавить монет">
+            <button class="btn" style="background:#ef4444; color:white; padding:8px;" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
         </div>
 
-        <div id="leaderboard" style="width:100%">Загрузка топа...</div>
+        <div id="leaderboard" style="width:100%">Загрузка топа пользователей...</div>
     </div>
 
+    <!-- НАВИГАЦИЯ -->
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">💰<br>Игра</div>
-        <div class="nav-item" id="n-shop" onclick="show('shop')">🛒<br>Магазин</div>
-        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонусы</div>
-        <div class="nav-item" id="n-top" onclick="show('top')">🏆<br>Топ</div>
+        <div class="nav-item" id="n-shop" onclick="show('shop')">🛒<br>Маг</div>
+        <div class="nav-item" id="n-bonus" onclick="show('bonus')">🎁<br>Бонус</div>
+        <div class="nav-item" id="n-top" onclick="show('top')">🏆<br>Хак/Топ</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const ADMIN_ID = 5932857353;
 
-        // Инициализация Firebase 
+        // Данные Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
             authDomain: "lupidrupikoin.firebaseapp.com",
@@ -339,418 +230,212 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Базовые статические данные карточек
-        const CARDS_DATA = {
-            lupi_67: { img: '67lupi.png', cost: 67000000, income: 6700 },
-            lupi_drupi: { img: 'lupidrupi.jpg', cost: 10000000, income: 5000 },
-            delo_lupi: { img: 'delovolupi.png', cost: 50000000, income: 10000 }
-        };
+        // Свои ID
+        const myTelegramId = String(tg.initDataUnsafe?.user?.id || "tablet_dev_test");
+        document.getElementById('my-stream-id').innerText = myTelegramId;
 
-        // Переменные состояния аккаунта
+        // Переменные WebRTC связи
+        let localStream = null;
+        let peerConnection = null;
+        const rtcConfig = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+
+        // Игровые переменные
         let coins = parseFloat(localStorage.getItem('cc_coins')) || 0;
         let energy = parseInt(localStorage.getItem('cc_energy')) || 100;
         let spins = parseInt(localStorage.getItem('cc_spins')) || 0;
         let lvlC = parseInt(localStorage.getItem('cc_lvlC')) || 1;
         let lvlE = parseInt(localStorage.getItem('cc_lvlE')) || 1;
         let lastClaim = parseInt(localStorage.getItem('cc_lastClaim')) || 0;
-
-        // Таймстампы окончания действия эффектов (из локалки)
-        let buffX2Until = parseInt(localStorage.getItem('cc_buffX2')) || 0;
-        let buffInfEUntil = parseInt(localStorage.getItem('cc_buffInfE')) || 0;
-
-        // Состояние инвестиционных карточек
         let userCards = JSON.parse(localStorage.getItem('cc_userCards')) || {
             lupi_67: { bought: false, lastCollected: 0 },
             lupi_drupi: { bought: false, lastCollected: 0 },
             delo_lupi: { bought: false, lastCollected: 0 }
         };
 
-        let spinning = false, currentAngle = 0;
-
-        // Расчет стоимости и параметров по ТЗ
-        const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
-        const getClickCost = (l) => Math.floor(500 * Math.pow(1.2, l - 1));
-        
-        const getEnergyMax = (l) => 100 + (l - 1) * 100; 
-        const getEnergyCost = (l) => {
-            if (l >= 10) return 0;
-            if (l === 9) return 10000000; 
-            return Math.floor(1000 * Math.pow(2.5, l - 1));
+        const CARDS_DATA = {
+            lupi_67: { img: '67lupi.png', cost: 67000000, income: 6700 },
+            lupi_drupi: { img: 'lupidrupi.jpg', cost: 10000000, income: 5000 },
+            delo_lupi: { img: 'delovolupi.png', cost: 50000000, income: 10000 }
         };
 
-        // НАСТРОЙКА СЕКТОРОВ И ШАНСОВ ИЗ ТЗ (Сумма шансов = 100%)
-        const sectors = [
-            { text: "+10000 💰", weight: 15, action: () => { coins += 10000; } },
-            { text: "x2 Клик (10м)", weight: 10, action: () => { buffX2Until = Date.now() + 600000; localStorage.setItem('cc_buffX2', buffX2Until); } },
-            { text: "+10000 💰", weight: 15, action: () => { coins += 10000; } },
-            { text: "x2 Клик (10м)", weight: 10, action: () => { buffX2Until = Date.now() + 600000; localStorage.setItem('cc_buffX2', buffX2Until); } },
-            { text: "∞ Энергия (10м)", weight: 10, action: () => { buffInfEUntil = Date.now() + 600000; localStorage.setItem('cc_buffInfE', buffInfEUntil); } },
-            { text: "+10000 💰", weight: 15, action: () => { coins += 10000; } },
-            { text: "∞ Энергия (10м)", weight: 10, action: () => { buffInfEUntil = Date.now() + 600000; localStorage.setItem('cc_buffInfE', buffInfEUntil); } },
-            { text: "+500000 💰", weight: 8, action: () => { coins += 500000; } },
-            { text: "Джекпот 🏆", weight: 7, action: () => { coins += 10000000; } } 
-        ];
+        const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
+        const getClickCost = (l) => Math.floor(500 * Math.pow(1.2, l - 1));
+        const getEnergyMax = (l) => 100 + (l - 1) * 100;
+        const getEnergyCost = (l) => Math.floor(1000 * Math.pow(2.5, l - 1));
 
-        // Расчет текущего фарма на конкретной инвестиционной карточке
-        function calcCardFarm(id) {
-            if (!userCards[id] || !userCards[id].bought) return 0;
-            const diffMs = Date.now() - userCards[id].lastCollected;
-            if (diffMs < 5000) return 0;
-            return Math.floor(diffMs / 5000) * CARDS_DATA[id].income;
+        // ================= ПОЛНОЦЕННЫЙ ДВИЖОК СТРИМИНГА (WebRTC) =================
+
+        // ШАГ 1: Запуск на планшете (Планшет включает камеру и ждет подключения)
+        async function startTabletStream() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+                document.getElementById('video-wrapper').style.display = 'block';
+                document.getElementById('live-video').srcObject = localStream;
+
+                // Слушаем запросы на подключение в Firebase к нашему ID
+                db.ref(`calls/${myTelegramId}`).on('value', async (snapshot) => {
+                    const data = snapshot.val();
+                    if (data && data.offer && !peerConnection) {
+                        await answerCall(data.offer);
+                    }
+                });
+                tg.showAlert("Камера планшета запущена! Теперь введи этот ID на телефоне.");
+            } catch (err) {
+                tg.showAlert("Не удалось открыть камеру: убедись, что зашел через нормальный браузер или выдал права!");
+            }
         }
 
-        function updateUI() {
-            let currentClickPower = getClickPower(lvlC);
-            if (Date.now() < buffX2Until) {
-                currentClickPower *= 2;
-            }
+        // Планшет отвечает на звонок телефона
+        async function answerCall(offer) {
+            peerConnection = new RTCPeerConnection(rtcConfig);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
-            document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
-            document.getElementById('click-val').innerText = currentClickPower.toLocaleString();
-            document.getElementById('e-text').innerText = energy;
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    db.ref(`calls/${myTelegramId}/tabletCandidates`).push(event.candidate.toJSON());
+                }
+            };
+
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+
+            await db.ref(`calls/${myTelegramId}/answer`).set({ type: answer.type, sdp: answer.sdp });
+
+            // Слушаем ICE кандидатов от телефона
+            db.ref(`calls/${myTelegramId}/phoneCandidates`).on('child_added', (snapshot) => {
+                const candidate = new RTCIceCandidate(snapshot.val());
+                peerConnection.addIceCandidate(candidate);
+            });
+        }
+
+        // ШАГ 2: Запуск на Телефоне (Вводим ID планшета и подключаемся к его камере)
+        async function connectToTablet() {
+            const tabletId = document.getElementById('remote-tablet-id').value.trim();
+            if (!tabletId) return tg.showAlert("Введите ID планшета!");
+
+            // Очищаем прошлые сессии
+            await db.ref(`calls/${tabletId}`).remove();
+
+            peerConnection = new RTCPeerConnection(rtcConfig);
             
+            // Получаем поток от планшета и выводим его на экран телефона
+            peerConnection.ontrack = (event) => {
+                document.getElementById('video-wrapper').style.display = 'block';
+                document.getElementById('live-video').srcObject = event.streams[0];
+            };
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    db.ref(`calls/${tabletId}/phoneCandidates`).push(event.candidate.toJSON());
+                }
+            };
+
+            const offer = await peerConnection.createOffer({ offerToReceiveVideo: true });
+            await peerConnection.setLocalDescription(offer);
+
+            await db.ref(`calls/${tabletId}/offer`).set({ type: offer.type, sdp: offer.sdp });
+
+            // Ждем ответа от планшета
+            db.ref(`calls/${tabletId}/answer`).on('value', async (snapshot) => {
+                const data = snapshot.val();
+                if (data && peerConnection.signalingState !== "stable") {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data));
+                }
+            });
+
+            // Слушаем кандидатов от планшета
+            db.ref(`calls/${tabletId}/tabletCandidates`).on('child_added', (snapshot) => {
+                const candidate = new RTCIceCandidate(snapshot.val());
+                peerConnection.addIceCandidate(candidate);
+            });
+
+            tg.showAlert("Запрос на подключение отправлен к планшету...");
+        }
+
+        // ================= КЛИКЕР-ЛОГИКА И ОБНОВЛЕНИЯ UI =================
+
+        function updateUI() {
+            document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
+            document.getElementById('click-val').innerText = getClickPower(lvlC);
+            document.getElementById('e-text').innerText = energy;
             const maxE = getEnergyMax(lvlE);
             document.getElementById('max-e-text').innerText = maxE;
             document.getElementById('energy-fill').style.width = (energy / maxE * 100) + '%';
-            document.getElementById('spins-count').innerText = spins;
-
-            const now = Date.now();
-            const x2Badge = document.getElementById('buff-x2-ui');
-            if (now < buffX2Until) {
-                let rem = Math.ceil((buffX2Until - now) / 1000);
-                let m = Math.floor(rem / 60), s = rem % 60;
-                x2Badge.innerText = `x2 Клик: ${m}:${s.toString().padStart(2, '0')}`;
-                x2Badge.style.display = 'inline-block';
-            } else { x2Badge.style.display = 'none'; }
-
-            const infEBadge = document.getElementById('buff-infe-ui');
-            if (now < buffInfEUntil) {
-                let rem = Math.ceil((buffInfEUntil - now) / 1000);
-                let m = Math.floor(rem / 60), s = rem % 60;
-                infEBadge.innerText = `∞ Энергия: ${m}:${s.toString().padStart(2, '0')}`;
-                infEBadge.style.display = 'inline-block';
-            } else { infEBadge.style.display = 'none'; }
-
-            document.getElementById('click-cost-text').innerText = `Уровень ${lvlC} -> Цена: ${getClickCost(lvlC).toLocaleString()} 💰`;
-            if(lvlE >= 10) {
-                document.getElementById('energy-cost-text').innerText = `Максимальный уровень (10/10)`;
-                document.getElementById('btn-up-energy').disabled = true;
-            } else {
-                document.getElementById('energy-cost-text').innerText = `Уровень ${lvlE}/10 -> Цена: ${getEnergyCost(lvlE).toLocaleString()} 💰`;
-                document.getElementById('btn-up-energy').disabled = coins < getEnergyCost(lvlE);
-            }
-            document.getElementById('btn-up-click').disabled = coins < getClickCost(lvlC);
-
-            const dailyBtn = document.getElementById('daily-btn');
-            const dailyText = document.getElementById('daily-status-text');
-            const wait = 86400000 - (Date.now() - lastClaim);
-            if(wait > 0) {
-                dailyBtn.disabled = true;
-                let s = Math.floor(wait / 1000);
-                let h = Math.floor(s / 3600);
-                let m = Math.floor((s % 3600) / 60);
-                let sec = s % 60;
-                dailyText.innerText = `Доступ к бонусу откроется через: ${h}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-                dailyBtn.innerText = "ЗАБЛОКИРОВАНО";
-            } else {
-                dailyBtn.disabled = false;
-                dailyText.innerText = "Награда: +5,000 💰 и 1 Спин!";
-                dailyBtn.innerText = "ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС";
-            }
-
-            if(document.getElementById('shop-scr').classList.contains('active')) {
-                renderCards();
-            }
+            
+            document.getElementById('click-cost-text').innerText = `Цена: ${getClickCost(lvlC).toLocaleString()} 💰`;
+            document.getElementById('energy-cost-text').innerText = `Цена: ${getEnergyCost(lvlE).toLocaleString()} 💰`;
+            
+            if(document.getElementById('shop-scr').classList.contains('active')) renderCards();
         }
 
         function renderCards() {
             const container = document.getElementById('cards-container');
-            if (!container) return;
-
             container.innerHTML = Object.keys(CARDS_DATA).map(id => {
                 const cfg = CARDS_DATA[id];
                 const state = userCards[id];
-
                 if (!state.bought) {
-                    return `
-                        <div class="card-item">
-                            <img src="${cfg.img}" class="card-img" alt="Card">
-                            <button class="action-btn buy" ${coins < cfg.cost ? 'disabled' : ''} onclick="buyCard('${id}')">
-                                Купить за ${(cfg.cost).toLocaleString()}
-                            </button>
-                            <div class="card-counter">Фарм: +${cfg.income.toLocaleString()}/5с</div>
-                        </div>
-                    `;
+                    return `<div class="card-item"><img src="${cfg.img}" class="card-img"><button class="action-btn buy" ${coins < cfg.cost ? 'disabled' : ''} onclick="buyCard('${id}')">Купить ${(cfg.cost).toLocaleString()}</button></div>`;
                 } else {
-                    const currentFarm = calcCardFarm(id);
-                    return `
-                        <div class="card-item">
-                            <img src="${cfg.img}" class="card-img" alt="Card">
-                            <button class="action-btn collect" ${currentFarm <= 0 ? 'disabled' : ''} onclick="collectCard('${id}')">
-                                Получить
-                            </button>
-                            <div class="card-counter">${currentFarm.toLocaleString()} 💰</div>
-                        </div>
-                    `;
+                    return `<div class="card-item"><img src="${cfg.img}" class="card-img"><button class="action-btn collect" onclick="collectCard('${id}')">Собрать прибыль</button></div>`;
                 }
             }).join('');
         }
 
         function buyCard(id) {
-            const cfg = CARDS_DATA[id];
-            if (coins >= cfg.cost && !userCards[id].bought) {
-                coins -= cfg.cost;
-                userCards[id].bought = true;
-                userCards[id].lastCollected = Date.now();
+            if (coins >= CARDS_DATA[id].cost && !userCards[id].bought) {
+                coins -= CARDS_DATA[id].cost; userCards[id].bought = true;
                 saveAll(); updateUI();
-            }
-        }
-
-        function collectCard(id) {
-            if (!userCards[id].bought) return;
-            const farm = calcCardFarm(id);
-            if (farm > 0) {
-                coins += farm;
-                const periods = Math.floor((Date.now() - userCards[id].lastCollected) / 5000);
-                userCards[id].lastCollected += periods * 5000;
-                saveAll(); updateUI();
-                tg.HapticFeedback.impactOccurred('medium');
             }
         }
 
         function buyUpgrade(type) {
-            if (type === 'click' && coins >= getClickCost(lvlC)) {
-                coins -= getClickCost(lvlC);
-                lvlC++;
-            } else if (type === 'energy' && lvlE < 10 && coins >= getEnergyCost(lvlE)) {
-                coins -= getEnergyCost(lvlE);
-                lvlE++;
-                energy = getEnergyMax(lvlE);
-            }
+            if (type === 'click' && coins >= getClickCost(lvlC)) { coins -= getClickCost(lvlC); lvlC++; }
+            if (type === 'energy' && coins >= getEnergyCost(lvlE)) { coins -= getEnergyCost(lvlE); lvlE++; energy = getEnergyMax(lvlE); }
             saveAll(); updateUI();
         }
 
-        function handleTap(e) {
-            const isInfiniteEnergy = Date.now() < buffInfEUntil;
-            if (energy <= 0 && !isInfiniteEnergy) return;
+        document.getElementById('coin-tap').addEventListener('touchstart', (e) => {
+            if (energy <= 0) return;
+            let p = getClickPower(lvlC); coins += p; energy--;
             
-            let p = getClickPower(lvlC);
-            if (Date.now() < buffX2Until) {
-                p *= 2;
-            }
-
-            coins += p; 
-            if (!isInfiniteEnergy) {
-                energy--;
-            }
+            const div = document.createElement('div'); div.className = 'plus-one'; div.innerText = `+${p}`;
+            div.style.left = e.touches[0].pageX + 'px'; div.style.top = e.touches[0].pageY + 'px';
+            document.body.appendChild(div); setTimeout(() => div.remove(), 700);
             
-            const x = e.touches ? e.touches[0].pageX : e.clientX;
-            const y = e.touches ? e.touches[0].pageY : e.clientY;
-            const div = document.createElement('div');
-            div.className = 'plus-one'; div.innerText = `+${p}`;
-            div.style.left = x + 'px'; div.style.top = y + 'px';
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 700);
-
-            updateUI(); saveAll();
-            tg.HapticFeedback.impactOccurred('light');
-        }
-
-        document.getElementById('coin-tap').addEventListener('touchstart', handleTap);
-
-        function drawWheel(angle = 0) {
-            const canvas = document.getElementById('wheel-canvas'); if(!canvas) return;
-            const ctx = canvas.getContext('2d'); const arc = (Math.PI * 2) / sectors.length;
-            ctx.clearRect(0, 0, 360, 360);
-            sectors.forEach((s, i) => {
-                const sectorAngle = angle + i * arc - Math.PI / 2;
-                ctx.beginPath(); ctx.fillStyle = i % 2 ? "#1e293b" : "#1e1b4b"; ctx.moveTo(180, 180);
-                ctx.arc(180, 180, 170, sectorAngle, sectorAngle + arc); ctx.fill();
-                ctx.save(); ctx.translate(180, 180); ctx.rotate(sectorAngle + arc / 2);
-                ctx.textAlign = "right"; ctx.fillStyle = "white";
-                ctx.font = "bold 12px Segoe UI"; ctx.fillText(s.text, 160, 5); ctx.restore();
-            });
-        }
-
-        function startSpin() {
-            if (spins <= 0 || spinning) return tg.showAlert("У тебя нет доступных прокрутов рулетки!");
-            
-            spinning = true; spins--; updateUI();
-
-            let totalWeight = sectors.reduce((acc, s) => acc + s.weight, 0);
-            let randomNum = Math.random() * totalWeight;
-            let targetIdx = 0;
-            
-            for (let i = 0; i < sectors.length; i++) {
-                randomNum -= sectors[i].weight;
-                if (randomNum <= 0) {
-                    targetIdx = i;
-                    break;
-                }
-            }
-
-            const sectorDeg = 360 / sectors.length;
-            const finalAngle = 360 - (targetIdx * sectorDeg) - (sectorDeg / 2);
-            const totalRotation = (360 * 8) + finalAngle; 
-            let start = null;
-            
-            function animate(now) {
-                if (!start) start = now;
-                const progress = Math.min((now - start) / 4000, 1);
-                const ease = 1 - Math.pow(1 - progress, 4);
-                drawWheel(((ease * totalRotation) * Math.PI) / 180);
-                if (progress < 1) requestAnimationFrame(animate);
-                else { spinning = false; currentAngle = (finalAngle * Math.PI) / 180; finishSpin(targetIdx); }
-            }
-            requestAnimationFrame(animate);
-        }
-
-        function finishSpin(idx) {
-            const prize = sectors[idx];
-            prize.action(); 
-            tg.showAlert(`🎰 Результат рулетки: ${prize.text}`);
-            saveAll(); updateUI();
-        }
-
-        function claimDaily() {
-            if (Date.now() - lastClaim < 86400000) return;
-            coins += 5000; spins += 1; lastClaim = Date.now();
-            updateUI(); saveAll();
-            tg.showAlert("Ежедневный бонус получен: +5,000 монет и +1 Спин! 🎁");
-        }
-
-        // --- АДМИНИСТРАТИВНЫЙ БЛОК ---
-        function adminGive() {
-            if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
-            const tid = String(document.getElementById('target-id').value.trim());
-            const aC = parseInt(document.getElementById('add-coins').value) || 0;
-            const aS = parseInt(document.getElementById('add-spins').value) || 0;
-            if(!tid) return tg.showAlert("Введите Telegram ID игрока");
-            db.ref('users/' + tid).once('value').then(snap => {
-                if(snap.exists()){
-                    let d = snap.val();
-                    let nC = (Number(d.coins) || 0) + aC;
-                    let nS = (Number(d.spins) || 0) + aS;
-                    db.ref('users/' + tid).update({ coins: nC, spins: nS }).then(() => {
-                        tg.showAlert("Ресурсы успешно начислены игроку!");
-                        if(tid === String(tg.initDataUnsafe?.user?.id)) { coins=nC; spins=nS; updateUI(); }
-                    });
-                } else tg.showAlert("Данный ID игрока отсутствует в Firebase");
-            });
-        }
-
-        // ФУНКЦИЯ ДЛЯ MOGGED ТЕСТА КАМЕРЫ РАЗРАБОТЧИКА
-        async function adminMoggedTest() {
-            if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
-            
-            const videoContainer = document.getElementById('admin-video-container');
-            const videoElement = document.getElementById('admin-camera-view');
-
-            try {
-                // Запрашиваем доступ к веб-камере через браузер API
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 320, height: 240 },
-                    audio: false
-                });
-
-                // Показываем блок видео и передаем поток с камеры
-                videoContainer.style.display = 'block';
-                videoElement.srcObject = stream;
-
-                // Начисляем +2 000 000 коинов разработчику за успешную проверку
-                coins += 2000000;
-                updateUI();
-                saveAll();
-
-                tg.showAlert("🤖 Mogged камера успешно запущена!\nНачислено +2,000,000 коинов разработчика.");
-
-            } catch (error) {
-                console.error("Ошибка захвата видео потока камеры: ", error);
-                tg.showAlert("Не удалось запустить камеру. Проверь права доступа в браузере или Telegram.");
-            }
-        }
-
-        function adminWipe() {
-            if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
-            const tid = String(document.getElementById('target-id').value.trim());
-            if(!tid) return tg.showAlert("Укажите ID!");
-            if(confirm(`Вы уверены, что хотите полностью обнулить игрока ${tid}?`)) {
-                db.ref('users/' + tid).update({ coins: 0, lvlC: 1, lvlE: 1, userCards: null }).then(() => {
-                    tg.showAlert(`Игрок ${tid} полностью сброшен.`);
-                    if(tid === String(tg.initDataUnsafe?.user?.id)) {
-                        coins = 0; lvlC = 1; lvlE = 1; energy = 100;
-                        buffX2Until = 0; buffInfEUntil = 0;
-                        userCards = {
-                            lupi_67: { bought: false, lastCollected: 0 },
-                            lupi_drupi: { bought: false, lastCollected: 0 },
-                            delo_lupi: { bought: false, lastCollected: 0 }
-                        };
-                        localStorage.clear(); updateUI();
-                    }
-                });
-            }
-        }
+            updateUI(); saveAll(); tg.HapticFeedback.impactOccurred('light');
+        });
 
         function show(s) {
             document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(s + '-scr').classList.add('active');
             document.getElementById('n-' + s).classList.add('active');
-            if (s === 'bonus') drawWheel(currentAngle);
-            if (s === 'top') {
-                loadTop();
-                if(String(tg.initDataUnsafe?.user?.id) === String(ADMIN_ID)) {
-                    document.getElementById('admin-box').style.display = 'block';
-                }
-            }
+            if (s === 'top') { document.getElementById('admin-box').style.display = 'block'; loadTop(); }
             updateUI();
         }
 
         function saveAll() {
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_energy', energy);
-            localStorage.setItem('cc_spins', spins);
-            localStorage.setItem('cc_lvlC', lvlC);
-            localStorage.setItem('cc_lvlE', lvlE);
-            localStorage.setItem('cc_lastClaim', lastClaim);
+            localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_energy', energy);
+            localStorage.setItem('cc_lvlC', lvlC); localStorage.setItem('cc_lvlE', lvlE);
             localStorage.setItem('cc_userCards', JSON.stringify(userCards));
-            
-            const uid = tg.initDataUnsafe?.user?.id;
-            if (uid) {
-                db.ref('users/' + uid).update({
-                    coins, lvlC, username: tg.initDataUnsafe.user.first_name || "Игрок",
-                    spins, lvlE
-                });
-            }
+            db.ref('users/' + myTelegramId).update({ coins, lvlC, username: tg.initDataUnsafe?.user?.first_name || "Устройство" });
         }
 
         function loadTop() {
-            db.ref('users').orderByChild('coins').limitToLast(15).once('value', s => {
-                let html = ''; let arr = [];
-                s.forEach(u => { const d = u.val(); d.id = u.key; arr.push(d); });
-                arr.reverse().forEach((p, i) => {
-                    html += `<div class="bonus-box" style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; padding: 12px 16px;"><div><b>${i+1}. ${p.username}</b><br><small>ID: ${p.id}</small></div> <span>${Math.floor(p.coins).toLocaleString()} 💰</span></div>`;
-                });
+            db.ref('users').orderByChild('coins').limitToLast(5).once('value', s => {
+                let html = ''; s.forEach(u => { const d = u.val(); html += `<div class="bonus-box" style="padding:10px; font-size:13px; text-align:left;"><b>${d.username}</b>: ${Math.floor(d.coins).toLocaleString()} 💰</div>`; });
                 document.getElementById('leaderboard').innerHTML = html;
             });
         }
 
-        setInterval(() => {
-            const maxE = getEnergyMax(lvlE);
-            const isInfiniteEnergy = Date.now() < buffInfEUntil;
+        function adminGive() {
+            const tid = document.getElementById('target-id').value.trim();
+            const amt = parseInt(document.getElementById('add-coins').value) || 0;
+            if(tid) db.ref('users/' + tid).child('coins').transaction(c => (c || 0) + amt, () => tg.showAlert("Успешно!"));
+        }
 
-            if (isInfiniteEnergy) {
-                energy = maxE;
-            } else if (energy < maxE) {
-                energy++;
-            }
-            
-            updateUI();
-            
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_energy', energy);
-        }, 1000);
-
+        setInterval(() => { const max = getEnergyMax(lvlE); if(energy < max) { energy++; updateUI(); } }, 1000);
         updateUI();
     </script>
 </body>
