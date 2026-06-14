@@ -143,7 +143,6 @@
         .profile-meta h3 { font-size: 17px; font-weight: 700; color: white; }
         .profile-meta p { font-size: 12px; color: #475467; margin-top: 2px; }
         
-        /* Исправлен выбор языка: Текст строго по центру */
         .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; background: rgba(13,19,32,0.7); padding: 5px; border-radius: 12px; margin-bottom: 25px; }
         .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 12px; font-weight: 700; font-size: 14px; border-radius: 10px; cursor: pointer; text-align: center; justify-content: center; align-items: center; display: flex; transition: all 0.3s ease; width: 100%; }
         .lang-btn.active { 
@@ -175,7 +174,7 @@
         
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
-        /* ИЗМЕНЕНО: Модалка теперь открывается ровно на половину высоты экранаснизу */
+        /* Модалка на 50% высоты экрана */
         .modal-overlay {
             position: fixed;
             left: 0; right: 0; bottom: 0;
@@ -196,7 +195,7 @@
         
         .modal-title { font-size: 18px; font-weight: 700; color: white; text-align: left; }
 
-        /* Компактная адаптивная сетка наград */
+        /* ИСПРАВЛЕНО: Сетка наград строго 4 в ряд, рамки ВСЕХ дней ОДИНАКОВЫЕ */
         .days-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -215,8 +214,8 @@
             padding: 6px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.03);
+            width: 100%;
         }
-        .day-card.span-2 { grid-column: span 2; }
         
         .day-card .day-title { 
             font-size: 10px; 
@@ -225,7 +224,6 @@
             font-weight: 600; 
         }
 
-        /* ИСПРАВЛЕНО: Квадратные аккуратные одинаковые иконки стопок */
         .day-img-box {
             background: #0d121d;
             border: 1px solid rgba(255,255,255,0.04);
@@ -395,28 +393,29 @@
         <div class="stats-container-card">
             <h3 id="lbl-stats-title">Статистика</h3>
             <div class="stats-list">
+                <!-- ИСПРАВЛЕНО: Полностью убрана нумерация -->
                 <div class="stats-row">
-                    <span id="lbl-st-1">1. Количество монет</span>
+                    <span id="lbl-st-1">Количество монет</span>
                     <span><span id="st-coins" style="color:#22c55e">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-2">2. Количество тапов</span>
+                    <span id="lbl-st-2">Количество тапов</span>
                     <span class="val-highlight" id="st-total-clicks">0</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-3">3. Выиграл в мини играх</span>
+                    <span id="lbl-st-3">Выиграл в mini играх</span>
                     <span style="color:#22c55e" id="st-games-won">0</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-4">4. Проиграл в мини играх</span>
+                    <span id="lbl-st-4">Проиграл в mini играх</span>
                     <span style="color:#ef4444" id="st-games-lost">0</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-5">5. Стрик наград</span>
+                    <span id="lbl-st-5">Стрик наград</span>
                     <span id="st-streak">0 дней</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-6">6. Прокрутил колесо фортуны</span>
+                    <span id="lbl-st-6">Прокрутил колесо фортуны</span>
                     <span id="st-wheel-spins" style="color: #a855f7;">0</span>
                 </div>
             </div>
@@ -488,7 +487,7 @@
             ru: {
                 energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ",
                 m_title: "Ежедневная награда", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆", in_dev: "В разработке...",
-                st_1: "1. Количество монет", st_2: "2. Количество тапов", st_3: "3. Выиграл в мини играх", st_4: "4. Проиграл в мини играх", st_5: "5. Стрик наград", st_6: "6. Прокрутил колесо фортуны",
+                st_1: "Количество монет", st_2: "Количество тапов", st_3: "Выиграл в мини играх", st_4: "Проиграл в мини играх", st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
                 claimed_today: "Следующая награда будет доступна завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней"
@@ -496,7 +495,7 @@
             en: {
                 energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS",
                 m_title: "Daily Reward", stats_title: "Statistics", top_title: "LEADERBOARD 🏆", in_dev: "In development...",
-                st_1: "1. Coins amount", st_2: "2. Taps count", st_3: "3. Won in mini-games", st_4: "4. Lost in mini-games", st_5: "5. Rewards streak", st_6: "6. Fortune wheel spins",
+                st_1: "Coins amount", st_2: "Taps count", st_3: "Won in mini-games", st_4: "Lost in mini-games", st_5: "Rewards streak", st_6: "Fortune wheel spins",
                 nv_game: "Home", nv_shop: "Shop", nv_games: "Mini Games", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
                 claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "day", days_format: "days"
@@ -511,7 +510,6 @@
             delo_lupi: { img: 'delovolupi.png', cost: 50000 }
         };
 
-        // Логика первого входа (Автоматическая выдача 1-го дня)
         let isFirstTime = localStorage.getItem('cc_initialized') === null;
         
         let coins = parseFloat(localStorage.getItem('cc_coins')) || 0;
@@ -526,7 +524,7 @@
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         if (isFirstTime) {
-            coins = dailyRewardsConfig[0]; // Награда 1 дня
+            coins = dailyRewardsConfig[0]; 
             stat_streak = 1;
             lastClaim = Date.now();
             localStorage.setItem('cc_initialized', 'true');
@@ -571,6 +569,7 @@
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
+        // ИСПРАВЛЕНО: Возвращены картинки 1.png, 2.png, 3.png
         function renderDaysGrid() {
             const container = document.getElementById('days-grid-container');
             const l = langData[currentLang];
@@ -582,11 +581,11 @@
             for(let i=0; i<7; i++) {
                 let isClaimed = i < currentDayIndex || (i === currentDayIndex && !isAvailable && lastClaim > 0);
                 let isCurrentAndLocked = i === currentDayIndex && !isAvailable;
-                let classes = `day-card ${isClaimed ? 'claimed' : ''} ${i >= 4 ? 'span-2' : ''}`;
+                let classes = `day-card ${isClaimed ? 'claimed' : ''}`;
                 
-                let imgFile = '1-Photoroom.jpg';
-                if(i === 3 || i === 4) imgFile = '2-Photoroom.jpg';
-                if(i === 5 || i === 6) imgFile = '3-Photoroom.jpg';
+                let imgFile = '1.png';
+                if(i === 3 || i === 4) imgFile = '2.png';
+                if(i === 5 || i === 6) imgFile = '3.png';
 
                 let timerOverlay = '';
                 if(isCurrentAndLocked) {
