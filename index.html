@@ -168,13 +168,154 @@
         }
         .stats-list { width: 100%; display: flex; flex-direction: column; }
         
-        /* Исправлено: все числа и значения справа в статистике теперь строго белого цвета */
         .stats-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #64748b; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .stats-row:last-child { border-bottom: none; }
         .stats-row span:last-child { font-weight: 600; color: #ffffff !important; display: flex; align-items: center; gap: 4px; text-align: right; }
         
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
+        /* СТИЛИ ДЛЯ МИНИ-ИГРЫ КОЛЕСО / WHEEL */
+        .wheel-game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 360px;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .wheel-panel {
+            background: #0d121d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 15px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .wheel-inputs-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+        .wheel-input-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .wheel-input-box label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .wheel-field-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .wheel-field-wrapper input {
+            width: 100%;
+            background: #05080e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 28px 10px 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            outline: none;
+        }
+        .wheel-field-wrapper .coin-tag {
+            position: absolute;
+            right: 8px;
+            font-size: 14px;
+        }
+        .wheel-shortcuts {
+            display: flex;
+            gap: 4px;
+            margin-top: 5px;
+        }
+        .wheel-shortcuts button {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #94a3b8;
+            border-radius: 6px;
+            padding: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .wheel-shortcuts button:active { background: rgba(255,255,255,0.1); }
+        
+        .wheel-view-box {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wheel-svg-ring {
+            transform: rotate(-90deg);
+        }
+        .wheel-svg-ring circle {
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+        .wheel-center-info {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        #wheel-percent-lbl {
+            font-size: 26px;
+            font-weight: 800;
+            color: white;
+        }
+        #wheel-risk-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        .risk-green { color: #22c55e; }
+        .risk-orange { color: #f97316; }
+        .risk-red { color: #ef4444; }
+
+        #wheel-arrow {
+            position: absolute;
+            top: -6px;
+            font-size: 16px;
+            color: #ef4444;
+            z-index: 5;
+            transition: transform 3s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+        .wheel-btn-spin {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        .wheel-btn-spin:disabled {
+            background: #161f30;
+            color: #4b586e;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* ОСТАЛЬНЫЕ КЛАССЫ И МОДАЛКИ */
         .modal-overlay {
             position: fixed;
             left: 0; right: 0; bottom: 0;
@@ -369,10 +510,57 @@
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
-    <div id="games-scr" class="screen" style="justify-content: center; text-align: center;">
-        <div style="font-size: 50px; margin-bottom: 10px;">🚀</div>
-        <h2 style="font-size: 20px; font-weight: 700;">Мини-игры</h2>
-        <p style="color: #64748b; font-size: 14px; margin-top: 6px;" id="lbl-in-dev">В разработке...</p>
+    <div id="games-scr" class="screen">
+        <div class="shop-section-title" id="lbl-game-title">Колесо</div>
+        
+        <div class="wheel-game-container">
+            <div class="wheel-panel">
+                <div class="wheel-inputs-row">
+                    <div class="wheel-input-box">
+                        <label id="lbl-wheel-bet">Ставка:</label>
+                        <div class="wheel-field-wrapper">
+                            <input type="number" id="wheel-bet-input" value="10000" min="10000">
+                            <span class="coin-tag">🪙</span>
+                        </div>
+                        <div class="wheel-shortcuts">
+                            <button onclick="shortcutBet('min')">MIN</button>
+                            <button onclick="shortcutBet('x2')">X2</button>
+                            <button onclick="shortcutBet('max')">MAX</button>
+                        </div>
+                    </div>
+                    
+                    <div class="wheel-input-box">
+                        <label id="lbl-wheel-target">Выигрыш:</label>
+                        <div class="wheel-field-wrapper">
+                            <input type="number" id="wheel-target-input" value="20000">
+                            <span class="coin-tag">🪙</span>
+                        </div>
+                        <div class="wheel-shortcuts">
+                            <button onclick="shortcutTarget('x2')">X2</button>
+                            <button onclick="shortcutTarget('x5')">X5</button>
+                            <button onclick="shortcutTarget('x10')">X10</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 10px; font-size: 11px; color: #566175; font-weight: bold;" id="wheel-mult-lbl">
+                    Множитель: x2.00
+                </div>
+            </div>
+
+            <div class="wheel-view-box">
+                <div id="wheel-arrow">▼</div>
+                <svg class="wheel-svg-ring" width="180" height="180">
+                    <circle stroke="rgba(255,255,255,0.03)" stroke-width="14" fill="transparent" r="76" cx="90" cy="90"/>
+                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="14" fill="transparent" r="76" cx="90" cy="90" stroke-dasharray="477.5" stroke-dashoffset="238.7"/>
+                </svg>
+                <div class="wheel-center-info">
+                    <span id="wheel-percent-lbl">50.00%</span>
+                    <span id="wheel-risk-lbl" class="risk-orange">Средний риск</span>
+                </div>
+            </div>
+
+            <button class="wheel-btn-spin" id="wheel-spin-btn" onclick="spinWheel()">ИГРАТЬ</button>
+        </div>
     </div>
 
     <div id="profile-scr" class="screen">
@@ -483,20 +671,24 @@
         let currentLang = localStorage.getItem('cc_lang') || 'ru';
         const langData = {
             ru: {
-                energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ",
-                m_title: "Ежедневная награда", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆", in_dev: "В разработке...",
-                st_1: "Количество монет", st_2: "Количество тапов", st_3: "Выиграл в мини играх", st_4: "Проиграл в мини играх", st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
+                energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ", game_title: "Колесо",
+                m_title: "Ежедневная награда", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆",
+                st_1: "Количество монет", st_2: "Количество тапов", st_3: "Выиграл в mini играх", st_4: "Проиграл в mini играх", st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
-                claimed_today: "Следующая награда будет доступна завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней"
+                claimed_today: "Следующая награда будет доступна завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней",
+                w_bet: "Ставка:", w_target: "Выигрыш:", w_mult: "Множитель:", w_play: "ИГРАТЬ", w_spinning: "КРУТИМ...",
+                risk_l: "Низкий риск", risk_m: "Средний риск", risk_h: "Высокий риск"
             },
             en: {
-                energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS",
-                m_title: "Daily Reward", stats_title: "Statistics", top_title: "LEADERBOARD 🏆", in_dev: "In development...",
+                energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS", game_title: "Wheel",
+                m_title: "Daily Reward", stats_title: "Statistics", top_title: "LEADERBOARD 🏆",
                 st_1: "Coins amount", st_2: "Taps count", st_3: "Won in mini-games", st_4: "Lost in mini-games", st_5: "Rewards streak", st_6: "Fortune wheel spins",
                 nv_game: "Home", nv_shop: "Shop", nv_games: "Mini Games", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
-                claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "day", days_format: "days"
+                claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "day", days_format: "days",
+                w_bet: "Bet:", w_target: "Target:", w_mult: "Multiplier:", w_play: "PLAY", w_spinning: "SPINNING...",
+                risk_l: "Low risk", risk_m: "Medium risk", risk_h: "High risk"
             }
         };
 
@@ -520,6 +712,10 @@
         let stat_games_won = parseInt(localStorage.getItem('cc_games_won')) || 0;
         let stat_games_lost = parseInt(localStorage.getItem('cc_games_lost')) || 0;
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
+
+        // ПЕРЕМЕННЫЕ ДЛЯ МИНИ-ИГРЫ КОЛЕСО
+        let wheelIsSpinning = false;
+        const wheelCircumference = 2 * Math.PI * 76; // Длина окружности круга (r=76)
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -556,6 +752,7 @@
             document.getElementById('lang-en').classList.toggle('active', lang === 'en');
             initTelegramProfile();
             updateUI();
+            calculateWheelChance();
         }
 
         function openBonusModal() {
@@ -643,7 +840,7 @@
             document.getElementById('lbl-cards').innerText = l.cards;
             document.getElementById('lbl-stats-title').innerText = l.stats_title;
             document.getElementById('lbl-top-title').innerText = l.top_title;
-            document.getElementById('lbl-in-dev').innerText = l.in_dev;
+            document.getElementById('lbl-game-title').innerText = l.game_title;
 
             document.getElementById('nv-game').innerText = l.nv_game;
             document.getElementById('nv-shop').innerText = l.nv_shop;
@@ -657,6 +854,13 @@
             document.getElementById('lbl-st-5').innerText = l.st_5;
             document.getElementById('lbl-st-6').innerText = l.st_6;
             document.getElementById('lbl-m-title').innerText = l.m_title;
+
+            // Локализация текстов Колеса
+            document.getElementById('lbl-wheel-bet').innerText = l.w_bet;
+            document.getElementById('lbl-wheel-target').innerText = l.w_target;
+            if(!wheelIsSpinning) {
+                document.getElementById('wheel-spin-btn').innerText = l.w_play;
+            }
 
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('click-val').innerText = getClickPower(lvlC).toLocaleString();
@@ -832,6 +1036,135 @@
             }
         }
 
+        // ЛОГИКА МИНИ-ИГРЫ «КОЛЕСО / WHEEL»
+        const betInput = document.getElementById('wheel-bet-input');
+        const targetInput = document.getElementById('wheel-target-input');
+
+        function calculateWheelChance() {
+            let b = parseFloat(betInput.value) || 0;
+            let t = parseFloat(targetInput.value) || 0;
+            const l = langData[currentLang];
+
+            if(t <= b) {
+                t = b * 2;
+                targetInput.value = t;
+            }
+
+            let mult = t / b;
+            document.getElementById('wheel-mult-lbl').innerText = `${l.w_mult} x${mult.toFixed(2)}`;
+
+            let chance = (b / t) * 100;
+            if(chance > 95) chance = 95;
+            if(chance < 0.01) chance = 0.01;
+
+            document.getElementById('wheel-percent-lbl').innerText = chance.toFixed(2) + '%';
+
+            // Отрисовка цветного сектора на SVG
+            const fillCircle = document.getElementById('wheel-svg-fill');
+            let offset = wheelCircumference - (chance / 100) * wheelCircumference;
+            fillCircle.style.strokeDashoffset = offset;
+
+            // Индикатор риска
+            const riskLbl = document.getElementById('wheel-risk-lbl');
+            if(chance >= 60) {
+                riskLbl.innerText = l.risk_l;
+                riskLbl.className = "risk-green";
+            } else if(chance >= 20) {
+                riskLbl.innerText = l.risk_m;
+                riskLbl.className = "risk-orange";
+            } else {
+                riskLbl.innerText = l.risk_h;
+                riskLbl.className = "risk-red";
+            }
+        }
+
+        betInput.addEventListener('input', calculateWheelChance);
+        targetInput.addEventListener('input', calculateWheelChance);
+
+        function shortcutBet(type) {
+            if(wheelIsSpinning) return;
+            let b = parseFloat(betInput.value) || 10000;
+            if(type === 'min') b = 10000;
+            if(type === 'x2') b = b * 2;
+            if(type === 'max') b = Math.max(10000, Math.floor(coins));
+            betInput.value = b;
+            calculateWheelChance();
+        }
+
+        function shortcutTarget(type) {
+            if(wheelIsSpinning) return;
+            let b = parseFloat(betInput.value) || 10000;
+            if(type === 'x2') targetInput.value = b * 2;
+            if(type === 'x5') targetInput.value = b * 5;
+            if(type === 'x10') targetInput.value = b * 10;
+            calculateWheelChance();
+        }
+
+        function spinWheel() {
+            if(wheelIsSpinning) return;
+            
+            let b = parseFloat(betInput.value) || 0;
+            let t = parseFloat(targetInput.value) || 0;
+
+            if(b < 10000) {
+                tg.showAlert(currentLang === 'ru' ? "Минимальная ставка — 10 000 монет!" : "Minimum bet is 10,000 coins!");
+                return;
+            }
+            if(coins < b) {
+                tg.showAlert(currentLang === 'ru' ? "Недостаточно монет на балансе!" : "Not enough coins!");
+                return;
+            }
+
+            wheelIsSpinning = true;
+            document.getElementById('wheel-spin-btn').disabled = true;
+            document.getElementById('wheel-spin-btn').innerText = langData[currentLang].w_spinning;
+
+            // Списание ставки
+            coins -= b;
+            stat_wheel_spins++;
+            updateUI();
+
+            let chance = (b / t) * 100;
+            if(chance > 95) chance = 95;
+
+            // Генерация случайного угла и расчет результата
+            let spinDegrees = 1800 + Math.floor(Math.random() * 360); 
+            let finalAngle = spinDegrees % 360;
+            
+            // В SVG круг развернут на -90 градусов, переводим угол в процентную точку круга
+            let pointerPercent = ((360 - finalAngle) / 360) * 100;
+            let isWin = pointerPercent <= chance;
+
+            // Запуск красивой CSS анимации стрелки
+            const arrow = document.getElementById('wheel-arrow');
+            arrow.style.transform = `rotate(${spinDegrees}deg)`;
+
+            setTimeout(() => {
+                wheelIsSpinning = false;
+                document.getElementById('wheel-spin-btn').disabled = false;
+                document.getElementById('wheel-spin-btn').innerText = langData[currentLang].w_play;
+
+                // Сброс положения стрелки без анимации на исходную позицию остатка угла
+                arrow.style.transition = 'none';
+                arrow.style.transform = `rotate(${finalAngle}deg)`;
+                setTimeout(() => { arrow.style.transition = 'transform 3s cubic-bezier(0.1, 1, 0.1, 1)'; }, 50);
+
+                if(isWin) {
+                    coins += t;
+                    stat_games_won++;
+                    tg.showAlert(currentLang === 'ru' ? `🎉 ПЕТАРДА! Вы выиграли ${Math.floor(t).toLocaleString()} монет!` : `🎉 BOOM! You won ${Math.floor(t).toLocaleString()} coins!`);
+                } else {
+                    stat_games_lost++;
+                    tg.showAlert(currentLang === 'ru' ? "Увы, проигрыш! Попробуйте другой шанс." : "Unlucky, you lost! Try another chance.");
+                }
+
+                updateUI();
+                saveAll();
+                calculateWheelChance();
+            }, 3050);
+        }
+
+        // Автогенерация энергии
         setInterval(() => {
             const maxE = getEnergyMax(lvlE);
             if (energy < maxE) energy++;
