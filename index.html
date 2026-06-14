@@ -195,7 +195,7 @@
         
         .modal-title { font-size: 18px; font-weight: 700; color: white; text-align: left; }
 
-        /* ИСПРАВЛЕНО: Сетка наград строго 4 в ряд, рамки ВСЕХ дней ОДИНАКОВЫЕ */
+        /* Сетка наград строго 4 в ряд, рамки ВСЕХ дней ОДИНАКОВЫЕ */
         .days-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -211,7 +211,7 @@
             align-items: center;
             position: relative;
             background: rgba(255, 255, 255, 0.02);
-            padding: 6px;
+            padding: 10px 6px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.03);
             width: 100%;
@@ -224,21 +224,23 @@
             font-weight: 600; 
         }
 
+        /* УВЕЛИЧЕНО: Контейнер для картинок стопок монет крупнее */
         .day-img-box {
             background: #0d121d;
             border: 1px solid rgba(255,255,255,0.04);
-            border-radius: 10px;
-            width: 42px;
-            height: 42px;
+            border-radius: 12px;
+            width: 64px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
+        /* УВЕЛИЧЕНО: Сама картинка заполняет блок сочнее */
         .day-img-box img {
-            width: 85%;
-            height: 85%;
+            width: 90%;
+            height: 90%;
             object-fit: contain;
         }
 
@@ -275,7 +277,7 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(13, 18, 29, 0.85);
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -393,7 +395,7 @@
         <div class="stats-container-card">
             <h3 id="lbl-stats-title">Статистика</h3>
             <div class="stats-list">
-                <!-- ИСПРАВЛЕНО: Полностью убрана нумерация -->
+                <!-- СТАТИСТИКА: Полностью без нумерации -->
                 <div class="stats-row">
                     <span id="lbl-st-1">Количество монет</span>
                     <span><span id="st-coins" style="color:#22c55e">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
@@ -569,7 +571,6 @@
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
-        // ИСПРАВЛЕНО: Возвращены картинки 1.png, 2.png, 3.png
         function renderDaysGrid() {
             const container = document.getElementById('days-grid-container');
             const l = langData[currentLang];
