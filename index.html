@@ -61,7 +61,7 @@
             z-index: 10;
         }
 
-        /* Кнопка-Огонёк по дизайну image_3a9043.png */
+        /* Кнопка-Огонёк */
         .top-bonus-row {
             display: flex;
             justify-content: flex-end;
@@ -176,7 +176,7 @@
         .stats-row .val-highlight { color: #5294e2; }
         .coin-mini-icon { width: 16px; height: 16px; vertical-align: middle; }
 
-        /* --- МОДАЛЬНОЕ ОКНО НАГРАД (image_3a8ca1.png) --- */
+        /* --- МОДАЛЬНОЕ ОКНО НАГРАД (Новый дизайн как на фото) --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -197,27 +197,56 @@
         .days-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto 30px auto;
         }
         .day-card {
-            background: #0d121d;
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 14px;
-            padding: 14px 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
         }
         .day-card.span-2 { grid-column: span 2; }
-        .day-card .day-title { font-size: 12px; color: #64748b; margin-bottom: 10px; font-weight: 600; }
-        .day-card .day-amount { font-size: 13px; font-weight: 700; color: white; display: flex; align-items: center; gap: 3px; }
         
-        /* Галочка выполненного дня */
-        .day-card .checkmark {
+        .day-card .day-title { 
+            font-size: 11px; 
+            color: #64748b; 
+            margin-bottom: 6px; 
+            font-weight: 600; 
+        }
+
+        /* Контейнер картинки на пол-экрана карточки */
+        .day-img-box {
+            background: #0d121d;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 14px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .day-img-box img {
+            width: 75%;
+            height: 75%;
+            object-fit: contain;
+        }
+
+        .day-card .day-amount { 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+        }
+        
+        /* Галочка выполненного дня накладывается на картинку */
+        .day-img-box .checkmark {
             position: absolute;
             top: -4px; right: -4px;
             width: 18px; height: 18px;
@@ -227,15 +256,17 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
+            z-index: 2;
+            border: 2px solid #05080e;
         }
-        .day-card.claimed { border-color: rgba(37, 99, 235, 0.2); background: rgba(13, 18, 29, 0.4); }
-        .day-card.claimed .checkmark { display: flex; }
-        .day-card.claimed * { opacity: 0.5; }
+        
+        .day-card.claimed .day-img-box .checkmark { display: flex; }
+        .day-card.claimed { opacity: 0.5; }
         
         /* Заблокированные / Будущие дни */
-        .day-card .day-overlay-timer {
+        .day-img-box .day-overlay-timer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(13, 18, 29, 0.85);
@@ -246,6 +277,7 @@
             font-size: 11px;
             font-weight: 700;
             color: #5294e2;
+            z-index: 2;
         }
 
         .modal-bottom-status { text-align: center; font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 20px; }
@@ -357,11 +389,11 @@
         <div class="stats-container-card">
             <h3 id="lbl-stats-title">Статистика</h3>
             <div class="stats-list">
-                <div class="stats-row"><span id="lbl-st-1">Всего ставок:</span><span class="val-highlight" id="st-total-bets">23</span></div>
-                <div class="stats-row"><span id="lbl-st-2">Выиграно:</span><span><span id="st-coins" style="color:#22c55e">0</span> <img src="coin_mini.png" class="coin-mini-icon" alt="c"></span></div>
-                <div class="stats-row"><span id="lbl-st-3">Прибыль:</span><span><span id="st-m-profit" style="color:#ef4444">0</span> <img src="coin_mini.png" class="coin-mini-icon" alt="c"></span></div>
-                <div class="stats-row"><span id="lbl-st-4">Лучшая серия:</span><span><span id="st-streak">0 Дня</span></span></div>
-                <div class="stats-row"><span id="lbl-st-5">Заданий выполнено:</span><span class="val-highlight" id="st-cards">4</span></div>
+                <div class="stats-row"><span id="lbl-st-1">Всего кликов:</span><span class="val-highlight" id="st-total-bets">1,254</span></div>
+                <div class="stats-row"><span id="lbl-st-2">Заработано монет:</span><span><span id="st-coins" style="color:#22c55e">0</span> <img src="coin.png" class="coin-mini-icon" alt="c"></span></div>
+                <div class="stats-row"><span id="lbl-st-4">Текущий стрик дней:</span><span><span id="st-streak">0 дня</span></span></div>
+                <div class="stats-row" style="display:none;"><span id="lbl-st-3">Прибыль:</span><span id="st-m-profit">0</span></div>
+                <div class="stats-row" style="display:none;"><span id="lbl-st-5">Заданий выполнено:</span><span id="st-cards">0</span></div>
             </div>
         </div>
 
@@ -432,7 +464,7 @@
                 energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ",
                 m_title: "Ежедневная награда",
                 stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆", in_dev: "В разработке...",
-                st_1: "Всего ставок:", st_2: "Выиграно:", st_3: "Прибыль:", st_4: "Лучшая серия:", st_5: "Заданий выполнено:",
+                st_1: "Всего кликов:", st_2: "Заработано монет:", st_3: "Прибыль:", st_4: "Текущий стрик дней:", st_5: "Заданий выполнено:",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
                 claimed_today: "Уже получено сегодня", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день"
@@ -441,14 +473,13 @@
                 energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS",
                 m_title: "Daily Reward",
                 stats_title: "Statistics", top_title: "LEADERBOARD 🏆", in_dev: "In development...",
-                st_1: "Total bets:", st_2: "Won:", st_3: "Profit:", st_4: "Best streak:", st_5: "Tasks completed:",
+                st_1: "Total clicks:", st_2: "Coins earned:", st_3: "Profit:", st_4: "Current streak:", st_5: "Tasks completed:",
                 nv_game: "Home", nv_shop: "Shop", nv_games: "Mini Games", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
                 claimed_today: "Already claimed today", claim_now: "CLAIM REWARD", day: "day"
             }
         };
 
-        // Твоя новая математика наград
         const dailyRewardsConfig = [1000, 2000, 2000, 5000, 5000, 7000, 10000];
 
         const CARDS_DATA = {
@@ -514,6 +545,11 @@
                 let isCurrentAndLocked = i === currentDayIndex && !isAvailable;
                 let classes = `day-card ${isClaimed ? 'claimed' : ''} ${i >= 4 ? 'span-2' : ''}`;
                 
+                // Динамически подбираем файлы стопок монет
+                let imgFile = '1-Photoroom.jpg';
+                if(i === 3 || i === 4) imgFile = '2-Photoroom.jpg';
+                if(i === 5 || i === 6) imgFile = '3-Photoroom.jpg';
+
                 let timerOverlay = '';
                 if(isCurrentAndLocked) {
                     let rem = 86400000 - timePassed;
@@ -523,10 +559,13 @@
 
                 html += `
                     <div class="${classes}">
-                        <div class="checkmark">✓</div>
                         <div class="day-title">${i+1} ${l.day}</div>
-                        <div class="day-amount">${dailyRewardsConfig[i].toLocaleString()} 💸</div>
-                        ${timerOverlay}
+                        <div class="day-img-box">
+                            <div class="checkmark">✓</div>
+                            <img src="${imgFile}" alt="Reward Pack">
+                            ${timerOverlay}
+                        </div>
+                        <div class="day-amount">${dailyRewardsConfig[i].toLocaleString()} <img src="coin.png" class="coin-mini-icon" alt="coin"></div>
                     </div>
                 `;
             }
@@ -562,9 +601,7 @@
 
             document.getElementById('lbl-st-1').innerText = l.st_1;
             document.getElementById('lbl-st-2').innerText = l.st_2;
-            document.getElementById('lbl-st-3').innerText = l.st_3;
             document.getElementById('lbl-st-4').innerText = l.st_4;
-            document.getElementById('lbl-st-5').innerText = l.st_5;
             document.getElementById('lbl-m-title').innerText = l.m_title;
 
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
@@ -575,13 +612,11 @@
             document.getElementById('max-e-text').innerText = maxE;
             document.getElementById('energy-fill').style.width = (energy / maxE * 100) + '%';
             
-            // Количество дней рядом с огоньком
             document.getElementById('top-streak-badge').innerText = stat_streak;
 
-            // Статистика
+            // Обновление статистики
             document.getElementById('st-coins').innerText = Math.floor(coins).toLocaleString();
-            document.getElementById('st-streak').innerText = `${stat_streak} Дня`;
-            document.getElementById('st-cards').innerText = stat_cards_bought;
+            document.getElementById('st-streak').innerText = `${stat_streak} дня`;
 
             if(document.getElementById('shop-scr').classList.contains('active')) renderCards();
             if(document.getElementById('bonus-modal').classList.contains('open')) renderDaysGrid();
