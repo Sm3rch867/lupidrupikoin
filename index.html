@@ -224,7 +224,7 @@
             font-weight: 600; 
         }
 
-        /* УВЕЛИЧЕНО: Контейнер для картинок стопок монет крупнее */
+        /* Крупный контейнер для картинок стопок монет */
         .day-img-box {
             background: #0d121d;
             border: 1px solid rgba(255,255,255,0.04);
@@ -237,7 +237,6 @@
             position: relative;
             margin-bottom: 6px;
         }
-        /* УВЕЛИЧЕНО: Сама картинка заполняет блок сочнее */
         .day-img-box img {
             width: 90%;
             height: 90%;
@@ -395,7 +394,6 @@
         <div class="stats-container-card">
             <h3 id="lbl-stats-title">Статистика</h3>
             <div class="stats-list">
-                <!-- СТАТИСТИКА: Полностью без нумерации -->
                 <div class="stats-row">
                     <span id="lbl-st-1">Количество монет</span>
                     <span><span id="st-coins" style="color:#22c55e">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
@@ -571,17 +569,35 @@
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
+        // ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ФУНКЦИЯ СЕТКИ НАГРАД (БЕЗ ЛОЖНЫХ ГАЛОЧЕК)
         function renderDaysGrid() {
             const container = document.getElementById('days-grid-container');
             const l = langData[currentLang];
-            let currentDayIndex = stat_streak % 7; 
+            
             const timePassed = Date.now() - lastClaim;
             const isAvailable = timePassed >= 86400000;
+            
+            let claimedCount = stat_streak % 7;
 
             let html = '';
             for(let i=0; i<7; i++) {
-                let isClaimed = i < currentDayIndex || (i === currentDayIndex && !isAvailable && lastClaim > 0);
-                let isCurrentAndLocked = i === currentDayIndex && !isAvailable;
+                let isClaimed = false;
+                let isCurrentAndLocked = false;
+
+                if (!isAvailable && lastClaim > 0) {
+                    if (i < claimedCount - 1) {
+                        isClaimed = true;
+                    } else if (i === claimedCount - 1) {
+                        isClaimed = true; 
+                    } else if (i === claimedCount) {
+                        isCurrentAndLocked = true; 
+                    }
+                } else {
+                    if (i < claimedCount) {
+                        isClaimed = true;
+                    }
+                }
+
                 let classes = `day-card ${isClaimed ? 'claimed' : ''}`;
                 
                 let imgFile = '1.png';
