@@ -51,7 +51,6 @@
         #game-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
         .active { display: flex; }
 
-        /* Скрываемый Хедер */
         .header { 
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -61,7 +60,6 @@
             z-index: 10;
         }
 
-        /* Кнопка-Огонёк */
         .top-bonus-row {
             display: flex;
             justify-content: flex-end;
@@ -102,7 +100,6 @@
         .energy-bar { width: 100%; height: 6px; background: #131926; border-radius: 10px; overflow: hidden; margin-top: 6px; }
         #energy-fill { width: 100%; height: 100%; background: #2563eb; transition: 0.2s; }
 
-        /* Клик-Кнопка с новой монетой newcoin.jpg */
         .coin-btn {
             width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03);
             background: url('newcoin.jpg') center/contain no-repeat; margin: auto 0;
@@ -124,7 +121,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Магазин карточек */
         .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
         .card-item {
             background: var(--card);
@@ -137,20 +133,19 @@
         }
         .card-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 8px; }
 
-        /* Кнопки */
         .btn { background: var(--primary); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .action-btn { padding: 10px 12px; font-size: 12px; border-radius: 10px; font-weight: bold; border: none; color: white; width: 100%; }
         .action-btn.buy { background: var(--primary); }
         .action-btn.owned { background: #161f30; color: #4b586e; }
 
-        /* Статистика в профиле */
         .profile-header { display: flex; align-items: center; gap: 15px; width: 100%; padding: 18px; background: rgba(13, 19, 32, 0.6); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 20px; margin-top: 10px; }
         .profile-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
         .profile-meta h3 { font-size: 17px; font-weight: 700; color: white; }
         .profile-meta p { font-size: 12px; color: #475467; margin-top: 2px; }
         
+        /* Исправлен выбор языка: Текст строго по центру */
         .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; background: rgba(13,19,32,0.7); padding: 5px; border-radius: 12px; margin-bottom: 25px; }
-        .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 12px; font-weight: 700; font-size: 14px; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s ease; }
+        .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 12px; font-weight: 700; font-size: 14px; border-radius: 10px; cursor: pointer; text-align: center; justify-content: center; align-items: center; display: flex; transition: all 0.3s ease; width: 100%; }
         .lang-btn.active { 
             background: #1e3a8a; 
             color: white; 
@@ -178,91 +173,101 @@
         .stats-row span:last-child { font-weight: 600; color: white; display: flex; align-items: center; gap: 4px; text-align: right; }
         .stats-row .val-highlight { color: #5294e2; }
         
-        /* Мини-иконка в статистике использует новую текстуру newcoin.jpg */
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
-        /* МОДАЛЬНОЕ ОКНО НАГРАД */
+        /* ИЗМЕНЕНО: Модалка теперь открывается ровно на половину высоты экранаснизу */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5, 8, 14, 0.96);
+            left: 0; right: 0; bottom: 0;
+            height: 50vh;
+            background: rgba(10, 15, 26, 0.98);
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
             z-index: 2000;
             display: none;
             flex-direction: column;
-            padding: 24px;
-            overflow-y: auto;
+            padding: 16px 20px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
         }
         .modal-overlay.open { display: flex; }
-        .modal-header { display: flex; justify-content: flex-end; width: 100%; }
-        .modal-close { background: none; border: none; color: #64748b; font-size: 28px; cursor: pointer; padding: 5px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; }
+        .modal-close { background: none; border: none; color: #64748b; font-size: 26px; cursor: pointer; padding: 0 5px; line-height: 1; }
         
-        .modal-title { text-align: center; font-size: 22px; font-weight: 700; color: white; margin-top: 5px; margin-bottom: 30px; }
+        .modal-title { font-size: 18px; font-weight: 700; color: white; text-align: left; }
 
+        /* Компактная адаптивная сетка наград */
         .days-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 8px;
             width: 100%;
-            max-width: 420px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 15px auto;
+            overflow-y: auto;
+            flex: 1;
         }
         .day-card {
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
         .day-card.span-2 { grid-column: span 2; }
         
         .day-card .day-title { 
-            font-size: 11px; 
+            font-size: 10px; 
             color: #64748b; 
-            margin-bottom: 6px; 
+            margin-bottom: 4px; 
             font-weight: 600; 
         }
 
+        /* ИСПРАВЛЕНО: Квадратные аккуратные одинаковые иконки стопок */
         .day-img-box {
             background: #0d121d;
             border: 1px solid rgba(255,255,255,0.04);
-            border-radius: 14px;
-            width: 100%;
-            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            width: 42px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .day-img-box img {
-            width: 80%;
-            height: 80%;
+            width: 85%;
+            height: 85%;
             object-fit: contain;
         }
 
         .day-card .day-amount { 
-            font-size: 12px; 
+            font-size: 10px; 
             font-weight: 700; 
             color: white; 
             display: flex; 
             align-items: center; 
             justify-content: center;
-            gap: 3px; 
+            gap: 2px; 
         }
         
         .day-img-box .checkmark {
             position: absolute;
-            top: -4px; right: -4px;
-            width: 18px; height: 18px;
+            top: -3px; right: -3px;
+            width: 14px; height: 14px;
             background: #2563eb;
             border-radius: 50%;
             display: none;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 10px;
+            font-size: 8px;
             font-weight: bold;
-            z-index: 2;
-            border: 2px solid #05080e;
+            z-index: 3;
+            border: 1px solid #05080e;
         }
         
         .day-card.claimed .day-img-box .checkmark { display: flex; }
@@ -272,19 +277,18 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(13, 18, 29, 0.85);
-            border-radius: 14px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 700;
             color: #5294e2;
             z-index: 2;
         }
 
-        .modal-bottom-status { text-align: center; font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 20px; }
+        .modal-bottom-status { text-align: center; font-size: 13px; color: #64748b; font-weight: 600; margin-bottom: 10px; }
 
-        /* Навигация */
         .nav { 
             position: fixed; 
             bottom: 0; left: 0; right: 0;
@@ -392,27 +396,27 @@
             <h3 id="lbl-stats-title">Статистика</h3>
             <div class="stats-list">
                 <div class="stats-row">
-                    <span id="lbl-st-1">Количество монет:</span>
+                    <span id="lbl-st-1">1. Количество монет</span>
                     <span><span id="st-coins" style="color:#22c55e">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-2">Сколько раз нажал на монету (сделал тап):</span>
+                    <span id="lbl-st-2">2. Количество тапов</span>
                     <span class="val-highlight" id="st-total-clicks">0</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-3">Сколько денег выиграл в мини играх:</span>
+                    <span id="lbl-st-3">3. Выиграл в мини играх</span>
                     <span style="color:#22c55e" id="st-games-won">0</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-4">Сколько проиграл денег в мини играх:</span>
+                    <span id="lbl-st-4">4. Проиграл в мини играх</span>
                     <span style="color:#ef4444" id="st-games-lost">0</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-5">Стрик ежедневных наград:</span>
+                    <span id="lbl-st-5">5. Стрик наград</span>
                     <span id="st-streak">0 дней</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-6">Сколько раз прокрутил колесо фортуны:</span>
+                    <span id="lbl-st-6">6. Прокрутил колесо фортуны</span>
                     <span id="st-wheel-spins" style="color: #a855f7;">0</span>
                 </div>
             </div>
@@ -454,14 +458,14 @@
 
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
+            <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
             <button class="modal-close" onclick="closeBonusModal()">×</button>
         </div>
-        <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
         
         <div class="days-grid" id="days-grid-container"></div>
 
         <div class="modal-bottom-status" id="modal-status-text">Уже получено сегодня</div>
-        <button class="btn" id="modal-claim-btn" onclick="claimDaily()" style="width: 100%; max-width: 340px; margin: 0 auto;">ЗАБРАТЬ НАГРАДУ</button>
+        <button class="btn" id="modal-claim-btn" onclick="claimDaily()" style="width: 100%; max-width: 340px; margin: 0 auto; display: none;">ЗАБРАТЬ НАГРАДУ</button>
     </div>
 
     <script>
@@ -483,31 +487,19 @@
         const langData = {
             ru: {
                 energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ",
-                m_title: "Ежедневная награда",
-                stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆", in_dev: "В разработке...",
-                st_1: "Количество монет:", 
-                st_2: "Сколько раз нажал на монету (сделал тап):", 
-                st_3: "Сколько денег выиграл в мини играх:", 
-                st_4: "Сколько проиграл денег в мини играх:", 
-                st_5: "Стрик ежедневных наград:",
-                st_6: "Сколько раз прокрутил колесо фортуны:",
+                m_title: "Ежедневная награда", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆", in_dev: "В разработке...",
+                st_1: "1. Количество монет", st_2: "2. Количество тапов", st_3: "3. Выиграл в мини играх", st_4: "4. Проиграл в мини играх", st_5: "5. Стрик наград", st_6: "6. Прокрутил колесо фортуны",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
-                claimed_today: "Уже получено сегодня", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней"
+                claimed_today: "Следующая награда будет доступна завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней"
             },
             en: {
                 energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS",
-                m_title: "Daily Reward",
-                stats_title: "Statistics", top_title: "LEADERBOARD 🏆", in_dev: "In development...",
-                st_1: "Coins amount:", 
-                st_2: "Total screen taps count:", 
-                st_3: "Money won in mini-games:", 
-                st_4: "Money lost in mini-games:", 
-                st_5: "Daily rewards streak:",
-                st_6: "Fortune wheel spins:",
+                m_title: "Daily Reward", stats_title: "Statistics", top_title: "LEADERBOARD 🏆", in_dev: "In development...",
+                st_1: "1. Coins amount", st_2: "2. Taps count", st_3: "3. Won in mini-games", st_4: "4. Lost in mini-games", st_5: "5. Rewards streak", st_6: "6. Fortune wheel spins",
                 nv_game: "Home", nv_shop: "Shop", nv_games: "Mini Games", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
-                claimed_today: "Already claimed today", claim_now: "CLAIM REWARD", day: "day", days_format: "days"
+                claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "day", days_format: "days"
             }
         };
 
@@ -519,6 +511,9 @@
             delo_lupi: { img: 'delovolupi.png', cost: 50000 }
         };
 
+        // Логика первого входа (Автоматическая выдача 1-го дня)
+        let isFirstTime = localStorage.getItem('cc_initialized') === null;
+        
         let coins = parseFloat(localStorage.getItem('cc_coins')) || 0;
         let energy = parseInt(localStorage.getItem('cc_energy')) || 100;
         let lvlC = parseInt(localStorage.getItem('cc_lvlC')) || 1;
@@ -529,6 +524,16 @@
         let stat_games_won = parseInt(localStorage.getItem('cc_games_won')) || 0;
         let stat_games_lost = parseInt(localStorage.getItem('cc_games_lost')) || 0;
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
+
+        if (isFirstTime) {
+            coins = dailyRewardsConfig[0]; // Награда 1 дня
+            stat_streak = 1;
+            lastClaim = Date.now();
+            localStorage.setItem('cc_initialized', 'true');
+            localStorage.setItem('cc_coins', coins);
+            localStorage.setItem('cc_st_streak', stat_streak);
+            localStorage.setItem('cc_lastClaim', lastClaim);
+        }
 
         let userCards = JSON.parse(localStorage.getItem('cc_userCards')) || {
             lupi_67: { bought: false }, lupi_drupi: { bought: false }, delo_lupi: { bought: false }
@@ -579,9 +584,9 @@
                 let isCurrentAndLocked = i === currentDayIndex && !isAvailable;
                 let classes = `day-card ${isClaimed ? 'claimed' : ''} ${i >= 4 ? 'span-2' : ''}`;
                 
-                let imgFile = '1-Photoroom.png';
-                if(i === 3 || i === 4) imgFile = '2-Photoroom.png';
-                if(i === 5 || i === 6) imgFile = '3-Photoroom.png';
+                let imgFile = '1-Photoroom.jpg';
+                if(i === 3 || i === 4) imgFile = '2-Photoroom.jpg';
+                if(i === 5 || i === 6) imgFile = '3-Photoroom.jpg';
 
                 let timerOverlay = '';
                 if(isCurrentAndLocked) {
@@ -595,10 +600,10 @@
                         <div class="day-title">${i+1} ${l.day}</div>
                         <div class="day-img-box">
                             <div class="checkmark">✓</div>
-                            <img src="${imgFile}" alt="Reward Pack">
+                            <img src="${imgFile}" alt="Pack">
                             ${timerOverlay}
                         </div>
-                        <div class="day-amount">${dailyRewardsConfig[i].toLocaleString()} <img src="newcoin.jpg" class="coin-mini-icon" alt="coin"></div>
+                        <div class="day-amount">${dailyRewardsConfig[i].toLocaleString()} <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></div>
                     </div>
                 `;
             }
@@ -776,7 +781,6 @@
             db.ref('users').orderByChild('coins').limitToLast(10).once('value', s => {
                 let html = ''; let arr = [];
                 s.forEach(u => { const d = u.val(); d.id = u.key; arr.push(d); });
-                // Вывод топа игроков с новой текстурой newcoin.jpg
                 arr.reverse().forEach((p, i) => {
                     html += `<div class="bonus-box" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; padding: 12px 14px; background: rgba(255,255,255,0.02); border-radius:12px; border: 1px solid rgba(255,255,255,0.04);"><div><b>${i+1}. ${p.username}</b><br><small style="color:#475467;">ID: ${p.id}</small></div> <span style="font-weight:bold; color:#2563eb; display:flex; align-items:center; gap:5px;">${Math.floor(p.coins).toLocaleString()} <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span></div>`;
                 });
@@ -809,7 +813,7 @@
                     if(tid === String(tg.initDataUnsafe?.user?.id)) {
                         coins = 0; lvlC = 1; lvlE = 1; energy = 100; stat_streak=0; stat_total_clicks=0; stat_games_won=0; stat_games_lost=0; stat_wheel_spins=0;
                         userCards = { lupi_67: { bought: false }, lupi_drupi: { bought: false }, delo_lupi: { bought: false } };
-                        localStorage.clear(); updateUI();
+                        localStorage.clear(); localStorage.setItem('cc_initialized', 'true'); updateUI();
                     }
                 });
             }
