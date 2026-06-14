@@ -167,14 +167,14 @@
             margin-bottom: 16px;
         }
         .stats-list { width: 100%; display: flex; flex-direction: column; }
+        
+        /* Исправлено: все числа и значения справа в статистике теперь строго белого цвета */
         .stats-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #64748b; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .stats-row:last-child { border-bottom: none; }
-        .stats-row span:last-child { font-weight: 600; color: white; display: flex; align-items: center; gap: 4px; text-align: right; }
-        .stats-row .val-highlight { color: #5294e2; }
+        .stats-row span:last-child { font-weight: 600; color: #ffffff !important; display: flex; align-items: center; gap: 4px; text-align: right; }
         
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
-        /* Модалка на 50% высоты экрана */
         .modal-overlay {
             position: fixed;
             left: 0; right: 0; bottom: 0;
@@ -195,7 +195,6 @@
         
         .modal-title { font-size: 18px; font-weight: 700; color: white; text-align: left; }
 
-        /* Сетка наград строго 4 в ряд, рамки ВСЕХ дней ОДИНАКОВЫЕ */
         .days-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -224,7 +223,6 @@
             font-weight: 600; 
         }
 
-        /* Крупный контейнер для картинок стопок монет */
         .day-img-box {
             background: #0d121d;
             border: 1px solid rgba(255,255,255,0.04);
@@ -282,7 +280,7 @@
             justify-content: center;
             font-size: 9px;
             font-weight: 700;
-            color: #5294e2;
+            color: #5294e2; 
             z-index: 2;
         }
 
@@ -396,19 +394,19 @@
             <div class="stats-list">
                 <div class="stats-row">
                     <span id="lbl-st-1">Количество монет</span>
-                    <span><span id="st-coins" style="color:#22c55e">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
+                    <span><span id="st-coins">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
                 </div>
                 <div class="stats-row">
                     <span id="lbl-st-2">Количество тапов</span>
-                    <span class="val-highlight" id="st-total-clicks">0</span>
+                    <span id="st-total-clicks">0</span>
                 </div>
                 <div class="stats-row">
                     <span id="lbl-st-3">Выиграл в mini играх</span>
-                    <span style="color:#22c55e" id="st-games-won">0</span>
+                    <span id="st-games-won">0</span>
                 </div>
                 <div class="stats-row">
                     <span id="lbl-st-4">Проиграл в mini играх</span>
-                    <span style="color:#ef4444" id="st-games-lost">0</span>
+                    <span id="st-games-lost">0</span>
                 </div>
                 <div class="stats-row">
                     <span id="lbl-st-5">Стрик наград</span>
@@ -416,7 +414,7 @@
                 </div>
                 <div class="stats-row">
                     <span id="lbl-st-6">Прокрутил колесо фортуны</span>
-                    <span id="st-wheel-spins" style="color: #a855f7;">0</span>
+                    <span id="st-wheel-spins">0</span>
                 </div>
             </div>
         </div>
@@ -569,7 +567,6 @@
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
-        // ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ФУНКЦИЯ СЕТКИ НАГРАД (БЕЗ ЛОЖНЫХ ГАЛОЧЕК)
         function renderDaysGrid() {
             const container = document.getElementById('days-grid-container');
             const l = langData[currentLang];
