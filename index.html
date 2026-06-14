@@ -9,13 +9,13 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
-            --primary: #3b82f6; /* Синий неоновый акцент */
-            --bg: #020617; /* Глубокий черный/темно-синий */
-            --card: rgba(15, 23, 42, 0.6); 
-            --boost: #ef4444; 
-            --energy: #2563eb; 
+            --primary: #2563eb; 
+            --primary-glow: rgba(37, 99, 235, 0.6);
+            --bg: #090d16; 
+            --card: rgba(15, 23, 42, 0.5); 
+            --text-muted: #566175;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; user-select: none; }
         
         body { 
             background: var(--bg);
@@ -25,162 +25,191 @@
             position: relative;
         }
 
-        /* Черно-синий неоновый градиентный фон */
-        body::before, body::after {
+        /* Синий неоновый бэкграунд-эффект */
+        body::before {
             content: "";
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: -1;
-            opacity: 0.4;
-            animation: floatBackground 15s infinite alternate ease-in-out;
-        }
-        body::before { width: 350px; height: 350px; background: #1e3a8a; top: -50px; left: -50px; }
-        body::after { width: 400px; height: 400px; background: #0f172a; bottom: -50px; right: -50px; animation-delay: -7s; }
-
-        .bg-glow {
             position: absolute;
             width: 300px;
             height: 300px;
-            background: #1d4ed8;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: #1e40af;
             filter: blur(120px);
-            opacity: 0.15;
             z-index: -1;
-            pointer-events: none;
-        }
-
-        @keyframes floatBackground {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 40px) scale(1.2); }
+            opacity: 0.3;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .screen { 
             display: none; 
             flex-direction: column; 
             align-items: center; 
-            height: calc(100vh - 145px); 
-            padding: 20px; 
+            height: 100vh; 
+            padding: 20px 20px 90px 20px; 
             overflow-y: auto; 
-            position: relative;
-            z-index: 1;
         }
+        /* Корректировка высоты для главной, где есть хедер */
+        #game-scr { height: calc(100vh - 145px); margin-top: 145px; padding-top: 0; }
         .active { display: flex; }
 
-        /* Хедер */
+        /* Скрываемый Хедер (Только на Главной) */
         .header { 
-            padding: 15px; 
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 20px 15px 10px 15px; 
             text-align: center; 
-            background: rgba(2, 6, 23, 0.7); 
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            background: linear-gradient(180deg, rgba(9,13,22,1) 70%, rgba(9,13,22,0) 100%);
             z-index: 10;
-            position: relative;
         }
-        #coins { font-size: 40px; font-weight: bold; color: white; text-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        #coins { font-size: 44px; font-weight: 800; color: white; letter-spacing: -0.5px; }
         
         .energy-box {
             width: 100%;
-            max-width: 320px;
-            margin: 5px auto 0 auto;
+            max-width: 340px;
+            margin: 8px auto 0 auto;
         }
-        .energy-bar { width: 100%; height: 8px; background: rgba(15, 23, 42, 0.8); border-radius: 10px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(255,255,255,0.03); }
-        #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #1d4ed8, #3b82f6); transition: 0.2s; }
+        .energy-bar { width: 100%; height: 6px; background: #131926; border-radius: 10px; overflow: hidden; margin-top: 6px; }
+        #energy-fill { width: 100%; height: 100%; background: #2563eb; transition: 0.2s; }
 
-        .buffs-container { display: flex; gap: 8px; margin-top: 5px; justify-content: center; }
+        .buffs-container { display: flex; gap: 8px; margin-top: 6px; justify-content: center; }
         .buff-badge { font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: bold; display: none; }
         .buff-x2 { background: #10b981; color: white; }
         .buff-infe { background: #2563eb; color: white; }
 
-        /* Монетка */
+        /* Клик-Кнопка */
         .coin-btn {
-            width: 250px; height: 250px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.05);
+            width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03);
             background: url('coin.png') center/cover; margin: auto 0;
-            box-shadow: 0 0 40px rgba(37, 99, 235, 0.2), inset 0 0 20px rgba(0,0,0,0.8); 
+            box-shadow: 0 0 50px rgba(37, 99, 235, 0.15); 
             transition: transform 0.05s; touch-action: manipulation;
         }
-        .coin-btn:active { transform: scale(0.95); }
+        .coin-btn:active { transform: scale(0.96); }
 
-        /* Заголовки */
         .shop-section-title {
             width: 100%;
             text-align: left;
-            font-size: 14px;
-            font-weight: bold;
-            margin: 15px 0 10px 0;
-            color: #94a3b8;
-            border-left: 3px solid var(--primary);
-            padding-left: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            margin: 20px 0 12px 0;
+            color: white;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* Карточки */
+        /* Улучшения и Карточки */
         .upgrade-card {
             background: var(--card);
             border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 14px;
-            padding: 12px;
-            margin-bottom: 8px;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
         }
-        .upgrade-info h4 { font-size: 14px; font-weight: 600; }
-        .upgrade-info p { font-size: 11px; color: #64748b; margin-top: 2px; }
+        .upgrade-info h4 { font-size: 15px; font-weight: 600; }
+        .upgrade-info p { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
 
-        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
+        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
         .card-item {
             background: var(--card);
             border: 1px solid rgba(255, 255, 255, 0.03);
             border-radius: 16px;
-            padding: 10px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            backdrop-filter: blur(10px);
-            text-align: center;
         }
-        .card-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.03); }
+        .card-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 8px; }
 
         /* Кнопки */
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.2s; }
-        .btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; opacity: 0.5; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; font-size: 13px; cursor: pointer; }
+        .btn:disabled { background: #161f30; color: #3b485f; cursor: not-allowed; }
         
-        .action-btn { padding: 8px 12px; font-size: 12px; border-radius: 8px; font-weight: bold; border: none; color: white; width: 100%; cursor: pointer;}
+        .action-btn { padding: 10px 12px; font-size: 12px; border-radius: 10px; font-weight: bold; border: none; color: white; width: 100%; }
         .action-btn.buy { background: var(--primary); }
-        .action-btn.owned { background: #1e293b; color: #64748b; cursor: default; }
+        .action-btn.owned { background: #161f30; color: #4b586e; }
 
-        .bonus-box { width: 100%; background: var(--card); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+        .bonus-box { width: 100%; background: var(--card); border: 1px solid rgba(255, 255, 255, 0.02); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
 
-        /* Вкладка Профиля (стиль CS3BET) */
-        .profile-header { display: flex; align-items: center; gap: 15px; width: 100%; padding: 15px; background: rgba(15, 23, 42, 0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); margin-bottom: 15px; }
-        .profile-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
-        .profile-meta h3 { font-size: 16px; font-weight: bold; }
-        .profile-meta p { font-size: 12px; color: #64748b; }
+        /* --- СТИЛИ ПРОФИЛЯ ПО СТИЛЮ ИЗ image_4728d9.png --- */
+        .profile-header { display: flex; align-items: center; gap: 15px; width: 100%; padding: 18px; background: rgba(13, 19, 32, 0.6); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 20px; margin-top: 10px; }
+        .profile-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+        .profile-meta h3 { font-size: 17px; font-weight: 700; color: white; }
+        .profile-meta p { font-size: 12px; color: #475467; margin-top: 2px; }
         
-        .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; width: 100%; background: #0f172a; padding: 4px; border-radius: 10px; margin-bottom: 15px; }
-        .lang-btn { background: transparent; border: none; color: #64748b; padding: 8px; font-weight: bold; font-size: 13px; border-radius: 8px; cursor: pointer; }
-        .lang-btn.active { background: var(--primary); color: white; }
+        .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; background: rgba(13,19,32,0.7); padding: 5px; border-radius: 12px; margin-bottom: 25px; }
+        .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 12px; font-weight: 700; font-size: 14px; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; }
+        .lang-btn.active { 
+            background: #1e3a8a; 
+            color: white; 
+            box-shadow: -5px 0 15px rgba(37, 99, 235, 0.4), 0 0 10px rgba(37, 99, 235, 0.2);
+        }
 
-        .stats-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .stats-row { display: flex; justify-content: space-between; font-size: 13px; color: #94a3b8; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 4px; }
-        .stats-row span:last-child { font-weight: bold; color: white; }
+        .stats-list { width: 100%; display: flex; flex-direction: column; background: rgba(13, 19, 32, 0.4); border-radius: 16px; padding: 6px 16px; margin-bottom: 20px; }
+        .stats-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #94a3b8; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .stats-list .stats-row:last-child { border-bottom: none; }
+        .stats-row span:last-child { font-weight: 600; color: white; display: flex; align-items: center; gap: 4px; }
+        .coin-mini-icon { width: 16px; height: 16px; vertical-align: middle; }
 
-        /* Навигация */
-        .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(2, 6, 23, 0.85); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(20px); z-index: 1000; }
-        .nav-item { text-align: center; font-size: 10px; opacity: 0.4; color: white; cursor: pointer; transition: 0.2s; padding: 5px; flex: 1; }
-        .nav-item.active { opacity: 1; color: var(--primary); font-weight: bold; }
-        .nav-icon { font-size: 18px; margin-bottom: 2px; }
+        /* --- НОВАЯ НАВИГАЦИОННАЯ ПАНЕЛЬ ИЗ ИЗОБРАЖЕНИЙ image_473386.png - image_473042.png --- */
+        .nav { 
+            position: fixed; 
+            bottom: 0; left: 0; right: 0;
+            height: 76px; 
+            background: #06090f; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            border-top: 1px solid rgba(255,255,255,0.02); 
+            z-index: 1000; 
+            padding-bottom: 12px;
+        }
+        .nav-item { 
+            text-align: center; 
+            color: #3d4757; 
+            cursor: pointer; 
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            height: 100%;
+            transition: color 0.3s ease;
+        }
+        .nav-item span { font-size: 11px; font-weight: 600; margin-top: 5px; }
+        
+        /* Иконка SVG */
+        .nav-svg { width: 22px; height: 22px; fill: none; stroke: #3d4757; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s ease; }
+        
+        /* Состояние Active */
+        .nav-item.active { color: #5294e2; }
+        .nav-item.active .nav-svg { stroke: #5294e2; }
 
-        .plus-one { position: absolute; color: white; font-size: 24px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 10px var(--primary); z-index: 1000; }
+        /* Размытое неоновое пятно света сверху активного элемента */
+        .nav-glow {
+            position: absolute;
+            top: -1px;
+            width: 70px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.5) 0%, rgba(37, 99, 235, 0) 70%);
+            filter: blur(6px);
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+            transform: translateY(-50%);
+        }
+        .nav-item.active .nav-glow { opacity: 1; }
+
+        /* Плюс коины анимация */
+        .plus-one { position: absolute; color: white; font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 10px var(--primary); z-index: 1000; }
         @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
 
-        .wheel-wrapper { position: relative; width: 260px; height: 260px; margin: 10px 0; }
-        .wheel-arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; font-size: 24px; color: var(--primary); }
+        .wheel-wrapper { position: relative; width: 250px; height: 250px; margin: 15px 0; }
+        .wheel-arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; font-size: 22px; color: var(--primary); }
         #wheel-canvas { width: 100%; height: 100%; border-radius: 50%; }
         
         .admin-panel { display: none; background: rgba(15, 23, 42, 0.95); padding: 15px; border-radius: 15px; width: 100%; border: 1px solid #ef4444; margin-bottom: 15px;}
@@ -189,12 +218,11 @@
 </head>
 <body>
 
-    <div class="bg-glow"></div>
-
-    <div class="header">
+    <!-- Верхний Хедер баланса (Виден только на Главной) -->
+    <div class="header" id="main-header">
         <div id="coins">0</div>
         <div class="energy-box">
-            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; font-weight: 500;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #475467; font-weight: 600;">
                 <span id="lbl-energy">⚡ Энергия</span>
                 <span><span id="e-text">100</span> / <span id="max-e-text">100</span></span>
             </div>
@@ -206,15 +234,31 @@
         </div>
     </div>
 
-    <!-- 1. GAME SCREEN -->
+    <!-- 1. ГЛАВНАЯ СТРАНИЦА -->
     <div id="game-scr" class="screen active">
-        <div style="font-size: 12px; color: #64748b; margin-top: 5px; font-weight: 500;">
+        <div style="font-size: 12px; color: #475467; margin-top: 5px; font-weight: 600;">
             <span id="lbl-clickpower">👆 Сила клика:</span> <span id="click-val">1</span>
         </div>
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
-    <!-- 2. SHOP SCREEN -->
+    <!-- 2. ЗАДАНИЯ / БОНУСЫ (Объединены под новый Таббар) -->
+    <div id="tasks-scr" class="screen">
+        <div class="shop-section-title" id="lbl-daily-title">ЕЖЕДНЕВНЫЙ БОНУС</div>
+        <div class="bonus-box" style="text-align: center;">
+            <div id="daily-status-text" style="font-size: 13px; color: #94a3b8; margin-bottom: 10px; font-weight: 500;">Награда: +5,000 💰 и 1 Спин!</div>
+            <button class="btn" id="daily-btn" onclick="claimDaily()" style="width:100%">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
+        </div>
+
+        <div class="shop-section-title" id="lbl-wheel-title">РУЛЕТКА УДАЧИ</div>
+        <div class="wheel-wrapper">
+            <div class="wheel-arrow">▼</div>
+            <canvas id="wheel-canvas" width="360" height="360"></canvas>
+        </div>
+        <button class="btn" id="spin-btn" onclick="startSpin()" style="width: 200px; margin-bottom: 5px;">КРУТИТЬ (Спины: <span id="spins-count">0</span>)</button>
+    </div>
+
+    <!-- 3. МАГАЗИН СТРАНИЦА -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title" id="lbl-upgrades">УЛУЧШЕНИЯ</div>
         
@@ -238,31 +282,7 @@
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
-    <!-- 3. MINI GAMES SCREEN -->
-    <div id="minigames-scr" class="screen">
-        <div class="shop-section-title" id="lbl-mg-title">МИНИ-ИГРЫ</div>
-        <div class="bonus-box" style="text-align: center; color: #64748b; padding: 40px 20px;" id="lbl-mg-empty">
-            Скоро открытие... В разработке! 🚀
-        </div>
-    </div>
-
-    <!-- 4. BONUS SCREEN -->
-    <div id="bonus-scr" class="screen">
-        <div class="shop-section-title" id="lbl-daily-title">ЕЖЕДНЕВНЫЙ БОНУС</div>
-        <div class="bonus-box" style="text-align: center;">
-            <div id="daily-status-text" style="font-size: 12px; color: #94a3b8; margin-bottom: 8px; font-weight: 500;">Награда: +5,000 💰 и 1 Спин!</div>
-            <button class="btn" id="daily-btn" onclick="claimDaily()" style="width:100%">ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС</button>
-        </div>
-
-        <div class="shop-section-title" id="lbl-wheel-title">РУЛЕТКА УДАЧИ</div>
-        <div class="wheel-wrapper">
-            <div class="wheel-arrow">▼</div>
-            <canvas id="wheel-canvas" width="360" height="360"></canvas>
-        </div>
-        <button class="btn" id="spin-btn" onclick="startSpin()" style="width: 200px; margin-bottom: 5px;">КРУТИТЬ (Спины: <span id="spins-count">0</span>)</button>
-    </div>
-
-    <!-- 5. PROFILE SCREEN -->
+    <!-- 4. ПРОФИЛЬ СТРАНИЦА -->
     <div id="profile-scr" class="screen">
         <div class="profile-header">
             <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
@@ -277,14 +297,14 @@
             <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">English</button>
         </div>
 
-        <div class="shop-section-title" id="lbl-stats-title">СТАТИСТИКА</div>
+        <div style="font-size: 20px; font-weight: 700; color: white; width: 100%; text-align: left; margin-bottom: 10px;" id="lbl-stats-title">Статистика</div>
         <div class="stats-list">
-            <div class="stats-row"><span id="lbl-st-1">Всего монет:</span><span id="st-coins">0</span></div>
-            <div class="stats-row"><span id="lbl-st-2">Выиграно в мини-играх:</span><span id="st-m-won">0</span></div>
-            <div class="stats-row"><span id="lbl-st-3">Проиграно в мини-играх:</span><span id="st-m-lost">0</span></div>
-            <div class="stats-row"><span id="lbl-st-4">Серия дейли бонусов:</span><span id="st-streak">0</span></div>
-            <div class="stats-row"><span id="lbl-st-5">Куплено карточек:</span><span id="st-cards">0</span></div>
-            <div class="stats-row"><span id="lbl-st-6">Прокруток колеса удачи:</span><span id="st-wheel">0</span></div>
+            <div class="stats-row"><span id="lbl-st-1">Всего монет:</span><span><span id="st-coins">0</span> <img src="coin_mini.png" class="coin-mini-icon" alt="c"></span></div>
+            <div class="stats-row"><span id="lbl-st-2">Выиграно в мини-играх:</span><span><span id="st-m-won">0</span> <img src="coin_mini.png" class="coin-mini-icon" alt="c"></span></div>
+            <div class="stats-row"><span id="lbl-st-3">Проиграно в mini-играх:</span><span><span id="st-m-lost">0</span> <img src="coin_mini.png" class="coin-mini-icon" alt="c"></span></div>
+            <div class="stats-row"><span id="lbl-st-4">Серия дейли бонусов:</span><span><span id="st-streak">0</span></span></div>
+            <div class="stats-row"><span id="lbl-st-5">Куплено карточек:</span><span><span id="st-cards">0</span></span></div>
+            <div class="stats-row"><span id="lbl-st-6">Прокруток колеса удачи:</span><span><span id="st-wheel">0</span></span></div>
         </div>
 
         <div class="shop-section-title" id="lbl-top-title">ТОП ИГРОКОВ 🏆</div>
@@ -299,13 +319,45 @@
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
     </div>
 
-    <!-- ТАББАР (BOTTOM NAV) -->
+    <!-- ТАББАР ИЗ СКРИНШОТОВ (4 ВКЛАДКИ) -->
     <div class="nav">
-        <div class="nav-item active" id="n-game" onclick="show('game')"><div class="nav-icon">🎮</div><span id="nv-game">Игра</span></div>
-        <div class="nav-item" id="n-shop" onclick="show('shop')"><div class="nav-icon">🛒</div><span id="nv-shop">Магазин</span></div>
-        <div class="nav-item" id="n-minigames" onclick="show('minigames')"><div class="nav-icon">🎲</div><span id="nv-mg">Мини-игры</span></div>
-        <div class="nav-item" id="n-bonus" onclick="show('bonus')"><div class="nav-icon">🎁</div><span id="nv-bonus">Бонусы</span></div>
-        <div class="nav-item" id="n-profile" onclick="show('profile')"><div class="nav-icon">👤</div><span id="nv-profile">Профиль</span></div>
+        <!-- Главная -->
+        <div class="nav-item active" id="n-game" onclick="show('game')">
+            <div class="nav-glow"></div>
+            <svg class="nav-svg" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span id="nv-game">Главная</span>
+        </div>
+        <!-- Задания -->
+        <div class="nav-item" id="n-tasks" onclick="show('tasks')">
+            <div class="nav-glow"></div>
+            <svg class="nav-svg" viewBox="0 0 24 24">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+            <span id="nv-tasks">Задания</span>
+        </div>
+        <!-- Магазин -->
+        <div class="nav-item" id="n-shop" onclick="show('shop')">
+            <div class="nav-glow"></div>
+            <svg class="nav-svg" viewBox="0 0 24 24">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span id="nv-shop">Магазин</span>
+        </div>
+        <!-- Профиль -->
+        <div class="nav-item" id="n-profile" onclick="show('profile')">
+            <div class="nav-glow"></div>
+            <svg class="nav-svg" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="nv-profile">Профиль</span>
+        </div>
     </div>
 
     <script>
@@ -313,7 +365,6 @@
         tg.expand();
         const ADMIN_ID = 5932857353;
 
-        // Инициализация Firebase 
         const firebaseConfig = {
             apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
             authDomain: "lupidrupikoin.firebaseapp.com",
@@ -324,7 +375,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Данные локализации
         let currentLang = localStorage.getItem('cc_lang') || 'ru';
         const langData = {
             ru: {
@@ -332,10 +382,9 @@
                 up_click: "Сила клика", up_energy: "Лимит энергии", price: "Цена", max_lvl: "Максимальный уровень (10/10)",
                 lvl: "Уровень", claim_daily: "ЗАБРАТЬ ЕЖЕДНЕВНЫЙ БОНУС", bonus_claimed: "Ежедневный бонус получен: +5,000 монет и +1 Спин! 🎁",
                 spin: "КРУТИТЬ", no_spins: "У тебя нет доступных прокрутов рулетки!", result: "🎰 Результат рулетки:",
-                mg_title: "МИНИ-ИГРЫ", mg_empty: "Скоро открытие... В разработке! 🚀", daily_title: "ЕЖЕДНЕВНЫЙ БОНУС",
-                wheel_title: "РУЛЕТКА УДАЧИ", stats_title: "СТАТИСТИКА", top_title: "ТОП ИГРОКОВ 🏆",
-                st_1: "Всего монет:", st_2: "Выиграно в мини-играх:", st_3: "Проиграно в мини-играх:", st_4: "Серия дейли бонусов:", st_5: "Куплено карточек:", st_6: "Прокруток колеса удачи:",
-                nv_game: "Game", nv_shop: "Shop", nv_mg: "Mini Games", nv_bonus: "Bonus", nv_profile: "Profile",
+                daily_title: "ЕЖЕДНЕВНЫЙ БОНУС", wheel_title: "РУЛЕТКА УДАЧИ", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆",
+                st_1: "Всего монет:", st_2: "Выиграно в мини-играх:", st_3: "Проиграно в mini-играх:", st_4: "Серия дейли бонусов:", st_5: "Куплено карточек:", st_6: "Прокруток колеса удачи:",
+                nv_game: "Главная", nv_tasks: "Задания", nv_shop: "Магазин", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
                 daily_status: "Награда: +5,000 💰 и 1 Спин!", daily_wait: "Доступ к бонусу откроется через: ", locked: "ЗАБЛОКИРОВАНО"
             },
@@ -344,23 +393,20 @@
                 up_click: "Click Power", up_energy: "Energy Limit", price: "Price", max_lvl: "Max Level (10/10)",
                 lvl: "Level", claim_daily: "CLAIM DAILY BONUS", bonus_claimed: "Daily reward claimed: +5,000 coins and +1 Spin! 🎁",
                 spin: "SPIN", no_spins: "You don't have available roulette spins!", result: "🎰 Roulette result:",
-                mg_title: "MINI GAMES", mg_empty: "Coming soon... Under development! 🚀", daily_title: "DAILY BONUS",
-                wheel_title: "LUCKY WHEEL", stats_title: "STATISTICS", top_title: "LEADERBOARD 🏆",
+                daily_title: "DAILY BONUS", wheel_title: "LUCKY WHEEL", stats_title: "Statistics", top_title: "LEADERBOARD 🏆",
                 st_1: "Total coins:", st_2: "Won in mini games:", st_3: "Lost in mini games:", st_4: "Daily bonus streak:", st_5: "Cards bought:", st_6: "Lucky wheel spins:",
-                nv_game: "Game", nv_shop: "Shop", nv_mg: "Mini Games", nv_bonus: "Bonus", nv_profile: "Profile",
+                nv_game: "Home", nv_tasks: "Tasks", nv_shop: "Shop", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
                 daily_status: "Reward: +5,000 💰 and 1 Spin!", daily_wait: "Bonus opens in: ", locked: "LOCKED"
             }
         };
 
-        // Статические данные карточек магазина
         const CARDS_DATA = {
             lupi_67: { img: '67lupi.png', cost: 10000 },
             lupi_drupi: { img: 'lupidrupi.jpg', cost: 25000 },
             delo_lupi: { img: 'delovolupi.png', cost: 50000 }
         };
 
-        // Переменные состояния аккаунта
         let coins = parseFloat(localStorage.getItem('cc_coins')) || 0;
         let energy = parseInt(localStorage.getItem('cc_energy')) || 100;
         let spins = parseInt(localStorage.getItem('cc_spins')) || 0;
@@ -368,7 +414,6 @@
         let lvlE = parseInt(localStorage.getItem('cc_lvlE')) || 1;
         let lastClaim = parseInt(localStorage.getItem('cc_lastClaim')) || 0;
 
-        // Переменные расширенной статистики под ТЗ
         let stat_mini_won = parseFloat(localStorage.getItem('cc_st_m_won')) || 0;
         let stat_mini_lost = parseFloat(localStorage.getItem('cc_st_m_lost')) || 0;
         let stat_streak = parseInt(localStorage.getItem('cc_st_streak')) || 0;
@@ -378,7 +423,6 @@
         let buffX2Until = parseInt(localStorage.getItem('cc_buffX2')) || 0;
         let buffInfEUntil = parseInt(localStorage.getItem('cc_buffInfE')) || 0;
 
-        // Состояние купленных карт
         let userCards = JSON.parse(localStorage.getItem('cc_userCards')) || {
             lupi_67: { bought: false }, lupi_drupi: { bought: false }, delo_lupi: { bought: false }
         };
@@ -400,16 +444,12 @@
             { text: "+5000 💰", weight: 10, action: () => { coins += 5000; } }
         ];
 
-        // Инициализация профиля из Telegram API
         function initTelegramProfile() {
             const user = tg.initDataUnsafe?.user;
             if (user) {
                 document.getElementById('user-name').innerText = user.first_name + (user.username ? ` (@${user.username})` : '');
-                if (user.photo_url) {
-                    document.getElementById('user-avatar').src = user.photo_url;
-                }
+                if (user.photo_url) document.getElementById('user-avatar').src = user.photo_url;
             }
-            // Форматирование текущей даты или даты из БД
             const dateObj = new Date();
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             document.getElementById('user-joined').innerText = `${langData[currentLang].member} ${months[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
@@ -427,28 +467,22 @@
         function updateUI() {
             const l = langData[currentLang];
             
-            // Локализация текстов базового UI
             document.getElementById('lbl-energy').innerText = l.energy;
             document.getElementById('lbl-clickpower').innerText = l.clickpower;
             document.getElementById('lbl-upgrades').innerText = l.upgrades;
             document.getElementById('lbl-cards').innerText = l.cards;
             document.getElementById('lbl-up-click-title').innerText = l.up_click;
             document.getElementById('lbl-up-energy-title').innerText = l.up_energy;
-            document.getElementById('lbl-mg-title').innerText = l.mg_title;
-            document.getElementById('lbl-mg-empty').innerText = l.mg_empty;
             document.getElementById('lbl-daily-title').innerText = l.daily_title;
             document.getElementById('lbl-wheel-title').innerText = l.wheel_title;
             document.getElementById('lbl-stats-title').innerText = l.stats_title;
             document.getElementById('lbl-top-title').innerText = l.top_title;
 
-            // Навигационный бар
             document.getElementById('nv-game').innerText = l.nv_game;
+            document.getElementById('nv-tasks').innerText = l.nv_tasks;
             document.getElementById('nv-shop').innerText = l.nv_shop;
-            document.getElementById('nv-mg').innerText = l.nv_mg;
-            document.getElementById('nv-bonus').innerText = l.nv_bonus;
             document.getElementById('nv-profile').innerText = l.nv_profile;
 
-            // Статистические лейблы
             document.getElementById('lbl-st-1').innerText = l.st_1;
             document.getElementById('lbl-st-2').innerText = l.st_2;
             document.getElementById('lbl-st-3').innerText = l.st_3;
@@ -456,7 +490,6 @@
             document.getElementById('lbl-st-5').innerText = l.st_5;
             document.getElementById('lbl-st-6').innerText = l.st_6;
 
-            // Расчет клика
             let currentClickPower = getClickPower(lvlC);
             if (Date.now() < buffX2Until) currentClickPower *= 2;
 
@@ -469,7 +502,6 @@
             document.getElementById('energy-fill').style.width = (energy / maxE * 100) + '%';
             document.getElementById('spins-count').innerText = spins;
 
-            // Баффы
             const now = Date.now();
             const x2Badge = document.getElementById('buff-x2-ui');
             if (now < buffX2Until) {
@@ -485,7 +517,6 @@
                 infEBadge.style.display = 'inline-block';
             } else { infEBadge.style.display = 'none'; }
 
-            // Кнопки магазина
             document.getElementById('click-cost-text').innerText = `${l.lvl} ${lvlC} -> ${l.price}: ${getClickCost(lvlC).toLocaleString()} 💰`;
             if(lvlE >= 10) {
                 document.getElementById('energy-cost-text').innerText = l.max_lvl;
@@ -496,7 +527,6 @@
             }
             document.getElementById('btn-up-click').disabled = coins < getClickCost(lvlC);
 
-            // Бонус таймер
             const dailyBtn = document.getElementById('daily-btn');
             const dailyText = document.getElementById('daily-status-text');
             const wait = 86400000 - (Date.now() - lastClaim);
@@ -512,7 +542,6 @@
                 dailyBtn.innerText = l.claim_daily;
             }
 
-            // Обновление цифр статистики во вкладке Профиля
             document.getElementById('st-coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('st-m-won').innerText = stat_mini_won.toLocaleString();
             document.getElementById('st-m-lost').innerText = stat_mini_lost.toLocaleString();
@@ -596,11 +625,11 @@
             ctx.clearRect(0, 0, 360, 360);
             sectors.forEach((s, i) => {
                 const sectorAngle = angle + i * arc - Math.PI / 2;
-                ctx.beginPath(); ctx.fillStyle = i % 2 ? "#0f172a" : "#1e3a8a"; ctx.moveTo(180, 180);
+                ctx.beginPath(); ctx.fillStyle = i % 2 ? "#0b0f19" : "#1e3a8a"; ctx.moveTo(180, 180);
                 ctx.arc(180, 180, 170, sectorAngle, sectorAngle + arc); ctx.fill();
                 ctx.save(); ctx.translate(180, 180); ctx.rotate(sectorAngle + arc / 2);
                 ctx.textAlign = "right"; ctx.fillStyle = "white";
-                ctx.font = "bold 12px Segoe UI"; ctx.fillText(s.text, 160, 5); ctx.restore();
+                ctx.font = "bold 13px Segoe UI"; ctx.fillText(s.text, 160, 5); ctx.restore();
             });
         }
 
@@ -641,19 +670,29 @@
             if (diff < 86400000) return;
             
             coins += 5000; spins += 1;
-            if (diff < 172800000) stat_streak++; else stat_streak = 1; // Проверка на удержание стрика (прошло меньше 48 часов)
+            if (diff < 172800000) stat_streak++; else stat_streak = 1;
             
             lastClaim = Date.now();
             updateUI(); saveAll();
             tg.showAlert(langData[currentLang].bonus_claimed);
         }
 
+        /* --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ + СКРЫТИЕ ХЕДЕРА МОНЕТ --- */
         function show(s) {
             document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
             document.getElementById(s + '-scr').classList.add('active');
             document.getElementById('n-' + s).classList.add('active');
-            if (s === 'bonus') drawWheel(currentAngle);
+            
+            // Если переходим на Game (Главная) — показываем баланс монет сверху, на остальных скрываем
+            if (s === 'game') {
+                document.getElementById('main-header').style.display = 'block';
+            } else {
+                document.getElementById('main-header').style.display = 'none';
+            }
+
+            if (s === 'tasks') drawWheel(currentAngle);
             if (s === 'profile') {
                 loadTop();
                 if(String(tg.initDataUnsafe?.user?.id) === String(ADMIN_ID)) {
@@ -693,13 +732,12 @@
                 let html = ''; let arr = [];
                 s.forEach(u => { const d = u.val(); d.id = u.key; arr.push(d); });
                 arr.reverse().forEach((p, i) => {
-                    html += `<div class="bonus-box" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; padding: 10px 14px; background: rgba(255,255,255,0.02); border-radius:10px;"><div><b>${i+1}. ${p.username}</b><br><small style="color:#475569;">ID: ${p.id}</small></div> <span style="font-weight:bold; color:var(--primary);">${Math.floor(p.coins).toLocaleString()} 💰</span></div>`;
+                    html += `<div class="bonus-box" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; padding: 12px 14px; background: rgba(255,255,255,0.02); border-radius:12px;"><div><b>${i+1}. ${p.username}</b><br><small style="color:#475467;">ID: ${p.id}</small></div> <span style="font-weight:bold; color:#2563eb;">${Math.floor(p.coins).toLocaleString()} 💰</span></div>`;
                 });
                 document.getElementById('leaderboard').innerHTML = html;
             });
         }
 
-        // Админка
         function adminGive() {
             if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
             const tid = String(document.getElementById('target-id').value.trim());
@@ -741,7 +779,6 @@
             localStorage.setItem('cc_energy', energy);
         }, 1000);
 
-        // Старт системы
         setLanguage(currentLang);
     </script>
 </body>
