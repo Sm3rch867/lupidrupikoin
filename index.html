@@ -51,7 +51,7 @@
         #game-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
         .active { display: flex; }
 
-        /* Скрываемый Хедер (Только на Главной) */
+        /* Скрываемый Хедер */
         .header { 
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -102,10 +102,10 @@
         .energy-bar { width: 100%; height: 6px; background: #131926; border-radius: 10px; overflow: hidden; margin-top: 6px; }
         #energy-fill { width: 100%; height: 100%; background: #2563eb; transition: 0.2s; }
 
-        /* Клик-Кнопка (Исправлены квадратные артефакты заднего фона монеты) */
+        /* Клик-Кнопка с новой монетой newcoin.jpg */
         .coin-btn {
             width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03);
-            background: url('coin.png') center/contain no-repeat; margin: auto 0;
+            background: url('newcoin.jpg') center/contain no-repeat; margin: auto 0;
             box-shadow: 0 0 50px rgba(37, 99, 235, 0.15); 
             overflow: hidden;
             background-color: transparent;
@@ -149,7 +149,6 @@
         .profile-meta h3 { font-size: 17px; font-weight: 700; color: white; }
         .profile-meta p { font-size: 12px; color: #475467; margin-top: 2px; }
         
-        /* Исправлен сдвиг влево: выравнивание по центру, симметричная тень */
         .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; background: rgba(13,19,32,0.7); padding: 5px; border-radius: 12px; margin-bottom: 25px; }
         .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 12px; font-weight: 700; font-size: 14px; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s ease; }
         .lang-btn.active { 
@@ -178,9 +177,11 @@
         .stats-row:last-child { border-bottom: none; }
         .stats-row span:last-child { font-weight: 600; color: white; display: flex; align-items: center; gap: 4px; text-align: right; }
         .stats-row .val-highlight { color: #5294e2; }
-        .coin-mini-icon { width: 16px; height: 16px; object-fit: contain; display: inline-block; vertical-align: middle; }
+        
+        /* Мини-иконка в статистике использует новую текстуру newcoin.jpg */
+        .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
-        /* --- МОДАЛЬНОЕ ОКНО НАГРАД --- */
+        /* МОДАЛЬНОЕ ОКНО НАГРАД */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -197,7 +198,6 @@
         
         .modal-title { text-align: center; font-size: 22px; font-weight: 700; color: white; margin-top: 5px; margin-bottom: 30px; }
 
-        /* Сетка дней */
         .days-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -221,7 +221,6 @@
             font-weight: 600; 
         }
 
-        /* Контейнер картинки */
         .day-img-box {
             background: #0d121d;
             border: 1px solid rgba(255,255,255,0.04);
@@ -240,7 +239,6 @@
             object-fit: contain;
         }
 
-        /* Выравнивание текста и монетки в наградах */
         .day-card .day-amount { 
             font-size: 12px; 
             font-weight: 700; 
@@ -251,7 +249,6 @@
             gap: 3px; 
         }
         
-        /* Галочка выполненного дня накладывается на картинку */
         .day-img-box .checkmark {
             position: absolute;
             top: -4px; right: -4px;
@@ -271,7 +268,6 @@
         .day-card.claimed .day-img-box .checkmark { display: flex; }
         .day-card.claimed { opacity: 0.5; }
         
-        /* Заблокированные / Будущие дни */
         .day-img-box .day-overlay-timer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -288,7 +284,7 @@
 
         .modal-bottom-status { text-align: center; font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 20px; }
 
-        /* Нижнее меню навигации */
+        /* Навигация */
         .nav { 
             position: fixed; 
             bottom: 0; left: 0; right: 0;
@@ -392,13 +388,12 @@
             <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">English</button>
         </div>
 
-        <!-- ПОЛНОСТЬЮ ОБНОВЛЕННАЯ СТРУКТУРА СТАТИСТИКИ ИЗ 6 ПУНКТОВ -->
         <div class="stats-container-card">
             <h3 id="lbl-stats-title">Статистика</h3>
             <div class="stats-list">
                 <div class="stats-row">
                     <span id="lbl-st-1">Количество монет:</span>
-                    <span><span id="st-coins" style="color:#22c55e">0</span> <img src="coin.png" class="coin-mini-icon" alt="c"></span>
+                    <span><span id="st-coins" style="color:#22c55e">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
                 </div>
                 <div class="stats-row">
                     <span id="lbl-st-2">Сколько раз нажал на монету (сделал тап):</span>
@@ -524,7 +519,6 @@
             delo_lupi: { img: 'delovolupi.png', cost: 50000 }
         };
 
-        // Загрузка переменных
         let coins = parseFloat(localStorage.getItem('cc_coins')) || 0;
         let energy = parseInt(localStorage.getItem('cc_energy')) || 100;
         let lvlC = parseInt(localStorage.getItem('cc_lvlC')) || 1;
@@ -585,7 +579,6 @@
                 let isCurrentAndLocked = i === currentDayIndex && !isAvailable;
                 let classes = `day-card ${isClaimed ? 'claimed' : ''} ${i >= 4 ? 'span-2' : ''}`;
                 
-                // Исправлено: изменены расширения файлов изображений на .png для корректного отображения стопок
                 let imgFile = '1-Photoroom.png';
                 if(i === 3 || i === 4) imgFile = '2-Photoroom.png';
                 if(i === 5 || i === 6) imgFile = '3-Photoroom.png';
@@ -605,7 +598,7 @@
                             <img src="${imgFile}" alt="Reward Pack">
                             ${timerOverlay}
                         </div>
-                        <div class="day-amount">${dailyRewardsConfig[i].toLocaleString()} <img src="coin.png" class="coin-mini-icon" alt="coin"></div>
+                        <div class="day-amount">${dailyRewardsConfig[i].toLocaleString()} <img src="newcoin.jpg" class="coin-mini-icon" alt="coin"></div>
                     </div>
                 `;
             }
@@ -639,7 +632,6 @@
             document.getElementById('nv-games').innerText = l.nv_games;
             document.getElementById('nv-profile').innerText = l.nv_profile;
 
-            // Обновление заголовков строк статистики из 6 пунктов
             document.getElementById('lbl-st-1').innerText = l.st_1;
             document.getElementById('lbl-st-2').innerText = l.st_2;
             document.getElementById('lbl-st-3').innerText = l.st_3;
@@ -658,7 +650,6 @@
             
             document.getElementById('top-streak-badge').innerText = stat_streak;
 
-            // Наполнение значений обновленной статистики
             document.getElementById('st-coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('st-total-clicks').innerText = stat_total_clicks.toLocaleString();
             document.getElementById('st-games-won').innerText = stat_games_won.toLocaleString();
@@ -710,7 +701,7 @@
             let p = getClickPower(lvlC);
             coins += p; 
             energy--;
-            stat_total_clicks++; // Инкремент тапов
+            stat_total_clicks++;
             
             const x = e.touches ? e.touches[0].pageX : e.clientX;
             const y = e.touches ? e.touches[0].pageY : e.clientY;
@@ -785,8 +776,9 @@
             db.ref('users').orderByChild('coins').limitToLast(10).once('value', s => {
                 let html = ''; let arr = [];
                 s.forEach(u => { const d = u.val(); d.id = u.key; arr.push(d); });
+                // Вывод топа игроков с новой текстурой newcoin.jpg
                 arr.reverse().forEach((p, i) => {
-                    html += `<div class="bonus-box" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; padding: 12px 14px; background: rgba(255,255,255,0.02); border-radius:12px; border: 1px solid rgba(255,255,255,0.04);"><div><b>${i+1}. ${p.username}</b><br><small style="color:#475467;">ID: ${p.id}</small></div> <span style="font-weight:bold; color:#2563eb;">${Math.floor(p.coins).toLocaleString()} 💰</span></div>`;
+                    html += `<div class="bonus-box" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; padding: 12px 14px; background: rgba(255,255,255,0.02); border-radius:12px; border: 1px solid rgba(255,255,255,0.04);"><div><b>${i+1}. ${p.username}</b><br><small style="color:#475467;">ID: ${p.id}</small></div> <span style="font-weight:bold; color:#2563eb; display:flex; align-items:center; gap:5px;">${Math.floor(p.coins).toLocaleString()} <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span></div>`;
                 });
                 document.getElementById('leaderboard').innerHTML = html;
             });
