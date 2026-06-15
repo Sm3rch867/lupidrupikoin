@@ -128,13 +128,8 @@
         
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
-        /* ======================================================== */
-        /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ МИНИ-ИГРЫ С НОВОЙ ИКОНКОЙ И СХЕМОЙ */
-        /* ======================================================== */
-        
         .games-menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-top: 10px; }
         
-        /* Карточка с новой иконкой 4).png */
         .game-preview-card {
             background: #0d121d;
             border: 2px solid rgba(255, 255, 255, 0.08);
@@ -171,36 +166,46 @@
         .q-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; color: #94a3b8; font-size: 10px; font-weight: 700; padding: 6px 0; cursor: pointer; transition: 0.1s; }
         .q-btn:active { background: rgba(255, 255, 255, 0.1); color: white; }
 
-        /* Игровое поле по схеме image_1b1c62.png */
+        /* ======================================================== */
+        /* СТИЛИ КОЛЕСА ПО ТВОЕМУ СКРИНШОТУ (МАТРИЦА ДИЗАЙНА)       */
+        /* ======================================================== */
         .wheel-big-box {
             position: relative;
-            width: 230px;
-            height: 230px;
+            width: 260px;
+            height: 260px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: transparent;
         }
         .wheel-svg-object {
-            transform: rotate(-90deg); /* Начинаем сверху (0 градусов) */
+            transform: rotate(-90deg); /* Ноль градусов находится строго вверху */
         }
         
-        /* Желтый бегунок-маркер из схемы */
+        /* Салатовая штука-метка, которая будет бегать по кругу */
         #wheel-yellow-pointer {
             position: absolute;
-            width: 16px;
-            height: 16px;
-            background: #ffeb3b; /* Желтый цвет */
-            border-radius: 50%;
-            top: 5px; /* Исходная точка на траектории */
-            left: calc(50% - 8px);
-            transform-origin: 8px 110px; /* Крутится вокруг центра SVG */
+            width: 14px;
+            height: 28px;
+            background: #adff2f; /* Салатовый (GreenYellow) как на картинке */
+            border-radius: 3px;
+            top: 4px; /* Четко садится на рельсы траектории */
+            left: calc(50% - 7px);
+            transform-origin: 7px 126px; /* Вращение вокруг центра колеса (130px) */
             z-index: 10;
-            box-shadow: 0 0 10px #ffeb3b;
+            box-shadow: 0 0 12px #adff2f;
         }
         
-        .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
+        /* Процент по центру */
+        .wheel-center-percent-only { 
+            position: absolute; 
+            font-size: 42px; 
+            font-weight: 500; 
+            color: white; 
+            font-family: -apple-system, sans-serif;
+            z-index: 2; 
+        }
 
-        /* КРАСИВАЯ МОДЕРНИЗИРОВАННАЯ КНОПКА КРУТИТЬ */
         .btn-wheel-action-spin {
             width: 100%;
             background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
@@ -273,10 +278,6 @@
                 <span class="flame-icon">🔥</span>
                 <span class="streak-num" id="top-streak-badge">0</span>
             </div>
-
-            <div class="bonus-trigger-btn" onclick="alert('Колесо фортуны в разработке')">
-                <span class="flame-icon">🎡</span>
-            </div>
         </div>
         <div id="coins">0</div>
         <div class="energy-box">
@@ -288,7 +289,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="game-scr" class="screen active">
         <div style="font-size: 12px; color: #475467; margin-top: 5px; font-weight: 600;">
             <span id="lbl-clickpower">👆 Сила клика:</span> <span id="click-val">1</span>
@@ -296,17 +296,14 @@
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
-    <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title" id="lbl-cards">КАРТОЧКИ</div>
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
-    <!-- ЭКРАН 3: МИНИ-ИГРЫ -->
     <div id="games-scr" class="screen">
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
-        <!-- Меню выбора игр с новой красивой иконкой 4).png -->
         <div class="games-menu-grid" id="wheel-menu-view">
             <div class="game-preview-card">
                 <img src="4).png" class="game-preview-icon" alt="Wheel Icon">
@@ -314,11 +311,9 @@
             </div>
         </div>
 
-        <!-- Экран игрового автомата по схеме рисунка image_1b1c62.png -->
         <div class="wheel-game-play-view" id="wheel-machine-view">
             <div class="wheel-top-capsule">
                 <div class="capsule-row">
-                    <!-- Левая ячейка: Ставка + кнопки MIN, X2, MAX -->
                     <div class="capsule-cell">
                         <label id="lbl-capsule-bet">Ставка:</label>
                         <div class="capsule-input-wrapper">
@@ -330,7 +325,6 @@
                             <button class="q-btn" onclick="setBetPreset('max')">MAX</button>
                         </div>
                     </div>
-                    <!-- Правая ячейка: Выигрыш + кнопки умножения -->
                     <div class="capsule-cell">
                         <label id="lbl-capsule-target">Выигрыш:</label>
                         <div class="capsule-input-wrapper">
@@ -346,25 +340,20 @@
                 </div>
             </div>
 
-            <!-- Игровое поле: Желтая стрелка, Красная траектория, Синяя зона выигрыша -->
             <div class="wheel-big-box">
                 <div id="wheel-yellow-pointer"></div>
-                <svg class="wheel-svg-object" width="220" height="220">
-                    <!-- Траектория движения (Красная линия) -->
-                    <circle stroke="#880e4f" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
-                    <!-- Синяя зона выигрыша (Шанс) -->
-                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="14" fill="transparent" r="95" cx="110" cy="110" stroke-dasharray="596.9" stroke-dashoffset="298.4"/>
+                <svg class="wheel-svg-object" width="260" height="260">
+                    <circle stroke="#000000" stroke-width="24" fill="transparent" r="112" cx="130" cy="130"/>
+                    <circle id="wheel-svg-fill" stroke="#0026ff" stroke-width="24" fill="transparent" r="112" cx="130" cy="130" stroke-dasharray="703.7" stroke-dashoffset="351.8"/>
                 </svg>
-                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50%</div>
+                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50.00%</div>
             </div>
 
-            <!-- Кнопка КРУТИТЬ (Улучшенный дизайн) -->
             <button class="btn-wheel-action-spin" id="wheel-spin-btn" onclick="spinWheel()">Крутить</button>
             <button class="back-to-menu-btn" id="lbl-back-menu" onclick="closeWheelGameView()">← назад в меню</button>
         </div>
     </div>
 
-    <!-- ЭКРАН 4: ПРОФИЛЬ -->
     <div id="profile-scr" class="screen">
         <div class="profile-header">
             <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
@@ -420,7 +409,6 @@
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
     </div>
 
-    <!-- МЕНЮ НАВИГАЦИИ -->
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">
             <div class="nav-glow"></div>
@@ -444,7 +432,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА КАЛЕНДАРЯ НАГРАД -->
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
             <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
@@ -514,8 +501,9 @@
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         let wheelIsSpinning = false;
-        const wheelCircumference = 2 * Math.PI * 95; // 596.90
-        let targetZoneStartAngle = 120; // Случайный начальный сдвиг синей зоны выигрыша
+        const wheelCircumference = 2 * Math.PI * 112; // 703.71
+        let targetZoneStartAngle = 120; 
+        let currentMarkerAngle = 0; // Текущий угол салатовой метки
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -638,7 +626,8 @@
 
         function randomizeTargetZone() {
             if(wheelIsSpinning) return;
-            targetZoneStartAngle = Math.floor(Math.random() * 260) + 20;
+            // Случайный сдвиг синей зоны
+            targetZoneStartAngle = Math.floor(Math.random() * 320) + 10;
             document.getElementById('wheel-svg-fill').style.transform = `rotate(${targetZoneStartAngle}deg)`;
         }
 
@@ -874,7 +863,6 @@
             fillCircle.style.strokeDashoffset = offset;
         }
 
-        /* Пресеты для управления ставкой: MIN, X2, MAX */
         function setBetPreset(action) {
             if(wheelIsSpinning) return;
             let b = parseFloat(betInput.value) || 10000;
@@ -902,7 +890,7 @@
         betInput.addEventListener('input', calculateWheelChance);
         targetInput.addEventListener('input', calculateWheelChance);
 
-        /* Новая кинематика движения по рисунку image_1b1c62.png */
+        /* ПОЛНОСТЬЮ ОБНОВЛЕННАЯ СИСТЕМА СПИНА С НАСТОЯЩИМ ВРАЩЕНИЕМ САЛАТОВОЙ МЕТКИ */
         function spinWheel() {
             if(wheelIsSpinning) return;
             
@@ -929,18 +917,21 @@
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
 
-            // Вычисляем случайную финальную точку остановки желтого бегунка
+            // Вычисляем финальный случайный угол остановки метки (от 0 до 359)
             let finalAngle = Math.floor(Math.random() * 360);
-            let spinDegrees = 1440 + finalAngle; // 4 полных круга для анимации скорости
-
-            // Проверяем попадание желтой точки на синий сектор
-            // Синий сектор начинается на угле targetZoneStartAngle и длится (chance / 100) * 360 градусов
-            let sectorEndAngle = targetZoneStartAngle + ((chance / 100) * 360);
             
-            let normalizedFinal = finalAngle;
+            // Накапливаем общий угол вращения, чтобы салатовый маркер крутился вперед, а не прыгал назад
+            // 1440 градусов — это ровно 4 полных разгонных круга перед остановкой
+            let totalSpinDegrees = currentMarkerAngle + 1440 + finalAngle; 
+            
+            // Сохраняем нормализованный угол для проверки условий выигрыша
+            let normalizedFinal = (totalSpinDegrees % 360);
+
+            // Синяя зона начинается на угле targetZoneStartAngle и длится определенное кол-во градусов
+            let sectorEndAngle = targetZoneStartAngle + ((chance / 100) * 360);
             let isWin = false;
 
-            // Корректная проверка с учетом перехлеста через 360 градусов
+            // Проверка попадания салатовой метки в синюю зону (с учетом перехода через 360 градусов)
             if (sectorEndAngle <= 360) {
                 if (normalizedFinal >= targetZoneStartAngle && normalizedFinal <= sectorEndAngle) isWin = true;
             } else {
@@ -948,18 +939,18 @@
                 if (normalizedFinal >= targetZoneStartAngle || normalizedFinal <= overflowAngle) isWin = true;
             }
 
+            // Запускаем плавное вращение салатового маркера через CSS transition
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
-            yellowPointer.style.transition = 'transform 3.5s cubic-bezier(0.1, 1, 0.2, 1)';
-            yellowPointer.style.transform = `rotate(${spinDegrees}deg)`;
+            yellowPointer.style.transition = 'transform 3.5s cubic-bezier(0.15, 1, 0.2, 1)';
+            yellowPointer.style.transform = `rotate(${totalSpinDegrees}deg)`;
+
+            // Запоминаем текущую позицию, чтобы следующий спин крутился дальше по часовой стрелке
+            currentMarkerAngle = totalSpinDegrees;
 
             setTimeout(() => {
                 wheelIsSpinning = false;
                 document.getElementById('wheel-spin-btn').disabled = false;
                 document.getElementById('wheel-spin-btn').innerText = langData[currentLang].w_spin;
-
-                // Фиксируем позицию без анимации для сброса кругов
-                yellowPointer.style.transition = 'none';
-                yellowPointer.style.transform = `rotate(${finalAngle}deg)`;
 
                 if(isWin) {
                     coins += t;
@@ -969,7 +960,7 @@
                 } else {
                     stat_games_lost++;
                     tg.HapticFeedback.notificationOccurred('error');
-                    tg.showAlert(currentLang === 'ru' ? "Проиграл! Желтая стрелка не попала в синюю зону." : "You lost! Yellow marker missed the blue zone.");
+                    tg.showAlert(currentLang === 'ru' ? "Проиграл! Салатовая метка не попала в синюю зону." : "You lost! Lime marker missed the blue zone.");
                 }
 
                 randomizeTargetZone();
