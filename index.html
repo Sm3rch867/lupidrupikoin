@@ -166,45 +166,32 @@
         .q-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; color: #94a3b8; font-size: 10px; font-weight: 700; padding: 6px 0; cursor: pointer; transition: 0.1s; }
         .q-btn:active { background: rgba(255, 255, 255, 0.1); color: white; }
 
-        /* ======================================================== */
-        /* СТИЛИ КОЛЕСА ПО ТВОЕМУ СКРИНШОТУ (МАТРИЦА ДИЗАЙНА)       */
-        /* ======================================================== */
         .wheel-big-box {
             position: relative;
-            width: 260px;
-            height: 260px;
+            width: 230px;
+            height: 230px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
         }
         .wheel-svg-object {
-            transform: rotate(-90deg); /* Ноль градусов находится строго вверху */
+            transform: rotate(-90deg); /* Начинаем сверху (0 градусов) */
         }
         
-        /* Салатовая штука-метка, которая будет бегать по кругу */
         #wheel-yellow-pointer {
             position: absolute;
-            width: 14px;
-            height: 28px;
-            background: #adff2f; /* Салатовый (GreenYellow) как на картинке */
-            border-radius: 3px;
-            top: 4px; /* Четко садится на рельсы траектории */
-            left: calc(50% - 7px);
-            transform-origin: 7px 126px; /* Вращение вокруг центра колеса (130px) */
+            width: 16px;
+            height: 16px;
+            background: #ffeb3b; 
+            border-radius: 50%;
+            top: 5px; 
+            left: calc(50% - 8px);
+            transform-origin: 8px 110px; /* Крутится вокруг центра SVG */
             z-index: 10;
-            box-shadow: 0 0 12px #adff2f;
+            box-shadow: 0 0 10px #ffeb3b;
         }
         
-        /* Процент по центру */
-        .wheel-center-percent-only { 
-            position: absolute; 
-            font-size: 42px; 
-            font-weight: 500; 
-            color: white; 
-            font-family: -apple-system, sans-serif;
-            z-index: 2; 
-        }
+        .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
 
         .btn-wheel-action-spin {
             width: 100%;
@@ -237,7 +224,6 @@
         
         .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
-        /* МОДАЛКА КАЛЕНДАРЯ НАГРАД */
         .modal-overlay { position: fixed; left: 0; right: 0; bottom: 0; height: 50vh; background: rgba(10, 15, 26, 0.98); border-top: 2px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 2000; display: none; flex-direction: column; padding: 16px 20px; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7); }
         .modal-overlay.open { display: flex; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; }
@@ -342,11 +328,11 @@
 
             <div class="wheel-big-box">
                 <div id="wheel-yellow-pointer"></div>
-                <svg class="wheel-svg-object" width="260" height="260">
-                    <circle stroke="#000000" stroke-width="24" fill="transparent" r="112" cx="130" cy="130"/>
-                    <circle id="wheel-svg-fill" stroke="#0026ff" stroke-width="24" fill="transparent" r="112" cx="130" cy="130" stroke-dasharray="703.7" stroke-dashoffset="351.8"/>
+                <svg class="wheel-svg-object" width="220" height="220">
+                    <circle stroke="#0d121d" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
+                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="12" fill="transparent" r="95" cx="110" cy="110" style="transform-origin: 110px 110px; transition: stroke-dashoffset 0.3s ease, transform 0.3s ease;"/>
                 </svg>
-                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50.00%</div>
+                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50%</div>
             </div>
 
             <button class="btn-wheel-action-spin" id="wheel-spin-btn" onclick="spinWheel()">Крутить</button>
@@ -501,9 +487,8 @@
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         let wheelIsSpinning = false;
-        const wheelCircumference = 2 * Math.PI * 112; // 703.71
+        const wheelCircumference = 2 * Math.PI * 95; // 596.90
         let targetZoneStartAngle = 120; 
-        let currentMarkerAngle = 0; // Текущий угол салатовой метки
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -626,8 +611,7 @@
 
         function randomizeTargetZone() {
             if(wheelIsSpinning) return;
-            // Случайный сдвиг синей зоны
-            targetZoneStartAngle = Math.floor(Math.random() * 320) + 10;
+            targetZoneStartAngle = Math.floor(Math.random() * 260) + 20;
             document.getElementById('wheel-svg-fill').style.transform = `rotate(${targetZoneStartAngle}deg)`;
         }
 
@@ -859,6 +843,11 @@
             document.getElementById('wheel-percent-lbl').innerText = chance.toFixed(2) + '%';
 
             const fillCircle = document.getElementById('wheel-svg-fill');
+            
+            // Задаем полную длину окружности
+            fillCircle.style.strokeDasharray = wheelCircumference;
+            
+            // Корректно считаем смещение: чем больше шанс, тем меньше dashoffset (больше заполнено синим)
             let offset = wheelCircumference - (chance / 100) * wheelCircumference;
             fillCircle.style.strokeDashoffset = offset;
         }
@@ -890,7 +879,6 @@
         betInput.addEventListener('input', calculateWheelChance);
         targetInput.addEventListener('input', calculateWheelChance);
 
-        /* ПОЛНОСТЬЮ ОБНОВЛЕННАЯ СИСТЕМА СПИНА С НАСТОЯЩИМ ВРАЩЕНИЕМ САЛАТОВОЙ МЕТКИ */
         function spinWheel() {
             if(wheelIsSpinning) return;
             
@@ -917,21 +905,14 @@
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
 
-            // Вычисляем финальный случайный угол остановки метки (от 0 до 359)
             let finalAngle = Math.floor(Math.random() * 360);
-            
-            // Накапливаем общий угол вращения, чтобы салатовый маркер крутился вперед, а не прыгал назад
-            // 1440 градусов — это ровно 4 полных разгонных круга перед остановкой
-            let totalSpinDegrees = currentMarkerAngle + 1440 + finalAngle; 
-            
-            // Сохраняем нормализованный угол для проверки условий выигрыша
-            let normalizedFinal = (totalSpinDegrees % 360);
+            let spinDegrees = 1440 + finalAngle; 
 
-            // Синяя зона начинается на угле targetZoneStartAngle и длится определенное кол-во градусов
             let sectorEndAngle = targetZoneStartAngle + ((chance / 100) * 360);
+            
+            let normalizedFinal = finalAngle;
             let isWin = false;
 
-            // Проверка попадания салатовой метки в синюю зону (с учетом перехода через 360 градусов)
             if (sectorEndAngle <= 360) {
                 if (normalizedFinal >= targetZoneStartAngle && normalizedFinal <= sectorEndAngle) isWin = true;
             } else {
@@ -939,18 +920,17 @@
                 if (normalizedFinal >= targetZoneStartAngle || normalizedFinal <= overflowAngle) isWin = true;
             }
 
-            // Запускаем плавное вращение салатового маркера через CSS transition
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
-            yellowPointer.style.transition = 'transform 3.5s cubic-bezier(0.15, 1, 0.2, 1)';
-            yellowPointer.style.transform = `rotate(${totalSpinDegrees}deg)`;
-
-            // Запоминаем текущую позицию, чтобы следующий спин крутился дальше по часовой стрелке
-            currentMarkerAngle = totalSpinDegrees;
+            yellowPointer.style.transition = 'transform 3.5s cubic-bezier(0.1, 1, 0.2, 1)';
+            yellowPointer.style.transform = `rotate(${spinDegrees}deg)`;
 
             setTimeout(() => {
                 wheelIsSpinning = false;
                 document.getElementById('wheel-spin-btn').disabled = false;
                 document.getElementById('wheel-spin-btn').innerText = langData[currentLang].w_spin;
+
+                yellowPointer.style.transition = 'none';
+                yellowPointer.style.transform = `rotate(${finalAngle}deg)`;
 
                 if(isWin) {
                     coins += t;
@@ -960,7 +940,7 @@
                 } else {
                     stat_games_lost++;
                     tg.HapticFeedback.notificationOccurred('error');
-                    tg.showAlert(currentLang === 'ru' ? "Проиграл! Салатовая метка не попала в синюю зону." : "You lost! Lime marker missed the blue zone.");
+                    tg.showAlert(currentLang === 'ru' ? "Проиграл! Желтая стрелка не попала в синюю зону." : "You lost! Yellow marker missed the blue zone.");
                 }
 
                 randomizeTargetZone();
