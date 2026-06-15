@@ -175,20 +175,21 @@
             justify-content: center;
         }
         .wheel-svg-object {
-            transform: rotate(-90deg); /* Начинаем сверху (0 градусов) */
+            transform: rotate(-90deg); /* Стартуем ровно вверху (12 часов) */
         }
         
+        /* Салатовая неоновая вертикальная метка-капсула */
         #wheel-yellow-pointer {
             position: absolute;
-            width: 16px;
-            height: 16px;
-            background: #ffeb3b; 
-            border-radius: 50%;
-            top: 5px; 
-            left: calc(50% - 8px);
-            transform-origin: 8px 110px; /* Крутится вокруг центра SVG */
+            width: 10px;
+            height: 24px;
+            background: #adff2f; 
+            border-radius: 6px;
+            top: 2px; 
+            left: calc(50% - 5px);
+            transform-origin: 5px 113px; /* Идеальное вращение по центру */
             z-index: 10;
-            box-shadow: 0 0 10px #ffeb3b;
+            box-shadow: 0 0 12px #adff2f, 0 0 4px rgba(173, 255, 47, 0.8);
         }
         
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
@@ -224,11 +225,22 @@
         
         .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
+        /* ОКНА ИГРОВЫХ УВЕДОМЛЕНИЙ */
         .modal-overlay { position: fixed; left: 0; right: 0; bottom: 0; height: 50vh; background: rgba(10, 15, 26, 0.98); border-top: 2px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 2000; display: none; flex-direction: column; padding: 16px 20px; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7); }
         .modal-overlay.open { display: flex; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; }
         .modal-close { background: none; border: none; color: #64748b; font-size: 26px; cursor: pointer; padding: 0 5px; line-height: 1; }
         .modal-title { font-size: 18px; font-weight: 700; color: white; text-align: left; }
+        
+        /* Стили кастомного диалога результата игры */
+        .result-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 8, 14, 0.85); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 20px; }
+        .result-dialog-card { background: #0f172a; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 25px 20px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6); animation: scalePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes scalePop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .result-dialog-text { font-size: 18px; font-weight: 700; color: white; line-height: 1.5; margin-bottom: 20px; }
+        .result-dialog-text img { width: 22px; height: 22px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; margin-left: 4px; margin-top: -3px; }
+        .result-dialog-btn { background: #2563eb; color: white; border: none; width: 100%; padding: 12px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.15s; }
+        .result-dialog-btn:active { background: #1d4ed8; transform: scale(0.98); }
+
         .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; margin: 0 auto 15px auto; overflow-y: auto; flex: 1; }
         .day-card { display: flex; flex-direction: column; align-items: center; position: relative; background: rgba(255, 255, 255, 0.02); padding: 10px 6px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.03); width: 100%; }
         .day-card .day-title { font-size: 10px; color: #64748b; margin-bottom: 4px; font-weight: 600; }
@@ -275,6 +287,7 @@
         </div>
     </div>
 
+    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="game-scr" class="screen active">
         <div style="font-size: 12px; color: #475467; margin-top: 5px; font-weight: 600;">
             <span id="lbl-clickpower">👆 Сила клика:</span> <span id="click-val">1</span>
@@ -282,11 +295,13 @@
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
+    <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title" id="lbl-cards">КАРТОЧКИ</div>
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
+    <!-- ЭКРАН 3: МИНИ-ИГРЫ -->
     <div id="games-scr" class="screen">
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
@@ -326,11 +341,13 @@
                 </div>
             </div>
 
+            <!-- Игровое поле: Салатовая капсула, Темная траектория, Статичная Синяя зона -->
             <div class="wheel-big-box">
                 <div id="wheel-yellow-pointer"></div>
                 <svg class="wheel-svg-object" width="220" height="220">
                     <circle stroke="#0d121d" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
-                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="12" fill="transparent" r="95" cx="110" cy="110" style="transform-origin: 110px 110px; transition: stroke-dashoffset 0.3s ease, transform 0.3s ease;"/>
+                    <!-- Синяя зона выигрыша (Строго зафиксирована сверху от 0 градусов) -->
+                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="12" fill="transparent" r="95" cx="110" cy="110" style="transform-origin: 110px 110px; transition: stroke-dashoffset 0.3s ease; transform: rotate(0deg);"/>
                 </svg>
                 <div class="wheel-center-percent-only" id="wheel-percent-lbl">50%</div>
             </div>
@@ -340,6 +357,7 @@
         </div>
     </div>
 
+    <!-- ЭКРАН 4: ПРОФИЛЬ -->
     <div id="profile-scr" class="screen">
         <div class="profile-header">
             <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
@@ -395,6 +413,7 @@
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
     </div>
 
+    <!-- МЕНЮ НАВИГАЦИИ -->
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">
             <div class="nav-glow"></div>
@@ -418,6 +437,7 @@
         </div>
     </div>
 
+    <!-- МЕНЮ НАГРАД -->
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
             <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
@@ -426,6 +446,14 @@
         <div class="days-grid" id="days-grid-container"></div>
         <div class="modal-bottom-status" id="modal-status-text">Уже получено сегодня</div>
         <button class="btn" id="modal-claim-btn" onclick="claimDaily()" style="width: 100%; max-width: 340px; margin: 0 auto; display: none;">ЗАБРАТЬ НАГРАДУ</button>
+    </div>
+
+    <!-- КАСТOМНЫЙ ДИАЛОГ РЕЗУЛЬТАТА ИГРЫ -->
+    <div id="result-dialog" class="result-dialog-overlay">
+        <div class="result-dialog-card">
+            <div id="result-dialog-msg" class="result-dialog-text"></div>
+            <button class="result-dialog-btn" onclick="closeResultDialog()">Закрыть</button>
+        </div>
     </div>
 
     <script>
@@ -487,8 +515,7 @@
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         let wheelIsSpinning = false;
-        const wheelCircumference = 2 * Math.PI * 95; // 596.90
-        let targetZoneStartAngle = 120; 
+        const wheelCircumference = 2 * Math.PI * 95; 
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -535,6 +562,15 @@
 
         function closeBonusModal() {
             document.getElementById('bonus-modal').classList.remove('open');
+        }
+
+        function showCustomResultDialog(htmlText) {
+            document.getElementById('result-dialog-msg').innerHTML = htmlText;
+            document.getElementById('result-dialog').style.display = 'flex';
+        }
+
+        function closeResultDialog() {
+            document.getElementById('result-dialog').style.display = 'none';
         }
 
         function renderDaysGrid() {
@@ -599,7 +635,12 @@
         function openWheelGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('wheel-machine-view').style.display = 'flex';
-            randomizeTargetZone();
+            
+            // Сбрасываем стрелку на 12 часов при входе
+            const yellowPointer = document.getElementById('wheel-yellow-pointer');
+            yellowPointer.style.transition = 'none';
+            yellowPointer.style.transform = `rotate(0deg)`;
+            
             calculateWheelChance();
         }
 
@@ -607,12 +648,6 @@
             if(wheelIsSpinning) return;
             document.getElementById('wheel-machine-view').style.display = 'none';
             document.getElementById('wheel-menu-view').style.display = 'grid';
-        }
-
-        function randomizeTargetZone() {
-            if(wheelIsSpinning) return;
-            targetZoneStartAngle = Math.floor(Math.random() * 260) + 20;
-            document.getElementById('wheel-svg-fill').style.transform = `rotate(${targetZoneStartAngle}deg)`;
         }
 
         function updateUI() {
@@ -843,11 +878,8 @@
             document.getElementById('wheel-percent-lbl').innerText = chance.toFixed(2) + '%';
 
             const fillCircle = document.getElementById('wheel-svg-fill');
-            
-            // Задаем полную длину окружности
             fillCircle.style.strokeDasharray = wheelCircumference;
             
-            // Корректно считаем смещение: чем больше шанс, тем меньше dashoffset (больше заполнено синим)
             let offset = wheelCircumference - (chance / 100) * wheelCircumference;
             fillCircle.style.strokeDashoffset = offset;
         }
@@ -905,20 +937,14 @@
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
 
+            // Генерируем финальный угол остановки метки
             let finalAngle = Math.floor(Math.random() * 360);
             let spinDegrees = 1440 + finalAngle; 
 
-            let sectorEndAngle = targetZoneStartAngle + ((chance / 100) * 360);
-            
-            let normalizedFinal = finalAngle;
-            let isWin = false;
-
-            if (sectorEndAngle <= 360) {
-                if (normalizedFinal >= targetZoneStartAngle && normalizedFinal <= sectorEndAngle) isWin = true;
-            } else {
-                let overflowAngle = sectorEndAngle - 360;
-                if (normalizedFinal >= targetZoneStartAngle || normalizedFinal <= overflowAngle) isWin = true;
-            }
+            // Так как синяя зона зафиксирована от 0 градусов (вверху),
+            // выигрышный сектор находится в диапазоне от 0 до (chance / 100 * 360) градусов.
+            let maxWinningAngle = (chance / 100) * 360;
+            let isWin = (finalAngle >= 0 && finalAngle <= maxWinningAngle);
 
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
             yellowPointer.style.transition = 'transform 3.5s cubic-bezier(0.1, 1, 0.2, 1)';
@@ -936,14 +962,25 @@
                     coins += t;
                     stat_games_won++;
                     tg.HapticFeedback.notificationOccurred('success');
-                    tg.showAlert(currentLang === 'ru' ? `🎉 УСПЕХ! Вы выиграли ${Math.floor(t).toLocaleString()} монет!` : `🎉 SUCCESS! You won ${Math.floor(t).toLocaleString()} coins!`);
+                    
+                    // Выводим кастомный попап с картинкой твоего коина
+                    showCustomResultDialog(
+                        currentLang === 'ru' 
+                        ? `Поздравляю! Вы выиграли ${Math.floor(t).toLocaleString()} <img src="newcoin.jpg" alt="coin">`
+                        : `Congratulations! You won ${Math.floor(t).toLocaleString()} <img src="newcoin.jpg" alt="coin">`
+                    );
                 } else {
                     stat_games_lost++;
                     tg.HapticFeedback.notificationOccurred('error');
-                    tg.showAlert(currentLang === 'ru' ? "Проиграл! Желтая стрелка не попала в синюю зону." : "You lost! Yellow marker missed the blue zone.");
+                    
+                    // Выводим кастомный попап проигрыша
+                    showCustomResultDialog(
+                        currentLang === 'ru'
+                        ? `К сожалению, вы проиграли`
+                        : `Unfortunately, you lost`
+                    );
                 }
 
-                randomizeTargetZone();
                 updateUI();
                 saveAll();
             }, 3550);
