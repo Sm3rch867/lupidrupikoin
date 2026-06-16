@@ -407,7 +407,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="game-scr" class="screen active">
         <div style="font-size: 12px; color: #475467; margin-top: 5px; font-weight: 600;">
             <span id="lbl-clickpower">👆 Сила клика:</span> <span id="click-val">1</span>
@@ -415,13 +414,11 @@
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
-    <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title" id="lbl-cards">КАРТОЧКИ</div>
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
-    <!-- ЭКРАН 3: МИНИ-ИГРЫ -->
     <div id="games-scr" class="screen">
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
@@ -475,7 +472,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 4: ПРОФИЛЬ -->
     <div id="profile-scr" class="screen">
         <div class="profile-header">
             <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
@@ -531,7 +527,6 @@
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
     </div>
 
-    <!-- МЕНЮ НАВИГАЦИИ -->
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">
             <div class="nav-glow"></div>
@@ -539,12 +534,12 @@
             <span id="nv-game">Главная</span>
         </div>
         <div class="nav-item" id="n-shop" onclick="show('shop')">
-            <div class="notification-dot"></div>
             <div class="nav-glow"></div>
             <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
             <span id="nv-shop">Магазин</span>
         </div>
         <div class="nav-item" id="n-games" onclick="show('games')">
+            <div class="notification-dot"></div>
             <div class="nav-glow"></div>
             <svg class="nav-svg" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"></path></svg>
             <span id="nv-games">Мини-игры</span>
@@ -556,7 +551,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА КАЛЕНДАРЯ НАГРАД -->
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
             <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
@@ -567,7 +561,6 @@
         <button class="btn" id="modal-claim-btn" onclick="claimDaily()" style="width: 100%; max-width: 340px; margin: 0 auto; display: none;">ЗАБРАТЬ НАГРАДУ</button>
     </div>
 
-    <!-- МОДАЛЬНЫЕ ОКНА КОЛЕСА ФОРТУНЫ -->
     <div id="fortune-modal" class="fortune-overlay">
         <div class="fortune-content">
             <button class="modal-close" id="fortune-close-btn">×</button>
@@ -792,7 +785,6 @@
             const l = langData[currentLang];
             const timePassed = Date.now() - lastClaim;
             
-            // Если lastClaim равен 0, значит календарь еще никогда не собирался (доступен 1 день)
             const isAvailable = lastClaim === 0 || timePassed >= 86400000;
             let claimedCount = stat_streak % 7;
 
@@ -984,7 +976,6 @@
             let currentDayIndex = stat_streak % 7;
             coins += dailyRewardsConfig[currentDayIndex];
             
-            // Если это самый первый сбор после сброса (lastClaim === 0), ставим стрик в 1
             if (lastClaim === 0) {
                 stat_streak = 1;
             } else if (diff < 172800000) {
@@ -1040,7 +1031,7 @@
                 db.ref('users/' + uid).update({
                     coins, username: tg.initDataUnsafe.user.first_name || "Игрок",
                     stat_streak, stat_total_clicks, stat_games_won, stat_games_lost, stat_wheel_spins,
-                    lastClaim: lastClaim // Теперь синхронизируем и временную метку
+                    lastClaim: lastClaim
                 });
             }
         }
@@ -1073,7 +1064,6 @@
             });
         }
 
-        // КОРРЕКТНЫЙ СБРОС ИГРОКА: 1 ДЕНЬ СТАНОВИТСЯ АКТИВНЫМ
         function adminWipe() {
             if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
             
@@ -1084,8 +1074,8 @@
                 db.ref('users/' + tid).set({ 
                     coins: 0, 
                     username: "Игрок",
-                    stat_streak: 0,            // Устанавливаем стрик наград в 0
-                    lastClaim: 0,              // Обнуляем время захода, чтобы открылся 1 день
+                    stat_streak: 0,
+                    lastClaim: 0,
                     stat_total_clicks: 0,      
                     stat_games_won: 0,         
                     stat_games_lost: 0,        
@@ -1098,8 +1088,8 @@
                         lvlC = 1; 
                         lvlE = 1; 
                         energy = 100; 
-                        lastClaim = 0;         // Сбрасываем локально
-                        stat_streak = 0;       // Сбрасываем локально
+                        lastClaim = 0;
+                        stat_streak = 0;
                         stat_total_clicks = 0; 
                         stat_games_won = 0; 
                         stat_games_lost = 0; 
