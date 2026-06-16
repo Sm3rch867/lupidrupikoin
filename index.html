@@ -232,6 +232,9 @@
         
         .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
+        /* ======================================================== */
+        /* НОВЫЕ СТИЛИ ДЛЯ КРУЖКА-УВЕДОМЛЕНИЯ И МОДАЛОК РУЛЕТКИ */
+        /* ======================================================== */
         .notification-dot {
             position: absolute;
             top: 6px;
@@ -351,6 +354,8 @@
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
         }
+
+        /* ======================================================== */
 
         .modal-overlay { position: fixed; left: 0; right: 0; bottom: 0; height: 50vh; background: rgba(10, 15, 26, 0.98); border-top: 2px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 2000; display: none; flex-direction: column; padding: 16px 20px; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7); }
         .modal-overlay.open { display: flex; }
@@ -534,12 +539,12 @@
             <span id="nv-game">Главная</span>
         </div>
         <div class="nav-item" id="n-shop" onclick="show('shop')">
+            <div class="notification-dot"></div>
             <div class="nav-glow"></div>
             <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
             <span id="nv-shop">Магазин</span>
         </div>
         <div class="nav-item" id="n-games" onclick="show('games')">
-            <div class="notification-dot"></div>
             <div class="nav-glow"></div>
             <svg class="nav-svg" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"></path></svg>
             <span id="nv-games">Мини-игры</span>
@@ -626,6 +631,7 @@
 
         const dailyRewardsConfig = [1000, 2000, 2000, 5000, 5000, 7000, 10000];
 
+        // Конфигурация секторов Колеса Фортуны (Призы и надписи из видео)
         const fortunePrizes = [
             { text: '100', value: 100 },
             { text: '200', value: 200 },
@@ -655,16 +661,17 @@
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         let wheelIsSpinning = false;
-        const wheelCircumference = 2 * Math.PI * 95; 
+        const wheelCircumference = 2 * Math.PI * 95; // 596.90
         let targetZoneStartAngle = 120;
 
+        // Переменные состояния для Нового Колеса Фортуны
         let fortuneIsSpinning = false;
         let fortuneCurrentRotation = 0;
 
         if (isFirstTime) {
-            coins = 0; 
-            stat_streak = 0;
-            lastClaim = 0; 
+            coins = dailyRewardsConfig[0]; 
+            stat_streak = 1;
+            lastClaim = Date.now();
             localStorage.setItem('cc_initialized', 'true');
             localStorage.setItem('cc_coins', coins);
             localStorage.setItem('cc_st_streak', stat_streak);
@@ -708,6 +715,7 @@
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
+        // Логика открытия / закрытия Колеса фортуны
         function openFortuneModal() {
             document.getElementById('fortune-modal').classList.add('open');
         }
@@ -715,11 +723,12 @@
             if (!fortuneIsSpinning) document.getElementById('fortune-modal').classList.remove('open');
         };
 
+        // Генерация секторов для Рулетки Фортуны
         function initFortuneWheelSectors() {
             const wheelInner = document.getElementById('fortune-wheel-inner');
             wheelInner.innerHTML = '';
             const count = fortunePrizes.length;
-            const angle = 360 / count;
+            const angle = 360 / count; // 60 deg
 
             fortunePrizes.forEach((prize, index) => {
                 const sector = document.createElement('div');
@@ -739,6 +748,7 @@
         }
         initFortuneWheelSectors();
 
+        // Запуск прокрутки Колеса Фортуны при тапе по боксу рулетки
         document.getElementById('fortune-spin-trigger').onclick = () => {
             if (fortuneIsSpinning) return;
             fortuneIsSpinning = true;
@@ -746,12 +756,16 @@
             tg.HapticFeedback.impactOccurred('medium');
 
             const sectorCount = fortunePrizes.length;
-            const sectorAngle = 360 / sectorCount;
+            const sectorAngle = 360 / sectorCount; // 60 градусов
 
+            // Генерируем случайный приз
             const prizeIndex = Math.floor(Math.random() * sectorCount);
             const selectedPrize = fortunePrizes[prizeIndex];
 
+            // 5 полных оборотов рулетки для эффекта разгона скорости
             const baseSpins = 5 * 360; 
+            
+            // Вычисляем угол, чтобы стрелка сверху (угол 0 / 360) указывала ровно в центр сектора
             const targetAngle = 360 - (prizeIndex * sectorAngle) - (sectorAngle / 2);
             
             fortuneCurrentRotation += baseSpins + (targetAngle - (fortuneCurrentRotation % 360));
@@ -759,12 +773,15 @@
             const wheelCanvas = document.getElementById('fortune-wheel-canvas');
             wheelCanvas.style.transform = `rotate(${fortuneCurrentRotation}deg)`;
 
+            // Ждем окончания 4-секундной анимации
             setTimeout(() => {
                 fortuneIsSpinning = false;
                 
+                // Начисление выигрыша
                 coins += selectedPrize.value;
                 stat_wheel_spins++;
                 
+                // Перевод модалок
                 document.getElementById('fortune-prize-value').innerText = selectedPrize.text;
                 document.getElementById('fortune-modal').classList.remove('open');
                 document.getElementById('fortune-win-modal').classList.add('open');
@@ -784,8 +801,7 @@
             const container = document.getElementById('days-grid-container');
             const l = langData[currentLang];
             const timePassed = Date.now() - lastClaim;
-            
-            const isAvailable = lastClaim === 0 || timePassed >= 86400000;
+            const isAvailable = timePassed >= 86400000;
             let claimedCount = stat_streak % 7;
 
             let html = '';
@@ -794,7 +810,8 @@
                 let isCurrentAndLocked = false;
 
                 if (!isAvailable && lastClaim > 0) {
-                    if (i < claimedCount) isClaimed = true;
+                    if (i < claimedCount - 1) isClaimed = true;
+                    else if (i === claimedCount - 1) isClaimed = true; 
                     else if (i === claimedCount) isCurrentAndLocked = true; 
                 } else {
                     if (i < claimedCount) isClaimed = true;
@@ -828,7 +845,7 @@
 
             const claimBtn = document.getElementById('modal-claim-btn');
             const statusText = document.getElementById('modal-status-text');
-            if(isAvailable) {
+            if(isAvailable || lastClaim === 0) {
                 claimBtn.style.display = 'block';
                 claimBtn.innerText = l.claim_now;
                 statusText.style.display = 'none';
@@ -887,6 +904,7 @@
             document.getElementById('lbl-capsule-bet').innerText = l.w_bet;
             document.getElementById('lbl-capsule-target').innerText = l.w_target;
 
+            // Локализация элементов Колеса Фортуны
             document.getElementById('fortune-lbl-title').innerText = l.f_title;
             document.getElementById('fortune-lbl-subtitle').innerText = l.f_subtitle;
             document.getElementById('fortune-lbl-win').innerText = l.f_win;
@@ -971,18 +989,11 @@
 
         function claimDaily() {
             const diff = Date.now() - lastClaim;
-            if (lastClaim > 0 && diff < 86400000) return;
+            if (diff < 86400000 && lastClaim > 0) return;
             
             let currentDayIndex = stat_streak % 7;
             coins += dailyRewardsConfig[currentDayIndex];
-            
-            if (lastClaim === 0) {
-                stat_streak = 1;
-            } else if (diff < 172800000) {
-                stat_streak++; 
-            } else {
-                stat_streak = 1;
-            }
+            if (diff < 172800000) stat_streak++; else stat_streak = 1;
             
             lastClaim = Date.now();
             updateUI(); saveAll();
@@ -1030,8 +1041,7 @@
             if (uid) {
                 db.ref('users/' + uid).update({
                     coins, username: tg.initDataUnsafe.user.first_name || "Игрок",
-                    stat_streak, stat_total_clicks, stat_games_won, stat_games_lost, stat_wheel_spins,
-                    lastClaim: lastClaim
+                    stat_streak, stat_total_clicks, stat_games_won, stat_games_lost, stat_wheel_spins
                 });
             }
         }
@@ -1066,48 +1076,15 @@
 
         function adminWipe() {
             if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
-            
-            const tid = String(document.getElementById('target-id').value.trim()); 
-            if(!tid) return tg.showAlert("Укажите ID!");
-            
-            if(confirm(`Обнулить игрока ${tid} полностью (включая дни и статистику)?`)) {
-                db.ref('users/' + tid).set({ 
-                    coins: 0, 
-                    username: "Игрок",
-                    stat_streak: 0,
-                    lastClaim: 0,
-                    stat_total_clicks: 0,      
-                    stat_games_won: 0,         
-                    stat_games_lost: 0,        
-                    stat_wheel_spins: 0        
-                }).then(() => {
-                    tg.showAlert("Игрок полностью сброшен в базе данных.");
-                    
+            const tid = String(document.getElementById('target-id').value.trim()); if(!tid) return tg.showAlert("Укажите ID!");
+            if(confirm(`Обнулить игрока ${tid}?`)) {
+                db.ref('users/' + tid).update({ coins:0, lvlC:1, lvlE:1, userCards:null, stat_streak:0, stat_total_clicks:0, stat_games_won:0, stat_games_lost:0, stat_wheel_spins:0 }).then(() => {
+                    tg.showAlert("Игрок сброшен.");
                     if(tid === String(tg.initDataUnsafe?.user?.id)) {
-                        coins = 0; 
-                        lvlC = 1; 
-                        lvlE = 1; 
-                        energy = 100; 
-                        lastClaim = 0;
-                        stat_streak = 0;
-                        stat_total_clicks = 0; 
-                        stat_games_won = 0; 
-                        stat_games_lost = 0; 
-                        stat_wheel_spins = 0;
-                        
-                        userCards = { 
-                            lupi_67: { bought: false }, 
-                            lupi_drupi: { bought: false }, 
-                            delo_lupi: { bought: false } 
-                        };
-                        
-                        localStorage.clear(); 
-                        localStorage.setItem('cc_initialized', 'true'); 
-                        
-                        updateUI(); 
+                        coins = 0; lvlC = 1; lvlE = 1; energy = 100; stat_streak=0; stat_total_clicks=0; stat_games_won=0; stat_games_lost=0; stat_wheel_spins=0;
+                        userCards = { lupi_67: { bought: false }, lupi_drupi: { bought: false }, delo_lupi: { bought: false } };
+                        localStorage.clear(); localStorage.setItem('cc_initialized', 'true'); updateUI();
                     }
-                }).catch((error) => {
-                    tg.showAlert("Ошибка при сбросе: " + error.message);
                 });
             }
         }
