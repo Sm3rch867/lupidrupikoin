@@ -233,7 +233,7 @@
         .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
         /* ======================================================== */
-        /* НОВЫЕ СТИЛИ ДЛЯ КРУЖКА-УВЕДОМЛЕНИЯ И МОДАЛОК РУЛЕТКИ */
+        /* СТИЛИ ДЛЯ КРУЖКА-УВЕДОМЛЕНИЯ И МОДАЛОК РУЛЕТКИ */
         /* ======================================================== */
         .notification-dot {
             position: absolute;
@@ -631,7 +631,7 @@
 
         const dailyRewardsConfig = [1000, 2000, 2000, 5000, 5000, 7000, 10000];
 
-        // Конфигурация секторов Колеса Фортуны (Призы и надписи из видео)
+        // Сектора колеса фортуны с призами
         const fortunePrizes = [
             { text: '100', value: 100 },
             { text: '200', value: 200 },
@@ -664,7 +664,6 @@
         const wheelCircumference = 2 * Math.PI * 95; // 596.90
         let targetZoneStartAngle = 120;
 
-        // Переменные состояния для Нового Колеса Фортуны
         let fortuneIsSpinning = false;
         let fortuneCurrentRotation = 0;
 
@@ -715,7 +714,6 @@
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
-        // Логика открытия / закрытия Колеса фортуны
         function openFortuneModal() {
             document.getElementById('fortune-modal').classList.add('open');
         }
@@ -723,12 +721,11 @@
             if (!fortuneIsSpinning) document.getElementById('fortune-modal').classList.remove('open');
         };
 
-        // Генерация секторов для Рулетки Фортуны
         function initFortuneWheelSectors() {
             const wheelInner = document.getElementById('fortune-wheel-inner');
             wheelInner.innerHTML = '';
             const count = fortunePrizes.length;
-            const angle = 360 / count; // 60 deg
+            const angle = 360 / count;
 
             fortunePrizes.forEach((prize, index) => {
                 const sector = document.createElement('div');
@@ -748,7 +745,6 @@
         }
         initFortuneWheelSectors();
 
-        // Запуск прокрутки Колеса Фортуны при тапе по боксу рулетки
         document.getElementById('fortune-spin-trigger').onclick = () => {
             if (fortuneIsSpinning) return;
             fortuneIsSpinning = true;
@@ -756,16 +752,12 @@
             tg.HapticFeedback.impactOccurred('medium');
 
             const sectorCount = fortunePrizes.length;
-            const sectorAngle = 360 / sectorCount; // 60 градусов
+            const sectorAngle = 360 / sectorCount;
 
-            // Генерируем случайный приз
             const prizeIndex = Math.floor(Math.random() * sectorCount);
             const selectedPrize = fortunePrizes[prizeIndex];
 
-            // 5 полных оборотов рулетки для эффекта разгона скорости
             const baseSpins = 5 * 360; 
-            
-            // Вычисляем угол, чтобы стрелка сверху (угол 0 / 360) указывала ровно в центр сектора
             const targetAngle = 360 - (prizeIndex * sectorAngle) - (sectorAngle / 2);
             
             fortuneCurrentRotation += baseSpins + (targetAngle - (fortuneCurrentRotation % 360));
@@ -773,15 +765,12 @@
             const wheelCanvas = document.getElementById('fortune-wheel-canvas');
             wheelCanvas.style.transform = `rotate(${fortuneCurrentRotation}deg)`;
 
-            // Ждем окончания 4-секундной анимации
             setTimeout(() => {
                 fortuneIsSpinning = false;
                 
-                // Начисление выигрыша
                 coins += selectedPrize.value;
                 stat_wheel_spins++;
                 
-                // Перевод модалок
                 document.getElementById('fortune-prize-value').innerText = selectedPrize.text;
                 document.getElementById('fortune-modal').classList.remove('open');
                 document.getElementById('fortune-win-modal').classList.add('open');
@@ -904,7 +893,6 @@
             document.getElementById('lbl-capsule-bet').innerText = l.w_bet;
             document.getElementById('lbl-capsule-target').innerText = l.w_target;
 
-            // Локализация элементов Колеса Фортуны
             document.getElementById('fortune-lbl-title').innerText = l.f_title;
             document.getElementById('fortune-lbl-subtitle').innerText = l.f_subtitle;
             document.getElementById('fortune-lbl-win').innerText = l.f_win;
@@ -1074,17 +1062,50 @@
             });
         }
 
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ ПОЛНОГО ТОТАЛЬНОГО СБРОСА ЧЕРЕЗ .SET()
         function adminWipe() {
             if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
-            const tid = String(document.getElementById('target-id').value.trim()); if(!tid) return tg.showAlert("Укажите ID!");
-            if(confirm(`Обнулить игрока ${tid}?`)) {
-                db.ref('users/' + tid).update({ coins:0, lvlC:1, lvlE:1, userCards:null, stat_streak:0, stat_total_clicks:0, stat_games_won:0, stat_games_lost:0, stat_wheel_spins:0 }).then(() => {
-                    tg.showAlert("Игрок сброшен.");
+            
+            const tid = String(document.getElementById('target-id').value.trim()); 
+            if(!tid) return tg.showAlert("Укажите ID!");
+            
+            if(confirm(`Обнулить игрока ${tid} полностью (включая дни и статистику)?`)) {
+                db.ref('users/' + tid).set({ 
+                    coins: 0, 
+                    username: "Игрок",
+                    stat_streak: 0,            
+                    stat_total_clicks: 0,      
+                    stat_games_won: 0,         
+                    stat_games_lost: 0,        
+                    stat_wheel_spins: 0        
+                }).then(() => {
+                    tg.showAlert("Игрок полностью сброшен в базе данных.");
+                    
                     if(tid === String(tg.initDataUnsafe?.user?.id)) {
-                        coins = 0; lvlC = 1; lvlE = 1; energy = 100; stat_streak=0; stat_total_clicks=0; stat_games_won=0; stat_games_lost=0; stat_wheel_spins=0;
-                        userCards = { lupi_67: { bought: false }, lupi_drupi: { bought: false }, delo_lupi: { bought: false } };
-                        localStorage.clear(); localStorage.setItem('cc_initialized', 'true'); updateUI();
+                        coins = 0; 
+                        lvlC = 1; 
+                        lvlE = 1; 
+                        energy = 100; 
+                        lastClaim = 0;         
+                        stat_streak = 0;       
+                        stat_total_clicks = 0; 
+                        stat_games_won = 0; 
+                        stat_games_lost = 0; 
+                        stat_wheel_spins = 0;
+                        
+                        userCards = { 
+                            lupi_67: { bought: false }, 
+                            lupi_drupi: { bought: false }, 
+                            delo_lupi: { bought: false } 
+                        };
+                        
+                        localStorage.clear(); 
+                        localStorage.setItem('cc_initialized', 'true'); 
+                        
+                        updateUI(); 
                     }
+                }).catch((error) => {
+                    tg.showAlert("Ошибка при сбросе: " + error.message);
                 });
             }
         }
