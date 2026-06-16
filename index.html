@@ -14,6 +14,7 @@
             --bg: #090d16; 
             --card: rgba(15, 23, 42, 0.5); 
             --text-muted: #566175;
+            --neon-blue: #00d2ff;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; user-select: none; }
         
@@ -63,11 +64,13 @@
         .top-bonus-row {
             display: flex;
             justify-content: flex-end;
+            align-items: center;
             width: 100%;
             max-width: 340px;
             margin: 0 auto 5px auto;
+            gap: 8px;
         }
-        .bonus-trigger-btn {
+        .bonus-trigger-btn, .wheel-trigger-btn {
             background: rgba(22, 32, 51, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
@@ -79,9 +82,14 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
             transition: transform 0.2s;
         }
-        .bonus-trigger-btn:active { transform: scale(0.95); }
+        .bonus-trigger-btn:active, .wheel-trigger-btn:active { transform: scale(0.95); }
         .bonus-trigger-btn .streak-num { font-size: 13px; font-weight: 700; color: #ffffff; }
-        .bonus-trigger-btn .flame-icon { font-size: 15px; line-height: 1; }
+        .bonus-trigger-btn .flame-icon, .wheel-trigger-btn .wheel-icon { font-size: 15px; line-height: 1; }
+
+        .wheel-trigger-btn {
+            border-color: rgba(0, 210, 255, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 210, 255, 0.1);
+        }
 
         #coins { font-size: 42px; font-weight: 800; color: white; letter-spacing: -0.5px; }
         
@@ -125,10 +133,6 @@
         .stats-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #64748b; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .stats-row:last-child { border-bottom: none; }
         .stats-row span:last-child { font-weight: 600; color: #ffffff !important; display: flex; align-items: center; gap: 4px; text-align: right; }
-        
-        /* Цвета для прибыли и выигрышей */
-        .stats-row .win-color { color: #4ade80 !important; }
-        .stats-row .loss-color { color: #f87171 !important; }
         
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
@@ -178,22 +182,21 @@
             align-items: center;
             justify-content: center;
         }
-        
         .wheel-svg-object {
-            transform: none; 
+            transform: rotate(-90deg);
         }
         
         #wheel-yellow-pointer {
             position: absolute;
-            width: 4px; 
-            height: 20px; 
-            background: #adff2f; 
-            border-radius: 2px;
-            top: calc(50% - 10px + 95px); 
-            left: calc(50% - 2px);
-            transform-origin: 2px -85px; 
+            width: 16px;
+            height: 16px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            top: 5px;
+            left: calc(50% - 8px);
+            transform-origin: 8px 110px;
             z-index: 10;
-            box-shadow: 0 0 10px #adff2f, 0 0 4px rgba(173, 255, 47, 1);
+            box-shadow: 0 0 10px #ffeb3b;
         }
         
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
@@ -229,20 +232,137 @@
         
         .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
+        /* ======================================================== */
+        /* НОВЫЕ СТИЛИ ДЛЯ КРУЖКА-УВЕДОМЛЕНИЯ И МОДАЛОК РУЛЕТКИ */
+        /* ======================================================== */
+        .notification-dot {
+            position: absolute;
+            top: 6px;
+            right: calc(50% - 18px);
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-blue);
+            animation: dot-pulse 2s infinite alternate;
+            z-index: 100;
+        }
+        @keyframes dot-pulse {
+            0% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 4px var(--neon-blue); }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px var(--neon-blue); }
+        }
+
+        .fortune-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 8, 16, 0.96);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+        .fortune-overlay.open { display: flex; }
+        
+        .fortune-content, .fortune-win-content {
+            background: radial-gradient(circle, #141f36 0%, #0a0f1d 100%);
+            width: 90%;
+            max-width: 360px;
+            padding: 30px 20px;
+            border-radius: 24px;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .fortune-title { color: white; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+        .fortune-subtitle { color: #64748b; font-size: 13px; margin-bottom: 25px; line-height: 1.4; font-weight: 600; }
+
+        .fortune-wheel-box {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 20px auto;
+        }
+        .fortune-arrow {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--neon-blue);
+            font-size: 22px;
+            z-index: 12;
+            filter: drop-shadow(0 0 5px var(--neon-blue));
+        }
+        .fortune-wheel-body {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #16223f;
+            position: relative;
+            overflow: hidden;
+            background: #111a2e;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.15);
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.1, 1);
+        }
+        .fortune-wheel-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .fortune-sector {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            left: 50%;
+            top: 50%;
+            transform-origin: 0% 0%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .fortune-sector-content {
+            position: absolute;
+            left: 26px;
+            top: -38px;
+            transform: rotate(30deg);
+            color: #fff;
+            font-weight: 800;
+            font-size: 14px;
+            text-align: center;
+        }
+        .fortune-coin-icon {
+            display: block;
+            margin: 4px auto 0;
+            font-size: 14px;
+        }
+
+        .fortune-win-title { color: #64748b; font-size: 15px; font-weight: 700; text-transform: uppercase; }
+        .fortune-win-amount { color: #fff; font-size: 42px; font-weight: 900; margin: 12px 0; letter-spacing: -0.5px; }
+        .fortune-win-currency { color: #64748b; font-size: 13px; font-weight: 600; margin-bottom: 25px; }
+        
+        .fortune-claim-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
+        }
+
+        /* ======================================================== */
+
         .modal-overlay { position: fixed; left: 0; right: 0; bottom: 0; height: 50vh; background: rgba(10, 15, 26, 0.98); border-top: 2px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 2000; display: none; flex-direction: column; padding: 16px 20px; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7); }
         .modal-overlay.open { display: flex; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px; }
         .modal-close { background: none; border: none; color: #64748b; font-size: 26px; cursor: pointer; padding: 0 5px; line-height: 1; }
+        .modal-close:hover { color: white; }
         .modal-title { font-size: 18px; font-weight: 700; color: white; text-align: left; }
-        
-        .result-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 8, 14, 0.85); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 20px; }
-        .result-dialog-card { background: #0f172a; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 25px 20px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6); animation: scalePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes scalePop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .result-dialog-text { font-size: 18px; font-weight: 700; color: white; line-height: 1.5; margin-bottom: 20px; }
-        .result-dialog-text img { width: 22px; height: 22px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; margin-left: 4px; margin-top: -3px; }
-        .result-dialog-btn { background: #2563eb; color: white; border: none; width: 100%; padding: 12px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.15s; }
-        .result-dialog-btn:active { background: #1d4ed8; transform: scale(0.98); }
-
         .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; margin: 0 auto 15px auto; overflow-y: auto; flex: 1; }
         .day-card { display: flex; flex-direction: column; align-items: center; position: relative; background: rgba(255, 255, 255, 0.02); padding: 10px 6px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.03); width: 100%; }
         .day-card .day-title { font-size: 10px; color: #64748b; margin-bottom: 4px; font-weight: 600; }
@@ -274,6 +394,9 @@
 
     <div class="header" id="main-header">
         <div class="top-bonus-row">
+            <div class="wheel-trigger-btn" onclick="openFortuneModal()">
+                <span class="wheel-icon">🎡</span>
+            </div>
             <div class="bonus-trigger-btn" onclick="openBonusModal()">
                 <span class="flame-icon">🔥</span>
                 <span class="streak-num" id="top-streak-badge">0</span>
@@ -289,7 +412,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="game-scr" class="screen active">
         <div style="font-size: 12px; color: #475467; margin-top: 5px; font-weight: 600;">
             <span id="lbl-clickpower">👆 Сила клика:</span> <span id="click-val">1</span>
@@ -297,13 +419,11 @@
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
-    <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title" id="lbl-cards">КАРТОЧКИ</div>
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
-    <!-- ЭКРАН 3: МИНИ-ИГРЫ -->
     <div id="games-scr" class="screen">
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
@@ -343,14 +463,13 @@
                 </div>
             </div>
 
-            <!-- Игровое Колесо -->
             <div class="wheel-big-box">
                 <div id="wheel-yellow-pointer"></div>
                 <svg class="wheel-svg-object" width="220" height="220">
-                    <circle stroke="#0d121d" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
-                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="12" fill="transparent" r="95" cx="110" cy="110" style="transform-origin: 110px 110px; transition: stroke-dasharray 0.3s ease, transform 0.3s ease;"/>
+                    <circle stroke="#880e4f" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
+                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="14" fill="transparent" r="95" cx="110" cy="110" stroke-dasharray="596.9" stroke-dashoffset="298.4"/>
                 </svg>
-                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50.00%</div>
+                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50%</div>
             </div>
 
             <button class="btn-wheel-action-spin" id="wheel-spin-btn" onclick="spinWheel()">Крутить</button>
@@ -358,7 +477,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 4: ПРОФИЛЬ -->
     <div id="profile-scr" class="screen">
         <div class="profile-header">
             <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
@@ -384,14 +502,13 @@
                     <span id="lbl-st-2">Количество тапов</span>
                     <span id="st-total-clicks">0</span>
                 </div>
-                <!-- ОБНОВЛЕННЫЕ ПУНКТЫ СТАТИСТИКИ -->
                 <div class="stats-row">
-                    <span id="lbl-st-3">Выиграно в мини играх</span>
-                    <span><span id="st-games-won" class="win-color">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
+                    <span id="lbl-st-3">Выиграл в mini играх</span>
+                    <span id="st-games-won">0</span>
                 </div>
                 <div class="stats-row">
-                    <span id="lbl-st-4">Прибыль</span>
-                    <span><span id="st-net-profit">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
+                    <span id="lbl-st-4">Проиграл в mini играх</span>
+                    <span id="st-games-lost">0</span>
                 </div>
                 <div class="stats-row">
                     <span id="lbl-st-5">Стрик наград</span>
@@ -415,7 +532,6 @@
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
     </div>
 
-    <!-- МЕНЮ НАВИГАЦИИ -->
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">
             <div class="nav-glow"></div>
@@ -423,6 +539,7 @@
             <span id="nv-game">Главная</span>
         </div>
         <div class="nav-item" id="n-shop" onclick="show('shop')">
+            <div class="notification-dot"></div>
             <div class="nav-glow"></div>
             <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
             <span id="nv-shop">Магазин</span>
@@ -439,7 +556,6 @@
         </div>
     </div>
 
-    <!-- МЕНЮ НАГРАД -->
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
             <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
@@ -450,11 +566,27 @@
         <button class="btn" id="modal-claim-btn" onclick="claimDaily()" style="width: 100%; max-width: 340px; margin: 0 auto; display: none;">ЗАБРАТЬ НАГРАДУ</button>
     </div>
 
-    <!-- КАСТOМНЫЙ ДИАЛОГ РЕЗУЛЬТАТА ИГРЫ -->
-    <div id="result-dialog" class="result-dialog-overlay">
-        <div class="result-dialog-card">
-            <div id="result-dialog-msg" class="result-dialog-text"></div>
-            <button class="result-dialog-btn" onclick="closeResultDialog()">Закрыть</button>
+    <div id="fortune-modal" class="fortune-overlay">
+        <div class="fortune-content">
+            <button class="modal-close" id="fortune-close-btn">×</button>
+            <h2 class="fortune-title" id="fortune-lbl-title">Ежедневное колесо</h2>
+            <p class="fortune-subtitle" id="fortune-lbl-subtitle">Тапни по экрану и забери до 1500<br>CS3NEWS коинов</p>
+            
+            <div class="fortune-wheel-box" id="fortune-spin-trigger">
+                <div class="fortune-arrow">▼</div>
+                <div class="fortune-wheel-body" id="fortune-wheel-canvas">
+                    <div class="fortune-wheel-inner" id="fortune-wheel-inner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fortune-win-modal" class="fortune-overlay">
+        <div class="fortune-win-content">
+            <h2 class="fortune-win-title" id="fortune-lbl-win">Ваш приз сегодня</h2>
+            <p class="fortune-win-amount"><span id="fortune-prize-value">0</span> 🪙</p>
+            <p class="fortune-win-currency">CS3NEWS коинов</p>
+            <button class="fortune-claim-btn" id="fortune-claim-btn">Забрать</button>
         </div>
     </div>
 
@@ -474,33 +606,40 @@
         const db = firebase.database();
 
         let currentLang = localStorage.getItem('cc_lang') || 'ru';
-        
         const langData = {
             ru: {
                 energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ", game_title_main: "Мини-игры",
                 m_title: "Ежедневная награда", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆",
-                st_1: "Количество монет", st_2: "Количество тапов", 
-                st_3: "Выиграно в мини играх", st_4: "Прибыль", 
-                st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
+                st_1: "Количество монет", st_2: "Количество тапов", st_3: "Выиграл в mini играх", st_4: "Проиграл в mini играх", st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
                 claimed_today: "Следующая награда будет доступна завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней",
-                w_bet: "Ставка:", w_target: "Выигрыш:", w_spin: "ЕЩЕ РАЗ", w_spinning: "КРУТИМ...", btn_play: "Играть", back_menu: "← назад в меню"
+                w_bet: "Ставка:", w_target: "Выигрыш:", w_spin: "КРУТИТЬ", w_spinning: "КРУТИМ...", btn_play: "Играть", back_menu: "← назад в меню",
+                f_title: "Ежедневное колесо", f_subtitle: "Тапни по экрану и забери до 1500\nCS3NEWS коинов", f_win: "Ваш приз сегодня"
             },
             en: {
                 energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS", game_title_main: "Mini Games",
                 m_title: "Daily Reward", stats_title: "Statistics", top_title: "LEADERBOARD 🏆",
-                st_1: "Coins amount", st_2: "Taps count", 
-                st_3: "Won in mini games", st_4: "Net Profit", 
-                st_5: "Rewards streak", st_6: "Fortune wheel spins",
+                st_1: "Coins amount", st_2: "Taps count", st_3: "Won in mini-games", st_4: "Lost in mini-games", st_5: "Rewards streak", st_6: "Fortune wheel spins",
                 nv_game: "Home", nv_shop: "Shop", nv_games: "Mini Games", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
                 claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "day", days_format: "days",
-                w_bet: "Bet:", w_target: "Target:", w_spin: "SPIN", w_spinning: "SPINNING...", btn_play: "Play", back_menu: "← back to menu"
+                w_bet: "Bet:", w_target: "Target:", w_spin: "SPIN", w_spinning: "SPINNING...", btn_play: "Play", back_menu: "← back to menu",
+                f_title: "Daily Wheel", f_subtitle: "Tap the screen and claim up to 1500\nCS3NEWS coins", f_win: "Your prize today"
             }
         };
 
         const dailyRewardsConfig = [1000, 2000, 2000, 5000, 5000, 7000, 10000];
+
+        // Конфигурация секторов Колеса Фортуны (Призы и надписи из видео)
+        const fortunePrizes = [
+            { text: '100', value: 100 },
+            { text: '200', value: 200 },
+            { text: '300', value: 300 },
+            { text: '500', value: 500 },
+            { text: '1k', value: 1000 },
+            { text: '1.5k', value: 1500 }
+        ];
 
         const CARDS_DATA = {
             lupi_67: { img: '67lupi.png', cost: 10000 },
@@ -517,31 +656,26 @@
         let lastClaim = parseInt(localStorage.getItem('cc_lastClaim')) || 0;
         let stat_streak = parseInt(localStorage.getItem('cc_st_streak')) || 0;
         let stat_total_clicks = parseInt(localStorage.getItem('cc_total_clicks')) || 0;
-        
-        // Исправлено: если это новый запуск или старые невалидные данные — ставим строгие нули
-        let stat_games_won = parseFloat(localStorage.getItem('cc_games_won'));
-        if (isNaN(stat_games_won)) stat_games_won = 0;
-
-        let stat_games_lost = parseFloat(localStorage.getItem('cc_games_lost'));
-        if (isNaN(stat_games_lost)) stat_games_lost = 0;
-
+        let stat_games_won = parseInt(localStorage.getItem('cc_games_won')) || 0;
+        let stat_games_lost = parseInt(localStorage.getItem('cc_games_lost')) || 0;
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         let wheelIsSpinning = false;
-        const wheelCircumference = 2 * Math.PI * 95; 
+        const wheelCircumference = 2 * Math.PI * 95; // 596.90
+        let targetZoneStartAngle = 120;
+
+        // Переменные состояния для Нового Колеса Фортуны
+        let fortuneIsSpinning = false;
+        let fortuneCurrentRotation = 0;
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
             stat_streak = 1;
             lastClaim = Date.now();
-            stat_games_won = 0;
-            stat_games_lost = 0;
             localStorage.setItem('cc_initialized', 'true');
             localStorage.setItem('cc_coins', coins);
             localStorage.setItem('cc_st_streak', stat_streak);
             localStorage.setItem('cc_lastClaim', lastClaim);
-            localStorage.setItem('cc_games_won', 0);
-            localStorage.setItem('cc_games_lost', 0);
         }
 
         let userCards = JSON.parse(localStorage.getItem('cc_userCards')) || {
@@ -581,14 +715,87 @@
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
-        function showCustomResultDialog(htmlText) {
-            document.getElementById('result-dialog-msg').innerHTML = htmlText;
-            document.getElementById('result-dialog').style.display = 'flex';
+        // Логика открытия / закрытия Колеса фортуны
+        function openFortuneModal() {
+            document.getElementById('fortune-modal').classList.add('open');
         }
+        document.getElementById('fortune-close-btn').onclick = () => {
+            if (!fortuneIsSpinning) document.getElementById('fortune-modal').classList.remove('open');
+        };
 
-        function closeResultDialog() {
-            document.getElementById('result-dialog').style.display = 'none';
+        // Генерация секторов для Рулетки Фортуны
+        function initFortuneWheelSectors() {
+            const wheelInner = document.getElementById('fortune-wheel-inner');
+            wheelInner.innerHTML = '';
+            const count = fortunePrizes.length;
+            const angle = 360 / count; // 60 deg
+
+            fortunePrizes.forEach((prize, index) => {
+                const sector = document.createElement('div');
+                sector.className = 'fortune-sector';
+                const currentAngle = index * angle;
+                sector.style.transform = `rotate(${currentAngle}deg) translate(-50%, -50%)`;
+                sector.style.borderRight = '1px solid rgba(255,255,255,0.04)';
+                
+                sector.innerHTML = `
+                    <div class="fortune-sector-content" style="transform: rotate(${angle / 2}deg) translateY(-75px);">
+                        <div>${prize.text}</div>
+                        <span class="fortune-coin-icon">🔹</span>
+                    </div>
+                `;
+                wheelInner.appendChild(sector);
+            });
         }
+        initFortuneWheelSectors();
+
+        // Запуск прокрутки Колеса Фортуны при тапе по боксу рулетки
+        document.getElementById('fortune-spin-trigger').onclick = () => {
+            if (fortuneIsSpinning) return;
+            fortuneIsSpinning = true;
+
+            tg.HapticFeedback.impactOccurred('medium');
+
+            const sectorCount = fortunePrizes.length;
+            const sectorAngle = 360 / sectorCount; // 60 градусов
+
+            // Генерируем случайный приз
+            const prizeIndex = Math.floor(Math.random() * sectorCount);
+            const selectedPrize = fortunePrizes[prizeIndex];
+
+            // 5 полных оборотов рулетки для эффекта разгона скорости
+            const baseSpins = 5 * 360; 
+            
+            // Вычисляем угол, чтобы стрелка сверху (угол 0 / 360) указывала ровно в центр сектора
+            const targetAngle = 360 - (prizeIndex * sectorAngle) - (sectorAngle / 2);
+            
+            fortuneCurrentRotation += baseSpins + (targetAngle - (fortuneCurrentRotation % 360));
+
+            const wheelCanvas = document.getElementById('fortune-wheel-canvas');
+            wheelCanvas.style.transform = `rotate(${fortuneCurrentRotation}deg)`;
+
+            // Ждем окончания 4-секундной анимации
+            setTimeout(() => {
+                fortuneIsSpinning = false;
+                
+                // Начисление выигрыша
+                coins += selectedPrize.value;
+                stat_wheel_spins++;
+                
+                // Перевод модалок
+                document.getElementById('fortune-prize-value').innerText = selectedPrize.text;
+                document.getElementById('fortune-modal').classList.remove('open');
+                document.getElementById('fortune-win-modal').classList.add('open');
+                
+                tg.HapticFeedback.notificationOccurred('success');
+                updateUI();
+                saveAll();
+
+                document.getElementById('fortune-claim-btn').onclick = () => {
+                    document.getElementById('fortune-win-modal').classList.remove('open');
+                    tg.HapticFeedback.impactOccurred('light');
+                };
+            }, 4000);
+        };
 
         function renderDaysGrid() {
             const container = document.getElementById('days-grid-container');
@@ -652,11 +859,7 @@
         function openWheelGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('wheel-machine-view').style.display = 'flex';
-            
-            const yellowPointer = document.getElementById('wheel-yellow-pointer');
-            yellowPointer.style.transition = 'none';
-            yellowPointer.style.transform = `rotate(0deg)`;
-            
+            randomizeTargetZone();
             calculateWheelChance();
         }
 
@@ -664,6 +867,12 @@
             if(wheelIsSpinning) return;
             document.getElementById('wheel-machine-view').style.display = 'none';
             document.getElementById('wheel-menu-view').style.display = 'grid';
+        }
+
+        function randomizeTargetZone() {
+            if(wheelIsSpinning) return;
+            targetZoneStartAngle = Math.floor(Math.random() * 260) + 20;
+            document.getElementById('wheel-svg-fill').style.transform = `rotate(${targetZoneStartAngle}deg)`;
         }
 
         function updateUI() {
@@ -694,6 +903,11 @@
 
             document.getElementById('lbl-capsule-bet').innerText = l.w_bet;
             document.getElementById('lbl-capsule-target').innerText = l.w_target;
+
+            // Локализация элементов Колеса Фортуны
+            document.getElementById('fortune-lbl-title').innerText = l.f_title;
+            document.getElementById('fortune-lbl-subtitle').innerText = l.f_subtitle;
+            document.getElementById('fortune-lbl-win').innerText = l.f_win;
             
             if(!wheelIsSpinning) {
                 document.getElementById('wheel-spin-btn').innerText = l.w_spin;
@@ -711,25 +925,8 @@
 
             document.getElementById('st-coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('st-total-clicks').innerText = stat_total_clicks.toLocaleString();
-            
-            // Выигрыш — всегда чистый и красивый зеленый цвет
-            document.getElementById('st-games-won').innerText = Math.floor(stat_games_won).toLocaleString();
-            
-            // Вычисление чистой прибыли приложения (Выиграно минус Проиграно)
-            let profit = stat_games_won - stat_games_lost;
-            let profitEl = document.getElementById('st-net-profit');
-            
-            if (profit > 0) {
-                profitEl.className = "win-color";
-                profitEl.innerText = "+" + Math.floor(profit).toLocaleString();
-            } else if (profit < 0) {
-                profitEl.className = "loss-color";
-                profitEl.innerText = "-" + Math.floor(Math.abs(profit)).toLocaleString();
-            } else {
-                profitEl.className = "";
-                profitEl.innerText = "0";
-            }
-            
+            document.getElementById('st-games-won').innerText = stat_games_won.toLocaleString();
+            document.getElementById('st-games-lost').innerText = stat_games_lost.toLocaleString();
             document.getElementById('st-streak').innerText = `${stat_streak} ${currentLang === 'ru' ? 'дней' : l.days_format}`;
             document.getElementById('st-wheel-spins').innerText = stat_wheel_spins.toLocaleString();
 
@@ -911,15 +1108,8 @@
             document.getElementById('wheel-percent-lbl').innerText = chance.toFixed(2) + '%';
 
             const fillCircle = document.getElementById('wheel-svg-fill');
-            let progressLength = (chance / 100) * wheelCircumference;
-            
-            fillCircle.style.strokeDasharray = `${progressLength} ${wheelCircumference}`;
-            fillCircle.style.strokeDashoffset = 0;
-            
-            let zoneDegrees = (chance / 100) * 360;
-            let startAngle = 90 - (zoneDegrees / 2);
-            
-            fillCircle.style.transform = `rotate(${startAngle}deg)`;
+            let offset = wheelCircumference - (chance / 100) * wheelCircumference;
+            fillCircle.style.strokeDashoffset = offset;
         }
 
         function setBetPreset(action) {
@@ -975,14 +1165,20 @@
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
 
-            let halfSpreadDegrees = ((chance / 100) * 360) / 2;
-
             let finalAngle = Math.floor(Math.random() * 360);
             let spinDegrees = 1440 + finalAngle; 
 
-            let diff = finalAngle;
-            if (diff > 180) diff = 360 - diff;
-            let isWin = (diff <= halfSpreadDegrees);
+            let sectorEndAngle = targetZoneStartAngle + ((chance / 100) * 360);
+            
+            let normalizedFinal = finalAngle;
+            let isWin = false;
+
+            if (sectorEndAngle <= 360) {
+                if (normalizedFinal >= targetZoneStartAngle && normalizedFinal <= sectorEndAngle) isWin = true;
+            } else {
+                let overflowAngle = sectorEndAngle - 360;
+                if (normalizedFinal >= targetZoneStartAngle || normalizedFinal <= overflowAngle) isWin = true;
+            }
 
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
             yellowPointer.style.transition = 'transform 3.5s cubic-bezier(0.1, 1, 0.2, 1)';
@@ -998,27 +1194,16 @@
 
                 if(isWin) {
                     coins += t;
-                    // Прибавляем чистую прибыль
-                    stat_games_won += (t - b); 
+                    stat_games_won++;
                     tg.HapticFeedback.notificationOccurred('success');
-                    
-                    showCustomResultDialog(
-                        currentLang === 'ru' 
-                        ? `Поздравляю! Вы выиграли ${Math.floor(t).toLocaleString()} <img src="newcoin.jpg" alt="coin">`
-                        : `Congratulations! You won ${Math.floor(t).toLocaleString()} <img src="newcoin.jpg" alt="coin">`
-                    );
+                    tg.showAlert(currentLang === 'ru' ? `🎉 УСПЕХ! Вы выиграли ${Math.floor(t).toLocaleString()} монет!` : `🎉 SUCCESS! You won ${Math.floor(t).toLocaleString()} coins!`);
                 } else {
-                    // Записываем проигрыш ставки
-                    stat_games_lost += b; 
+                    stat_games_lost++;
                     tg.HapticFeedback.notificationOccurred('error');
-                    
-                    showCustomResultDialog(
-                        currentLang === 'ru'
-                        ? `К сожалению, вы проиграли`
-                        : `Unfortunately, you lost`
-                    );
+                    tg.showAlert(currentLang === 'ru' ? "Проиграл! Желтая стрелка не попала в синюю зону." : "You lost! Yellow marker missed the blue zone.");
                 }
 
+                randomizeTargetZone();
                 updateUI();
                 saveAll();
             }, 3550);
