@@ -175,12 +175,12 @@
             justify-content: center;
         }
         
-        /* Поворачиваем контейнер SVG на 90 градусов, чтобы точка отсчета (0px dashoffset) переместилась на 6 часов */
+        /* Главный контейнер для кругов */
         .wheel-svg-object {
-            transform: rotate(90deg); 
+            transform: none; 
         }
         
-        /* Идеальный перпендикулярный маркер на рельсе */
+        /* Маркер на рельсе (строго внизу на 6 часах, угол 0 градусов) */
         #wheel-yellow-pointer {
             position: absolute;
             width: 4px; 
@@ -344,7 +344,7 @@
                 <div id="wheel-yellow-pointer"></div>
                 <svg class="wheel-svg-object" width="220" height="220">
                     <circle stroke="#0d121d" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
-                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="12" fill="transparent" r="95" cx="110" cy="110" style="transform-origin: 110px 110px; transition: stroke-dasharray 0.3s ease, stroke-dashoffset 0.3s ease;"/>
+                    <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="12" fill="transparent" r="95" cx="110" cy="110" style="transform-origin: 110px 110px; transition: stroke-dasharray 0.3s ease, transform 0.3s ease;"/>
                 </svg>
                 <div class="wheel-center-percent-only" id="wheel-percent-lbl">50.00%</div>
             </div>
@@ -854,7 +854,7 @@
         const betInput = document.getElementById('wheel-bet-input');
         const targetInput = document.getElementById('wheel-target-input');
 
-        /* ИСПРАВЛЕННЫЙ МЕТОД РАСЧЕТА ЗОНЫ */
+        /* ИСПРАВЛЕННАЯ ЛОГИКА СИММЕТРИЧНОЙ ОТРИСОВКИ */
         function calculateWheelChance() {
             let b = parseFloat(betInput.value) || 0;
             let t = parseFloat(targetInput.value) || 0;
@@ -871,14 +871,25 @@
             document.getElementById('wheel-percent-lbl').innerText = chance.toFixed(2) + '%';
 
             const fillCircle = document.getElementById('wheel-svg-fill');
+            
+            // Длина заполнения (честные 50% займут половину всей окружности)
             let progressLength = (chance / 100) * wheelCircumference;
             
+            // Отрисовываем дугу ровно на весь процент шанса (без делений на два)
             fillCircle.style.strokeDasharray = `${progressLength} ${wheelCircumference}`;
             
-            // Благодаря вращению всего контейнера .wheel-svg-object на 90 градусов,
-            // точка 0 dashoffset находится строго внизу (на 6 часах).
-            // Чтобы зона расходилась симметрично, сдвигаем её назад на половину её длины.
-            fillCircle.style.strokeDashoffset = (progressLength / 2);
+            // Сбрасываем смещение dashoffset в 0
+            fillCircle.style.strokeDashoffset = 0;
+            
+            // Вычисляем угол, который занимает эта дуга
+            let zoneDegrees = (chance / 100) * 360;
+            
+            // Чтобы зона расходилась влево и вправо по 25% (симметрично вокруг 6 часов),
+            // мы берем стандартную точку старта (90° — это 6 часов) и поворачиваем сам круг назад
+            // ровно на ПОЛОВИНУ угла зоны.
+            let startAngle = 90 - (zoneDegrees / 2);
+            
+            fillCircle.style.transform = `rotate(${startAngle}deg)`;
         }
 
         function setBetPreset(action) {
@@ -934,15 +945,14 @@
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
 
-            // Расчет диапазона победы. Маркер изначально стоит на 0° (6 часов).
-            // Синяя зона расходится на halfSpread влево (в минус) и вправо (в плюс).
-            let halfSpreadDegrees = (chance / 100 * 360) / 2;
+            // Расчет победы: маркер стоит на 0° (на 6 часах).
+            // Синяя зона теперь симметрично распределена вокруг 0°: на половину шанса влево и вправо.
+            let halfSpreadDegrees = ((chance / 100) * 360) / 2;
 
             let finalAngle = Math.floor(Math.random() * 360);
             let spinDegrees = 1440 + finalAngle; 
 
-            // Проверка попадания: так как точка отсчета 0 градусов — это 6 часов,
-            // то попаданием считается угол, который ближе к 0 (или к 360), чем halfSpreadDegrees.
+            // Считаем кратчайшее расстояние от угла остановки маркера до 0° (6 часов)
             let diff = finalAngle;
             if (diff > 180) diff = 360 - diff;
             let isWin = (diff <= halfSpreadDegrees);
