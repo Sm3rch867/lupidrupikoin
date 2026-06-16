@@ -175,21 +175,20 @@
             justify-content: center;
         }
         
+        /* Поворачиваем контейнер SVG на 90 градусов, чтобы точка отсчета (0px dashoffset) переместилась на 6 часов */
         .wheel-svg-object {
-            transform: rotate(0deg); 
+            transform: rotate(90deg); 
         }
         
-        /* Исправленный аккуратный прямоугольный маркер-ползунок, пересекающий окружность */
+        /* Идеальный перпендикулярный маркер на рельсе */
         #wheel-yellow-pointer {
             position: absolute;
             width: 4px; 
             height: 20px; 
             background: #adff2f; 
             border-radius: 2px;
-            /* Позиционируем ровно на линии окружности внизу (6 часов) */
             top: calc(50% - 10px + 95px); 
             left: calc(50% - 2px);
-            /* Точка вращения находится в центре wheel-big-box */
             transform-origin: 2px -85px; 
             z-index: 10;
             box-shadow: 0 0 10px #adff2f, 0 0 4px rgba(173, 255, 47, 1);
@@ -630,7 +629,6 @@
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('wheel-machine-view').style.display = 'flex';
             
-            // В покое ползунок стоит в начальной точке (0 градусов = 6 часов вечера)
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
             yellowPointer.style.transition = 'none';
             yellowPointer.style.transform = `rotate(0deg)`;
@@ -856,6 +854,7 @@
         const betInput = document.getElementById('wheel-bet-input');
         const targetInput = document.getElementById('wheel-target-input');
 
+        /* ИСПРАВЛЕННЫЙ МЕТОД РАСЧЕТА ЗОНЫ */
         function calculateWheelChance() {
             let b = parseFloat(betInput.value) || 0;
             let t = parseFloat(targetInput.value) || 0;
@@ -876,10 +875,10 @@
             
             fillCircle.style.strokeDasharray = `${progressLength} ${wheelCircumference}`;
             
-            // В SVG 0 градусов находится на 3 часах (справа). Чтобы центр зоны был на 6 часах (внизу, то есть 90 градусов),
-            // сдвигаем черту начала отрисовки. Формула учитывает длину дуги, чтобы рост шел симметрично влево-вправо от 6 часов.
-            let startOffset = (90 / 360) * wheelCircumference + (progressLength / 2);
-            fillCircle.style.strokeDashoffset = startOffset;
+            // Благодаря вращению всего контейнера .wheel-svg-object на 90 градусов,
+            // точка 0 dashoffset находится строго внизу (на 6 часах).
+            // Чтобы зона расходилась симметрично, сдвигаем её назад на половину её длины.
+            fillCircle.style.strokeDashoffset = (progressLength / 2);
         }
 
         function setBetPreset(action) {
@@ -935,21 +934,21 @@
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
 
-            // Расчет диапазона победы. Наш центр — это 90° относительно дефолтной тригонометрической окружности.
+            // Расчет диапазона победы. Маркер изначально стоит на 0° (6 часов).
+            // Синяя зона расходится на halfSpread влево (в минус) и вправо (в плюс).
             let halfSpreadDegrees = (chance / 100 * 360) / 2;
 
-            // Генерируем финальный случайный угол остановки
             let finalAngle = Math.floor(Math.random() * 360);
             let spinDegrees = 1440 + finalAngle; 
 
-            // Математическая проверка попадания: угол должен быть в пределах halfSpreadDegrees от 90 градусов (от 6 часов)
-            let diff = Math.abs(finalAngle - 90);
+            // Проверка попадания: так как точка отсчета 0 градусов — это 6 часов,
+            // то попаданием считается угол, который ближе к 0 (или к 360), чем halfSpreadDegrees.
+            let diff = finalAngle;
             if (diff > 180) diff = 360 - diff;
             let isWin = (diff <= halfSpreadDegrees);
 
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
             yellowPointer.style.transition = 'transform 3.5s cubic-bezier(0.1, 1, 0.2, 1)';
-            // При угле 0 маркер стоит внизу. Чтобы он крутился синхронно с углами, крутим его по часовой стрелке.
             yellowPointer.style.transform = `rotate(${spinDegrees}deg)`;
 
             setTimeout(() => {
