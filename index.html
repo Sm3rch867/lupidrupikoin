@@ -176,21 +176,23 @@
         }
         
         .wheel-svg-object {
-            transform: rotate(90deg); /* Поворот на 90 градусов, чтобы точка 0/360 оказалась внизу (на 6 часов) */
+            transform: rotate(90deg); /* 0 градусов теперь находится ровно внизу (на 6 часах) */
         }
         
-        /* Измененный уменьшенный маркер-капсула салатового цвета */
+        /* Исправленный, аккуратный и аккуратно выровненный маркер в виде горизонтального ползунка как в image_4daffa.png */
         #wheel-yellow-pointer {
             position: absolute;
-            width: 6px; /* Было 10px */
-            height: 16px; /* Было 24px */
+            width: 20px; 
+            height: 10px; 
             background: #adff2f; 
-            border-radius: 4px;
-            top: 6px; 
-            left: calc(50% - 3px);
-            transform-origin: 3px 109px; /* Идеальное центрирование тонкой стрелки для круга */
+            border-radius: 6px;
+            /* Размещаем точно по центру колеи SVG-окружности радиусом 95px */
+            top: calc(50% - 5px + 95px); 
+            left: calc(50% - 10px);
+            /* Точка вращения находится в геометрическом центре всего блока wheel-big-box */
+            transform-origin: 10px -90px; 
             z-index: 10;
-            box-shadow: 0 0 10px #adff2f, 0 0 3px rgba(173, 255, 47, 0.8);
+            box-shadow: 0 0 12px #adff2f, 0 0 4px rgba(173, 255, 47, 0.9);
         }
         
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
@@ -288,6 +290,7 @@
         </div>
     </div>
 
+    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="game-scr" class="screen active">
         <div style="font-size: 12px; color: #475467; margin-top: 5px; font-weight: 600;">
             <span id="lbl-clickpower">👆 Сила клика:</span> <span id="click-val">1</span>
@@ -295,11 +298,13 @@
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
+    <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title" id="lbl-cards">КАРТОЧКИ</div>
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
+    <!-- ЭКРАН 3: МИНИ-ИГРЫ -->
     <div id="games-scr" class="screen">
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
@@ -339,13 +344,15 @@
                 </div>
             </div>
 
+            <!-- Игровое поле: Ползунок лежит на дуге, синяя зона симметрично исходит от 6 часов -->
             <div class="wheel-big-box">
                 <div id="wheel-yellow-pointer"></div>
                 <svg class="wheel-svg-object" width="220" height="220">
                     <circle stroke="#0d121d" stroke-width="12" fill="transparent" r="95" cx="110" cy="110"/>
+                    <!-- Синяя зона выигрыша (Симметрично расширяется из нижней точки на 6 часах) -->
                     <circle id="wheel-svg-fill" stroke="#2563eb" stroke-width="12" fill="transparent" r="95" cx="110" cy="110" style="transform-origin: 110px 110px; transition: stroke-dasharray 0.3s ease, stroke-dashoffset 0.3s ease;"/>
                 </svg>
-                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50%</div>
+                <div class="wheel-center-percent-only" id="wheel-percent-lbl">50.00%</div>
             </div>
 
             <button class="btn-wheel-action-spin" id="wheel-spin-btn" onclick="spinWheel()">Крутить</button>
@@ -353,6 +360,7 @@
         </div>
     </div>
 
+    <!-- ЭКРАН 4: ПРОФИЛЬ -->
     <div id="profile-scr" class="screen">
         <div class="profile-header">
             <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
@@ -408,6 +416,7 @@
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
     </div>
 
+    <!-- МЕНЮ НАВИГАЦИИ -->
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">
             <div class="nav-glow"></div>
@@ -431,6 +440,7 @@
         </div>
     </div>
 
+    <!-- МЕНЮ НАГРАД -->
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
             <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
@@ -441,6 +451,7 @@
         <button class="btn" id="modal-claim-btn" onclick="claimDaily()" style="width: 100%; max-width: 340px; margin: 0 auto; display: none;">ЗАБРАТЬ НАГРАДУ</button>
     </div>
 
+    <!-- КАСТOМНЫЙ ДИАЛОГ РЕЗУЛЬТАТА ИГРЫ -->
     <div id="result-dialog" class="result-dialog-overlay">
         <div class="result-dialog-card">
             <div id="result-dialog-msg" class="result-dialog-text"></div>
@@ -628,10 +639,10 @@
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('wheel-machine-view').style.display = 'flex';
             
-            // Салатовый маркер ставится на 12 часов (в абсолютных координатах это 270 градусов относительно повёрнутого на 90 градусов SVG)
+            // В состоянии покоя маркер стоит в начальной нижней точке (0 градусов)
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
             yellowPointer.style.transition = 'none';
-            yellowPointer.style.transform = `rotate(270deg)`;
+            yellowPointer.style.transform = `rotate(0deg)`;
             
             calculateWheelChance();
         }
@@ -869,13 +880,12 @@
 
             document.getElementById('wheel-percent-lbl').innerText = chance.toFixed(2) + '%';
 
-            // Равномерное распределение синей зоны из нижней точки (на 6 часов):
-            // strokeDasharray принимает массив: [длина_видимой_дуги, длина_невидимой]
+            // Идеальное симметричное расхождение синей полосы в две стороны от нижней точки (6 часов)
             const fillCircle = document.getElementById('wheel-svg-fill');
             let progressLength = (chance / 100) * wheelCircumference;
             
             fillCircle.style.strokeDasharray = `${progressLength} ${wheelCircumference}`;
-            // Смещаем начало отрисовки назад на половину длины дуги, чтобы центр зоны всегда оставался строго внизу
+            // Сдвигаем на половину длины дуги назад, чтобы синий сектор рос влево и вправо одинаково
             fillCircle.style.strokeDashoffset = progressLength / 2;
         }
 
@@ -932,16 +942,14 @@
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
 
-            // Логика проверки:
-            // Нижняя точка в абсолютных координатах круга — это 0 (или 360) градусов.
-            // Синий сектор расходится симметрично влево и вправо на угол halfSpreadDegrees.
+            // Расчет выигрышных секторов: так как центр внизу (0 градусов),
+            // половина шанса уходит влево (в сторону 360 градусов), а половина вправо (в сторону увеличения).
             let halfSpreadDegrees = (chance / 100 * 360) / 2;
 
-            // Генерируем финальный угол остановки маркера от 0 до 359
             let finalAngle = Math.floor(Math.random() * 360);
             let spinDegrees = 1440 + finalAngle; 
 
-            // Проверяем попадание: так как центр зоны внизу (0 градусов), выигрышными считаются углы близкие к 0 или 360
+            // Проверка попадания в синюю зону
             let isWin = (finalAngle <= halfSpreadDegrees || finalAngle >= (360 - halfSpreadDegrees));
 
             const yellowPointer = document.getElementById('wheel-yellow-pointer');
