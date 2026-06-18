@@ -11,7 +11,6 @@
         :root { 
             --primary: #2563eb; 
             --primary-glow: rgba(37, 99, 235, 0.6);
-            /* ОБНОВЛЕНО: Чёрно-голубой радиальный градиент (из центра в края) */
             --bg: radial-gradient(circle at center, #0b1528 0%, #05080e 100%); 
             --card: rgba(15, 23, 42, 0.5); 
             --text-muted: #566175;
@@ -26,7 +25,6 @@
             position: relative;
         }
 
-        /* ОБНОВЛЕНО: Верхнее неоновое свечение стало более ярким и голубым */
         body::before {
             content: "";
             position: absolute;
@@ -243,66 +241,57 @@
         
         .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
-        /* ОБНОВЛЕНО: Подстроен фон модального окна колеса под новый стиль */
-        .modal-overlay { position: fixed; left: 0; right: 0; bottom: 0; height: 60vh; background: rgba(11, 21, 40, 0.98); border-top: 2px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 2000; display: none; flex-direction: column; padding: 16px 20px; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7); align-items: center; }
+        /* ОБНОВЛЕНО: Стили для Календаря Наград вместо Колеса */
+        .modal-overlay { position: fixed; left: 0; right: 0; bottom: 0; height: auto; max-height: 85vh; background: rgba(11, 21, 40, 0.98); border-top: 2px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 2000; display: none; flex-direction: column; padding: 20px; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7); align-items: center; }
         .modal-overlay.open { display: flex; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px; }
         .modal-close { background: none; border: none; color: #64748b; font-size: 26px; cursor: pointer; padding: 0 5px; line-height: 1; }
         .modal-title { font-size: 18px; font-weight: 700; color: white; text-align: left; }
         .modal-subtitle { font-size: 12px; color: #64748b; margin-top: 2px; width: 100%; text-align: left; margin-bottom: 15px; }
         
-        .daily-wheel-wrapper {
-            position: relative;
-            width: 220px;
-            height: 220px;
-            margin: auto;
+        /* Сетка дней для календаря */
+        .rewards-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .reward-day-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 10px 4px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 4px;
+            transition: all 0.2s ease;
         }
-        .daily-wheel-arrow {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 16px solid #3b82f6;
-            filter: drop-shadow(0 0 6px #2563eb);
-            z-index: 10;
+        .reward-day-card.day-7 {
+            grid-column: span 2;
         }
-        .daily-wheel-body {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 4px solid #1e293b;
-            box-shadow: 0 0 25px rgba(37, 99, 235, 0.2);
-            background: conic-gradient(
-                #1e1b4b 0deg 45deg, #0f172a 45deg 90deg,
-                #1e1b4b 90deg 135deg, #0f172a 135deg 180deg,
-                #1e1b4b 180deg 225deg, #0f172a 225deg 270deg,
-                #1e1b4b 270deg 315deg, #0f172a 315deg 360deg
-            );
-            position: relative;
-            overflow: hidden;
+        .reward-day-card.completed {
+            background: rgba(37, 99, 235, 0.15);
+            border-color: rgba(37, 99, 235, 0.4);
         }
-        .wheel-sector-text {
-            position: absolute;
-            width: 50%;
-            height: 40px;
-            top: calc(50% - 20px);
-            left: 50%;
-            transform-origin: left center;
-            padding-left: 35px;
-            font-size: 13px;
-            font-weight: 800;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
+        .reward-day-card.completed .day-title, .reward-day-card.completed .day-coins {
+            color: #60a5fa;
         }
-        
+        .reward-day-card.current {
+            background: var(--primary);
+            border-color: #60a5fa;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+            transform: scale(1.03);
+        }
+        .reward-day-card.current .day-title, .reward-day-card.current .day-coins {
+            color: white;
+        }
+        .day-title { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .day-coins { font-size: 11px; font-weight: 700; color: white; display: flex; align-items: center; gap: 2px; }
+        .day-check { font-size: 11px; margin-top: 2px; }
+
         .result-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 8, 14, 0.85); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 20px; }
         .result-dialog-card { background: #0f172a; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 25px 20px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6); animation: scalePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes scalePop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -311,7 +300,7 @@
         .result-dialog-btn { background: #2563eb; color: white; border: none; width: 100%; padding: 12px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.15s; }
         .result-dialog-btn:active { background: #1d4ed8; transform: scale(0.98); }
 
-        .modal-bottom-status { text-align: center; font-size: 13px; color: #64748b; font-weight: 600; margin-top: 15px; margin-bottom: 5px; }
+        .modal-bottom-status { text-align: center; font-size: 13px; color: #64748b; font-weight: 600; margin-top: 5px; margin-bottom: 5px; width: 100%; }
 
         .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 76px; background: #05080e; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.02); z-index: 1000; padding-bottom: 12px; }
         .nav-item { text-align: center; color: #3d4757; cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%; }
@@ -493,19 +482,16 @@
 
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
-            <h2 class="modal-title" id="lbl-m-title">Ежедневное колесо</h2>
+            <h2 class="modal-title" id="lbl-m-title">Ежедневные награды</h2>
             <button class="modal-close" onclick="closeBonusModal()">×</button>
         </div>
-        <div class="modal-subtitle" id="lbl-m-subtitle">Тапни по колесу и забери до 1500 коинов</div>
+        <div class="modal-subtitle" id="lbl-m-subtitle">Заходи в игру каждый день без пропусков и забирай растущие бонусы!</div>
         
-        <div class="daily-wheel-wrapper">
-            <div class="daily-wheel-arrow"></div>
-            <div class="daily-wheel-body" id="daily-wheel-canvas" onclick="spinDailyWheel()">
-                </div>
-        </div>
+        <div class="rewards-calendar-grid" id="rewards-grid-container">
+            </div>
 
-        <div class="modal-bottom-status" id="modal-status-text">Уже получено сегодня</div>
-        <button class="btn" id="modal-claim-btn" onclick="spinDailyWheel()" style="width: 100%; max-width: 340px; margin: 15px auto 0 auto; display: none;">КРУТИТЬ КОЛЕСО</button>
+        <div class="modal-bottom-status" id="modal-status-text"></div>
+        <button class="btn" id="modal-claim-btn" onclick="claimDailyRewardClick()" style="width: 100%; max-width: 340px; margin: 10px auto 0 auto; display: none;">ЗАБРАТЬ НАГРАДУ</button>
     </div>
 
     <div id="result-dialog" class="result-dialog-overlay">
@@ -535,32 +521,38 @@
         const langData = {
             ru: {
                 energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ", game_title_main: "Мини-игры",
-                m_title: "Ежедневное колесо", m_subtitle: "Тапни по колесу и забери до 1500 коинов", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆",
+                m_title: "Ежедневные награды", m_subtitle: "Заходи в игру каждый день без пропусков и забирай растущие бонусы!", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆",
                 st_1: "Количество монет", st_2: "Количество тапов", 
                 st_3: "Выиграно в мини играх", st_4: "Прибыль", 
                 st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
-                claimed_today: "Следующее вращение будет доступно завтра", claim_now: "КРУТИТЬ КОЛЕСО", day: "день", days_format: "дней",
-                w_bet: "Ставка:", w_target: "Выигрыш:", w_spin: "ЕЩЕ РАЗ", w_spinning: "КРУТИМ...", btn_play: "Играть", back_menu: "← назад в меню"
+                claimed_today: "Следующая награда будет доступна завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "День", days_format: "дней",
+                w_bet: "Ставка:", w_target: "Выигрыш:", w_spin: "КРУТИТЬ", w_spinning: "КРУТИМ...", btn_play: "Играть", back_menu: "← назад в меню"
             },
             en: {
                 energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS", game_title_main: "Mini Games",
-                m_title: "Daily Wheel", m_subtitle: "Tap the wheel to claim up to 1500 coins", stats_title: "Statistics", top_title: "LEADERBOARD 🏆",
+                m_title: "Daily Rewards", m_subtitle: "Enter the game daily without missing a day to claim growing bonuses!", stats_title: "Statistics", top_title: "LEADERBOARD 🏆",
                 st_1: "Coins amount", st_2: "Taps count", 
                 st_3: "Won in mini games", st_4: "Net Profit", 
                 st_5: "Rewards streak", st_6: "Fortune wheel spins",
                 nv_game: "Home", nv_shop: "Shop", nv_games: "Mini Games", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
-                claimed_today: "Next spin available tomorrow", claim_now: "SPIN THE WHEEL", day: "day", days_format: "days",
+                claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "Day", days_format: "days",
                 w_bet: "Bet:", w_target: "Target:", w_spin: "SPIN", w_spinning: "SPINNING...", btn_play: "Play", back_menu: "← back to menu"
             }
         };
 
-        const dailyWheelSectors = [
-            { prize: 100 }, { prize: 200 }, { prize: 300 }, { prize: 500 },
-            { prize: 1000 }, { prize: 1500 }, { prize: 2000 }, { prize: 5000 }
-        ];
+        // Статичная конфигурация наград по дням (цикл 7 дней)
+        const DAILY_REWARDS_LIST = {
+            1: 1000,
+            2: 2500,
+            3: 5000,
+            4: 10000,
+            5: 25000,
+            6: 50000,
+            7: 100000
+        };
 
         const CARDS_DATA = {
             lupi_67: { img: '67lupi.png', cost: 10000 },
@@ -582,12 +574,11 @@
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         let wheelIsSpinning = false;
-        let dailyWheelIsSpinning = false;
         const wheelCircumference = 2 * Math.PI * 95; 
 
         if (isFirstTime) {
             coins = 100; 
-            stat_streak = 1;
+            stat_streak = 0; // Начинаем с 0, при первом получении станет 1
             lastClaim = 0;
             stat_games_won = 0;
             stat_games_lost = 0;
@@ -629,33 +620,73 @@
 
         function openBonusModal() {
             document.getElementById('bonus-modal').classList.add('open');
-            buildDailyWheelSectors();
-            checkDailyWheelStatus();
+            checkDailyRewardStreakValidation(); // Проверяем, не сгорел ли стрик перед отрисовкой
+            buildDailyRewardsCalendar();
+            checkDailyRewardStatus();
         }
 
         function closeBonusModal() {
-            if (dailyWheelIsSpinning) return;
             document.getElementById('bonus-modal').classList.remove('open');
         }
 
-        function buildDailyWheelSectors() {
-            const canvas = document.getElementById('daily-wheel-canvas');
-            canvas.innerHTML = '';
-            const sectorAngle = 360 / dailyWheelSectors.length;
+        // Авто-проверка пропущенных дней для стрика
+        function checkDailyRewardStreakValidation() {
+            if (lastClaim === 0) return;
 
-            dailyWheelSectors.forEach((sector, index) => {
-                const textDiv = document.createElement('div');
-                textDiv.className = 'wheel-sector-text';
-                const currentAngle = (index * sectorAngle) + (sectorAngle / 2);
-                textDiv.style.transform = `rotate(${currentAngle}deg)`;
-                textDiv.innerHTML = `${sector.prize}`;
-                canvas.appendChild(textDiv);
-            });
+            const todayStart = new Date().setHours(0, 0, 0, 0);
+            const oneDayMs = 24 * 60 * 60 * 1000;
+            const yesterdayStart = todayStart - oneDayMs;
+            const lastClaimStart = new Date(lastClaim).setHours(0, 0, 0, 0);
+
+            // Если последний сбор был раньше, чем вчера -> Стрик сгорает (сброс в 0)
+            if (lastClaimStart < yesterdayStart) {
+                stat_streak = 0;
+                localStorage.setItem('cc_st_streak', stat_streak);
+            }
         }
 
-        function checkDailyWheelStatus() {
-            const timePassed = Date.now() - lastClaim;
-            const isAvailable = timePassed >= 86400000 || lastClaim === 0;
+        function buildDailyRewardsCalendar() {
+            const container = document.getElementById('rewards-grid-container');
+            container.innerHTML = '';
+            
+            const todayStart = new Date().setHours(0, 0, 0, 0);
+            const lastClaimStart = new Date(lastClaim).setHours(0, 0, 0, 0);
+            const isAvailableToday = lastClaimStart !== todayStart || lastClaim === 0;
+
+            // Определяем, какой день является текущим для получения
+            let activeDayIndex = stat_streak + 1;
+            if (!isAvailableToday) {
+                activeDayIndex = stat_streak; // Если сегодня забрали, подсвечиваем последний собранный
+            }
+            if (activeDayIndex > 7) activeDayIndex = 1;
+
+            for (let day = 1; day <= 7; day++) {
+                const prize = DAILY_REWARDS_LIST[day];
+                const card = document.createElement('div');
+                card.className = `reward-day-card${day === 7 ? ' day-7' : ''}`;
+
+                let statusHtml = '';
+                if (day < activeDayIndex || (!isAvailableToday && day === activeDayIndex)) {
+                    card.classList.add('completed');
+                    statusHtml = '<span class="day-check">✅</span>';
+                } else if (day === activeDayIndex && isAvailableToday) {
+                    card.classList.add('current');
+                }
+
+                card.innerHTML = `
+                    <div class="day-title">${langData[currentLang].day} ${day}</div>
+                    <div class="day-coins">${prize.toLocaleString()}</div>
+                    ${statusHtml}
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function checkDailyRewardStatus() {
+            const todayStart = new Date().setHours(0, 0, 0, 0);
+            const lastClaimStart = new Date(lastClaim).setHours(0, 0, 0, 0);
+            const isAvailable = lastClaimStart !== todayStart || lastClaim === 0;
+
             const claimBtn = document.getElementById('modal-claim-btn');
             const statusText = document.getElementById('modal-status-text');
 
@@ -670,59 +701,35 @@
             }
         }
 
-        function spinDailyWheel() {
-            if (dailyWheelIsSpinning) return;
+        function claimDailyRewardClick() {
+            const todayStart = new Date().setHours(0, 0, 0, 0);
+            const lastClaimStart = new Date(lastClaim).setHours(0, 0, 0, 0);
             
-            const timePassed = Date.now() - lastClaim;
-            if (timePassed < 86400000 && lastClaim > 0) return;
+            if (lastClaimStart === todayStart && lastClaim > 0) return; // Защита от повторного клика
 
-            dailyWheelIsSpinning = true;
-            document.getElementById('modal-claim-btn').disabled = true;
+            // Высчитываем стрик наград
+            if (stat_streak >= 7) {
+                stat_streak = 1; // Цикл сбрасывается на 1-й день после 7-го
+            } else {
+                stat_streak++;
+            }
 
-            const sectorCount = dailyWheelSectors.length;
-            const sectorAngle = 360 / sectorCount;
+            const prizeAmount = DAILY_REWARDS_LIST[stat_streak];
+            coins += prizeAmount;
+            lastClaim = Date.now();
 
-            const winningIndex = Math.floor(Math.random() * sectorCount);
-            const prizeObj = dailyWheelSectors[winningIndex];
+            tg.HapticFeedback.notificationOccurred('success');
+            
+            showCustomResultDialog(
+                currentLang === 'ru' 
+                ? `Награда за <b>День ${stat_streak}</b> получена!<br>+<b>${prizeAmount.toLocaleString()}</b> LUPI COIN`
+                : `Reward for <b>Day ${stat_streak}</b> claimed!<br>+<b>${prizeAmount.toLocaleString()}</b> LUPI COIN`
+            );
 
-            const targetSectorCenter = (winningIndex * sectorAngle) + (sectorAngle / 2);
-            const initialOffset = 270; 
-            const finalAngle = (initialOffset - targetSectorCenter + 360) % 360;
-            const totalRotation = 1800 + finalAngle; 
-
-            const wheelCanvas = document.getElementById('daily-wheel-canvas');
-            wheelCanvas.style.transition = 'transform 4s cubic-bezier(0.2, 1, 0.2, 1)';
-            wheelCanvas.style.transform = `rotate(${totalRotation}deg)`;
-
-            setTimeout(() => {
-                coins += prizeObj.prize;
-                
-                if (timePassed < 172800000) {
-                    stat_streak++;
-                } else {
-                    stat_streak = 1;
-                }
-
-                lastClaim = Date.now();
-                dailyWheelIsSpinning = false;
-                
-                document.getElementById('modal-claim-btn').disabled = false;
-
-                wheelCanvas.style.transition = 'none';
-                wheelCanvas.style.transform = `rotate(${finalAngle}deg)`;
-
-                tg.HapticFeedback.notificationOccurred('success');
-                
-                showCustomResultDialog(
-                    currentLang === 'ru' 
-                    ? `Ваш приз сегодня:<br><b>${prizeObj.prize}</b> LUPI COIN!`
-                    : `Your prize today:<br><b>${prizeObj.prize}</b> LUPI COIN!`
-                );
-
-                checkDailyWheelStatus();
-                updateUI();
-                saveAll();
-            }, 4100);
+            buildDailyRewardsCalendar();
+            checkDailyRewardStatus();
+            updateUI();
+            saveAll();
         }
 
         function showCustomResultDialog(htmlText) {
@@ -814,15 +821,16 @@
             document.getElementById('st-streak').innerText = `${stat_streak} ${currentLang === 'ru' ? 'дней' : l.days_format}`;
             document.getElementById('st-wheel-spins').innerText = stat_wheel_spins.toLocaleString();
 
-            const timePassed = Date.now() - lastClaim;
-            const isRewardAvailable = (timePassed >= 86400000 || lastClaim === 0);
+            const todayStart = new Date().setHours(0, 0, 0, 0);
+            const lastClaimStart = new Date(lastClaim).setHours(0, 0, 0, 0);
+            const isRewardAvailable = lastClaimStart !== todayStart || lastClaim === 0;
             const dotEl = document.getElementById('bonus-dot');
             if (dotEl) {
                 dotEl.style.display = isRewardAvailable ? 'block' : 'none';
             }
 
             if(document.getElementById('shop-scr').classList.contains('active')) renderCards();
-            if(document.getElementById('bonus-modal').classList.contains('open') && !dailyWheelIsSpinning) checkDailyWheelStatus();
+            if(document.getElementById('bonus-modal').classList.contains('open')) checkDailyRewardStatus();
         }
 
         function renderCards() {
@@ -1106,6 +1114,7 @@
             }, 3550);
         }
 
+        // Энергия и автосохранение раз в секунду
         setInterval(() => {
             const maxE = getEnergyMax(lvlE);
             if (energy < maxE) energy++;
@@ -1114,6 +1123,8 @@
             localStorage.setItem('cc_energy', energy);
         }, 1000);
 
+        // Первая инициализация стрика при загрузке страницы
+        checkDailyRewardStreakValidation();
         setLanguage(currentLang);
     </script>
 </body>
