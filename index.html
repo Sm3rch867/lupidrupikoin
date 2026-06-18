@@ -70,7 +70,6 @@
         .bonus-trigger-btn .streak-num { font-size: 13px; font-weight: 700; color: #ffffff; }
         .bonus-trigger-btn .flame-icon { font-size: 15px; line-height: 1; }
         
-        /* Синяя точка-уведомление */
         #bonus-dot {
             position: absolute;
             top: -2px;
@@ -103,8 +102,9 @@
         .shop-section-title { width: 100%; text-align: left; font-size: 15px; font-weight: 700; margin: 10px 0 12px 0; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
-        .card-item { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; align-items: center; }
-        .card-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 8px; }
+        .card-item { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .card-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 6px; }
+        .card-profit-lbl { font-size: 11px; color: #4ade80; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 3px; }
 
         .btn { background: var(--primary); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .action-btn { padding: 10px 12px; font-size: 12px; border-radius: 10px; font-weight: bold; border: none; color: white; width: 100%; }
@@ -128,7 +128,6 @@
         .stats-row:last-child { border-bottom: none; }
         .stats-row span:last-child { font-weight: 600; color: #ffffff !important; display: flex; align-items: center; gap: 4px; text-align: right; }
         
-        /* Цвета для прибыли и выигрышей */
         .stats-row .win-color { color: #4ade80 !important; }
         .stats-row .loss-color { color: #f87171 !important; }
         
@@ -320,7 +319,7 @@
                     <div class="capsule-cell">
                         <label id="lbl-capsule-bet">Ставка:</label>
                         <div class="capsule-input-wrapper">
-                            <input type="number" id="wheel-bet-input" value="10000" min="10000">
+                            <input type="number" id="wheel-bet-input" value="1000" min="1000">
                         </div>
                         <div class="capsule-quick-row">
                             <button class="q-btn" onclick="setBetPreset('min')">MIN</button>
@@ -331,7 +330,7 @@
                     <div class="capsule-cell">
                         <label id="lbl-capsule-target">Выигрыш:</label>
                         <div class="capsule-input-wrapper">
-                            <input type="number" id="wheel-target-input" value="20000">
+                            <input type="number" id="wheel-target-input" value="2000">
                         </div>
                         <div class="capsule-quick-row four-cols">
                             <button class="q-btn" onclick="multiplyTarget(2)">X2</button>
@@ -496,10 +495,11 @@
 
         const dailyRewardsConfig = [1000, 2000, 2000, 5000, 5000, 7000, 10000];
 
+        // Настройки карточек: цена и пассивный доход в секунду
         const CARDS_DATA = {
-            lupi_67: { img: '67lupi.png', cost: 10000 },
-            lupi_drupi: { img: 'lupidrupi.jpg', cost: 25000 },
-            delo_lupi: { img: 'delovolupi.png', cost: 50000 }
+            lupi_67: { name_ru: "67 лупи", name_en: "67 lupi", img: '67lupi.png', cost: 670000, pps: 67 },
+            lupi_drupi: { name_ru: "лупи друпи", name_en: "lupi drupi", img: 'lupidrupi.jpg', cost: 1000000, pps: 20 },
+            delo_lupi: { name_ru: "деловой лупи", name_en: "business lupi", img: 'delovolupi.png', cost: 100000000, pps: 1000 }
         };
 
         let isFirstTime = localStorage.getItem('cc_initialized') === null;
@@ -543,6 +543,17 @@
 
         const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
         const getEnergyMax = (l) => 100 + (l - 1) * 100; 
+
+        // Вычисление текущего общего дохода в секунду
+        function getPassiveIncomePerSecond() {
+            let totalIncome = 0;
+            Object.keys(CARDS_DATA).forEach(id => {
+                if (userCards[id] && userCards[id].bought) {
+                    totalIncome += CARDS_DATA[id].pps;
+                }
+            });
+            return totalIncome;
+        }
 
         function initTelegramProfile() {
             const user = tg.initDataUnsafe?.user;
@@ -724,7 +735,6 @@
             document.getElementById('st-streak').innerText = `${stat_streak} ${currentLang === 'ru' ? 'дней' : l.days_format}`;
             document.getElementById('st-wheel-spins').innerText = stat_wheel_spins.toLocaleString();
 
-            // Логика управления отображением синей точки уведомления
             const timePassed = Date.now() - lastClaim;
             const isRewardAvailable = (timePassed >= 86400000 || lastClaim === 0);
             const dotEl = document.getElementById('bonus-dot');
@@ -742,10 +752,15 @@
             container.innerHTML = Object.keys(CARDS_DATA).map(id => {
                 const cfg = CARDS_DATA[id];
                 const state = userCards[id];
+                const title = currentLang === 'ru' ? cfg.name_ru : cfg.name_en;
+                const profitText = currentLang === 'ru' ? `Доход: +${cfg.pps}/сек` : `Income: +${cfg.pps}/sec`;
+                
                 if (!state.bought) {
                     return `
                         <div class="card-item">
+                            <b style="font-size:13px; margin-bottom:5px; text-transform:uppercase;">${title}</b>
                             <img src="${cfg.img}" class="card-img" alt="Card">
+                            <div class="card-profit-lbl">⚡ ${profitText}</div>
                             <button class="action-btn buy" ${coins < cfg.cost ? 'disabled' : ''} onclick="buyCard('${id}')">
                                 ${l.buy_btn} ${cfg.cost.toLocaleString()}
                             </button>
@@ -754,7 +769,9 @@
                 } else {
                     return `
                         <div class="card-item">
+                            <b style="font-size:13px; margin-bottom:5px; text-transform:uppercase;">${title}</b>
                             <img src="${cfg.img}" class="card-img" alt="Card">
+                            <div class="card-profit-lbl">⚡ ${profitText}</div>
                             <button class="action-btn owned" disabled>${l.owned_btn}</button>
                         </div>
                     `;
@@ -843,7 +860,8 @@
             if (uid) {
                 db.ref('users/' + uid).update({
                     coins, username: tg.initDataUnsafe.user.first_name || "Игрок",
-                    stat_streak, stat_total_clicks, stat_games_won, stat_games_lost, stat_wheel_spins, lastClaim
+                    stat_streak, stat_total_clicks, stat_games_won, stat_games_lost, stat_wheel_spins, lastClaim,
+                    userCards
                 });
             }
         }
@@ -945,14 +963,14 @@
 
         function setBetPreset(action) {
             if(wheelIsSpinning) return;
-            let b = parseFloat(betInput.value) || 10000;
+            let b = parseFloat(betInput.value) || 1000;
             if(action === 'min') {
-                b = 10000;
+                b = 1000;
             } else if (action === 'x2') {
                 b = b * 2;
             } else if (action === 'max') {
                 b = Math.floor(coins);
-                if(b < 10000) b = 10000;
+                if(b < 1000) b = 1000;
             }
             betInput.value = b;
             calculateWheelChance();
@@ -976,8 +994,8 @@
             let b = parseFloat(betInput.value) || 0;
             let t = parseFloat(targetInput.value) || 0;
 
-            if(b < 10000) {
-                tg.showAlert(currentLang === 'ru' ? "Минимальная ставка — 10 000 монет!" : "Minimum bet is 10,000 coins!");
+            if(b < 1000) {
+                tg.showAlert(currentLang === 'ru' ? "Минимальная ставка — 1 000 монет!" : "Minimum bet is 1,000 coins!");
                 return;
             }
             if(coins < b) {
@@ -1043,12 +1061,37 @@
             }, 3550);
         }
 
+        // Единый ежесекундный таймер игры
+        let dbSaveCounter = 0;
         setInterval(() => {
+            // 1. Регенерация энергии
             const maxE = getEnergyMax(lvlE);
             if (energy < maxE) energy++;
+            
+            // 2. Начисление AFK-дохода от купленных карточек
+            const afkIncome = getPassiveIncomePerSecond();
+            if (afkIncome > 0) {
+                coins += afkIncome;
+            }
+            
+            // 3. Обновление интерфейса
             updateUI();
+            
+            // 4. Локальное сохранение данных каждую секунду
             localStorage.setItem('cc_coins', coins);
             localStorage.setItem('cc_energy', energy);
+            
+            // 5. Оптимальное сохранение в Firebase (раз в 5 секунд, чтобы не перегружать БД)
+            dbSaveCounter++;
+            if (dbSaveCounter >= 5) {
+                const uid = tg.initDataUnsafe?.user?.id;
+                if (uid) {
+                    db.ref('users/' + uid).update({
+                        coins, energy, userCards
+                    });
+                }
+                dbSaveCounter = 0;
+            }
         }, 1000);
 
         setLanguage(currentLang);
