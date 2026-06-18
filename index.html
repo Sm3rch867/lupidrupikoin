@@ -7,7 +7,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
         :root { 
             --primary: #2563eb; 
@@ -175,20 +174,52 @@
         #wheel-yellow-pointer { position: absolute; width: 4px; height: 20px; background: #adff2f; border-radius: 2px; top: calc(50% - 10px + 95px); left: calc(50% - 2px); transform-origin: 2px -85px; z-index: 10; box-shadow: 0 0 10px #adff2f, 0 0 4px rgba(173, 255, 47, 1); }
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
 
-        /* Контейнер оригинальной ТГ-анимации кубика */
-        .dice-lottie-container {
-            width: 150px;
-            height: 150px;
-            margin: 15px 0;
+        /* ==============================================
+           НОВЫЙ ЧЕСТНЫЙ 3D CSS КУБИК (РАБОТАЕТ ВСЕГДА)
+           ============================================== */
+        .dice-3d-scene {
+            width: 140px;
+            height: 140px;
+            margin: 25px 0;
+            perspective: 600px; /* Эффект глубины */
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+        .cube-object {
+            width: 90px;
+            height: 90px;
             position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(30deg); /* Стартовый ракурс */
+            transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.3, 1.05);
         }
-        #lottie-dice-player {
-            width: 100%;
-            height: 100%;
+        .cube-face {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: #1e293b;
+            border: 3px solid #3b82f6;
+            border-radius: 16px;
+            color: white;
+            font-size: 38px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(59, 130, 246, 0.3), 0 0 10px rgba(0,0,0,0.5);
+            backface-visibility: visible;
         }
+        /* Позиционирование 6 граней в 3D пространстве */
+        .face-1 { transform: rotateY(0deg) translateZ(45px); }
+        .face-6 { transform: rotateY(180deg) translateZ(45px); }
+        .face-3 { transform: rotateY(90deg) translateZ(45px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(45px); }
+        .face-2 { transform: rotateX(90deg) translateZ(45px); }
+        .face-5 { transform: rotateX(-90deg) translateZ(45px); }
+
+        /* Точки как на настоящих костях */
+        .cube-face span { text-shadow: 0 0 10px #60a5fa; }
 
         .dice-modes-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; background: #0d121d; padding: 4px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
         .dice-tab { background: transparent; border: none; color: #64748b; padding: 10px 4px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
@@ -381,8 +412,15 @@
                 <div id="dice-interactive-options" style="width: 100%;"></div>
             </div>
 
-            <div class="dice-lottie-container">
-                <div id="lottie-dice-player"></div>
+            <div class="dice-3d-scene">
+                <div class="cube-object" id="css-3d-cube">
+                    <div class="cube-face face-1"><span>1</span></div>
+                    <div class="cube-face face-6"><span>6</span></div>
+                    <div class="cube-face face-3"><span>3</span></div>
+                    <div class="cube-face face-4"><span>4</span></div>
+                    <div class="cube-face face-2"><span>2</span></div>
+                    <div class="cube-face face-5"><span>5</span></div>
+                </div>
             </div>
 
             <button class="btn-wheel-action-spin" id="dice-roll-btn" onclick="rollDice()">Бросить кубик</button>
@@ -507,7 +545,7 @@
                 energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ", game_title_main: "Мини-игры",
                 m_title: "Ежедневная награда", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆",
                 st_1: "Количество монет", st_2: "Количество тапов", 
-                st_3: "Выиграно в mini igrax", st_4: "Прибыль", 
+                st_3: "Выиграно в мини играх", st_4: "Прибыль", 
                 st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
@@ -558,8 +596,15 @@
         let diceCurrentMode = 'number'; 
         let diceSelectedValue = 1;      
 
-        // Lottie Переменная экземпляра
-        let diceAnimationInstance = null;
+        // 3D CSS Ротации для каждой грани куба [X, Y]
+        const faceRotations = {
+            1: [0, 0],
+            6: [0, 180],
+            3: [0, -90],
+            4: [0, 90],
+            2: [-90, 0],
+            5: [90, 0]
+        };
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -691,35 +736,17 @@
         }
 
         /* ========================================================
-           ИГРА КУБИК: ОФИЦИАЛЬНЫЙ ДВИЖОК Telegram (LOTTIE ВЕКТОР)
+           ЛОГИКА ИГРЫ КУБИК (3D CSS)
            ======================================================== */
-        function initDiceLottiePlaceholder() {
-            // Если анимация уже загружена, сбрасываем её на первый статичный кадр
-            if (diceAnimationInstance) {
-                diceAnimationInstance.goToAndStop(0, true);
-                return;
-            }
-
-            // Загружаем векторный кубик из CDN. Это копия официальной ТГ анимации.
-            diceAnimationInstance = lottie.loadAnimation({
-                container: document.getElementById('lottie-dice-player'),
-                renderer: 'svg',
-                loop: false,
-                autoplay: false,
-                path: 'https://assets5.lottiefiles.com/packages/lf20_9aa9v8am.json' // Базовый плавный ТГ-куб
-            });
-
-            // Ждем загрузки и фиксируем на старте
-            diceAnimationInstance.addEventListener('DOMLoaded', () => {
-                diceAnimationInstance.goToAndStop(0, true);
-            });
-        }
-
         function openDiceGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('dice-machine-view').style.display = 'flex';
             
-            initDiceLottiePlaceholder();
+            // Возвращаем в дефолтное положение
+            const cube = document.getElementById('css-3d-cube');
+            cube.style.transition = 'none';
+            cube.style.transform = `rotateX(-20deg) rotateY(30deg)`;
+            
             setDiceMode(diceCurrentMode);
         }
 
@@ -810,14 +837,26 @@
             coins -= b;
             updateUI();
 
-            // Рандомим результат (1 - 6)
+            // Рандомим результат (от 1 до 6)
             let resultNumber = Math.floor(Math.random() * 6) + 1;
 
-            // Запускаем воспроизведение плавной векторной анимации ТГ-кубика с начала
-            diceAnimationInstance.goToAndPlay(0, true);
-            tg.HapticFeedback.impactOccurred('medium');
+            const cube = document.getElementById('css-3d-cube');
+            
+            // Включаем плавную анимацию
+            cube.style.transition = 'transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            
+            // Вычисляем угол вращения: берем базовый угол грани и добавляем 3-4 полных оборота (720-1080 градусов) для безумного вращения
+            let baseRot = faceRotations[resultNumber];
+            let extraX = (Math.floor(Math.random() * 2) + 3) * 360; 
+            let extraY = (Math.floor(Math.random() * 2) + 3) * 360; 
 
-            // ТГ Анимация длится около 1.8 секунд. Крутим и в нужный момент фиксируем результат.
+            let targetX = baseRot[0] + extraX;
+            let targetY = baseRot[1] + extraY;
+
+            // Запускаем 3D-вращение
+            cube.style.transform = `rotateX(${targetX}deg) rotateY(${targetY}deg)`;
+            tg.HapticFeedback.impactOccurred('heavy');
+
             setTimeout(() => {
                 let isWin = false;
                 let multiplier = 2;
@@ -856,13 +895,17 @@
                     );
                 }
 
+                // Сбрасываем углы обратно в базовые (без лишних сотен градусов), чтобы при следующем броске кубик не крутился назад
+                cube.style.transition = 'none';
+                cube.style.transform = `rotateX(${baseRot[0]}deg) rotateY(${baseRot[1]}deg)`;
+
                 diceIsRolling = false;
                 document.getElementById('dice-roll-btn').disabled = false;
                 document.getElementById('dice-roll-btn').innerText = langData[currentLang].dice_roll_btn;
                 
                 updateUI();
                 saveAll();
-            }, 1800); 
+            }, 1550); 
         }
 
         /* --- КАНАЛ КОЛЕСА (WHEEL LOGIC) --- */
