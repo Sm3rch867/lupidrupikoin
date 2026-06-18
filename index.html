@@ -495,11 +495,11 @@
 
         const dailyRewardsConfig = [1000, 2000, 2000, 5000, 5000, 7000, 10000];
 
-        // Настройки карточек: цена и пассивный доход в секунду
+        // Имена удалены, оставлены только картинки, стоимость и пассивный доход
         const CARDS_DATA = {
-            lupi_67: { name_ru: "67 лупи", name_en: "67 lupi", img: '67lupi.png', cost: 670000, pps: 67 },
-            lupi_drupi: { name_ru: "лупи друпи", name_en: "lupi drupi", img: 'lupidrupi.jpg', cost: 1000000, pps: 20 },
-            delo_lupi: { name_ru: "деловой лупи", name_en: "business lupi", img: 'delovolupi.png', cost: 100000000, pps: 1000 }
+            lupi_67: { img: '67lupi.png', cost: 670000, pps: 67 },
+            lupi_drupi: { img: 'lupidrupi.jpg', cost: 1000000, pps: 20 },
+            delo_lupi: { img: 'delovolupi.png', cost: 100000000, pps: 1000 }
         };
 
         let isFirstTime = localStorage.getItem('cc_initialized') === null;
@@ -544,7 +544,6 @@
         const getClickPower = (l) => Math.floor(Math.pow(1.15, l - 1));
         const getEnergyMax = (l) => 100 + (l - 1) * 100; 
 
-        // Вычисление текущего общего дохода в секунду
         function getPassiveIncomePerSecond() {
             let totalIncome = 0;
             Object.keys(CARDS_DATA).forEach(id => {
@@ -752,13 +751,12 @@
             container.innerHTML = Object.keys(CARDS_DATA).map(id => {
                 const cfg = CARDS_DATA[id];
                 const state = userCards[id];
-                const title = currentLang === 'ru' ? cfg.name_ru : cfg.name_en;
                 const profitText = currentLang === 'ru' ? `Доход: +${cfg.pps}/сек` : `Income: +${cfg.pps}/sec`;
                 
+                // Из блоков ниже удалены теги <b> с именами карточек
                 if (!state.bought) {
                     return `
                         <div class="card-item">
-                            <b style="font-size:13px; margin-bottom:5px; text-transform:uppercase;">${title}</b>
                             <img src="${cfg.img}" class="card-img" alt="Card">
                             <div class="card-profit-lbl">⚡ ${profitText}</div>
                             <button class="action-btn buy" ${coins < cfg.cost ? 'disabled' : ''} onclick="buyCard('${id}')">
@@ -769,7 +767,6 @@
                 } else {
                     return `
                         <div class="card-item">
-                            <b style="font-size:13px; margin-bottom:5px; text-transform:uppercase;">${title}</b>
                             <img src="${cfg.img}" class="card-img" alt="Card">
                             <div class="card-profit-lbl">⚡ ${profitText}</div>
                             <button class="action-btn owned" disabled>${l.owned_btn}</button>
@@ -1061,27 +1058,21 @@
             }, 3550);
         }
 
-        // Единый ежесекундный таймер игры
         let dbSaveCounter = 0;
         setInterval(() => {
-            // 1. Регенерация энергии
             const maxE = getEnergyMax(lvlE);
             if (energy < maxE) energy++;
             
-            // 2. Начисление AFK-дохода от купленных карточек
             const afkIncome = getPassiveIncomePerSecond();
             if (afkIncome > 0) {
                 coins += afkIncome;
             }
             
-            // 3. Обновление интерфейса
             updateUI();
             
-            // 4. Локальное сохранение данных каждую секунду
             localStorage.setItem('cc_coins', coins);
             localStorage.setItem('cc_energy', energy);
             
-            // 5. Оптимальное сохранение в Firebase (раз в 5 секунд, чтобы не перегружать БД)
             dbSaveCounter++;
             if (dbSaveCounter >= 5) {
                 const uid = tg.initDataUnsafe?.user?.id;
