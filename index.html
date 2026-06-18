@@ -68,6 +68,7 @@
             margin: 0 auto 5px auto;
         }
         .bonus-trigger-btn {
+            position: relative;
             background: rgba(22, 32, 51, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
@@ -82,6 +83,21 @@
         .bonus-trigger-btn:active { transform: scale(0.95); }
         .bonus-trigger-btn .streak-num { font-size: 13px; font-weight: 700; color: #ffffff; }
         .bonus-trigger-btn .flame-icon { font-size: 15px; line-height: 1; }
+        
+        /* Синяя точка-уведомление */
+        #bonus-dot {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: 8px;
+            height: 8px;
+            background: #2563eb;
+            border-radius: 50%;
+            border: 1px solid #090d16;
+            box-shadow: 0 0 6px #2563eb;
+            display: none;
+            z-index: 5;
+        }
 
         #coins { font-size: 42px; font-weight: 800; color: white; letter-spacing: -0.5px; }
         
@@ -275,6 +291,7 @@
     <div class="header" id="main-header">
         <div class="top-bonus-row">
             <div class="bonus-trigger-btn" onclick="openBonusModal()">
+                <div id="bonus-dot"></div>
                 <span class="flame-icon">🔥</span>
                 <span class="streak-num" id="top-streak-badge">0</span>
             </div>
@@ -289,7 +306,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="game-scr" class="screen active">
         <div style="font-size: 12px; color: #475467; margin-top: 5px; font-weight: 600;">
             <span id="lbl-clickpower">👆 Сила клика:</span> <span id="click-val">1</span>
@@ -297,13 +313,11 @@
         <button class="coin-btn" id="coin-tap"></button>
     </div>
 
-    <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="shop-scr" class="screen">
         <div class="shop-section-title" id="lbl-cards">КАРТОЧКИ</div>
         <div class="cards-grid" id="cards-container"></div>
     </div>
 
-    <!-- ЭКРАН 3: МИНИ-ИГРЫ -->
     <div id="games-scr" class="screen">
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
@@ -315,7 +329,7 @@
         </div>
 
         <div class="wheel-game-play-view" id="wheel-machine-view">
-            <div class="wheel-top-capsule">
+            <div class="wheel-game-top-capsule">
                 <div class="capsule-row">
                     <div class="capsule-cell">
                         <label id="lbl-capsule-bet">Ставка:</label>
@@ -343,7 +357,6 @@
                 </div>
             </div>
 
-            <!-- Игровое Колесо -->
             <div class="wheel-big-box">
                 <div id="wheel-yellow-pointer"></div>
                 <svg class="wheel-svg-object" width="220" height="220">
@@ -358,7 +371,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 4: ПРОФИЛЬ -->
     <div id="profile-scr" class="screen">
         <div class="profile-header">
             <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
@@ -384,7 +396,6 @@
                     <span id="lbl-st-2">Количество тапов</span>
                     <span id="st-total-clicks">0</span>
                 </div>
-                <!-- ОБНОВЛЕННЫЕ ПУНКТЫ СТАТИСТИКИ -->
                 <div class="stats-row">
                     <span id="lbl-st-3">Выиграно в мини играх</span>
                     <span><span id="st-games-won" class="win-color">0</span> <img src="newcoin.jpg" class="coin-mini-icon" alt="c"></span>
@@ -415,7 +426,6 @@
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
     </div>
 
-    <!-- МЕНЮ НАВИГАЦИИ -->
     <div class="nav">
         <div class="nav-item active" id="n-game" onclick="show('game')">
             <div class="nav-glow"></div>
@@ -430,7 +440,7 @@
         <div class="nav-item" id="n-games" onclick="show('games')">
             <div class="nav-glow"></div>
             <svg class="nav-svg" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"></path></svg>
-            <span id="nv-games">Мини-игры</span>
+            <span id="nv-games">Mini Games</span>
         </div>
         <div class="nav-item" id="n-profile" onclick="show('profile')">
             <div class="nav-glow"></div>
@@ -439,7 +449,6 @@
         </div>
     </div>
 
-    <!-- МЕНЮ НАГРАД -->
     <div id="bonus-modal" class="modal-overlay">
         <div class="modal-header">
             <h2 class="modal-title" id="lbl-m-title">Ежедневная награда</h2>
@@ -450,7 +459,6 @@
         <button class="btn" id="modal-claim-btn" onclick="claimDaily()" style="width: 100%; max-width: 340px; margin: 0 auto; display: none;">ЗАБРАТЬ НАГРАДУ</button>
     </div>
 
-    <!-- КАСТOМНЫЙ ДИАЛОГ РЕЗУЛЬТАТА ИГРЫ -->
     <div id="result-dialog" class="result-dialog-overlay">
         <div class="result-dialog-card">
             <div id="result-dialog-msg" class="result-dialog-text"></div>
@@ -480,7 +488,7 @@
                 energy: "⚡ Энергия", clickpower: "👆 Сила клика:", cards: "КАРТОЧКИ", game_title_main: "Мини-игры",
                 m_title: "Ежедневная награда", stats_title: "Статистика", top_title: "ТОП ИГРОКОВ 🏆",
                 st_1: "Количество монет", st_2: "Количество тапов", 
-                st_3: "Выиграно в мини играх", st_4: "Прибыль", 
+                st_3: "Выиграно в mini igrax", st_4: "Прибыль", 
                 st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
@@ -518,7 +526,6 @@
         let stat_streak = parseInt(localStorage.getItem('cc_st_streak')) || 0;
         let stat_total_clicks = parseInt(localStorage.getItem('cc_total_clicks')) || 0;
         
-        // Исправлено: если это новый запуск или старые невалидные данные — ставим строгие нули
         let stat_games_won = parseFloat(localStorage.getItem('cc_games_won'));
         if (isNaN(stat_games_won)) stat_games_won = 0;
 
@@ -594,7 +601,7 @@
             const container = document.getElementById('days-grid-container');
             const l = langData[currentLang];
             const timePassed = Date.now() - lastClaim;
-            const isAvailable = timePassed >= 86400000;
+            const isAvailable = timePassed >= 86400000 || lastClaim === 0;
             let claimedCount = stat_streak % 7;
 
             let html = '';
@@ -712,10 +719,8 @@
             document.getElementById('st-coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('st-total-clicks').innerText = stat_total_clicks.toLocaleString();
             
-            // Выигрыш — всегда чистый и красивый зеленый цвет
             document.getElementById('st-games-won').innerText = Math.floor(stat_games_won).toLocaleString();
             
-            // Вычисление чистой прибыли приложения (Выиграно минус Проиграно)
             let profit = stat_games_won - stat_games_lost;
             let profitEl = document.getElementById('st-net-profit');
             
@@ -732,6 +737,14 @@
             
             document.getElementById('st-streak').innerText = `${stat_streak} ${currentLang === 'ru' ? 'дней' : l.days_format}`;
             document.getElementById('st-wheel-spins').innerText = stat_wheel_spins.toLocaleString();
+
+            // Логика управления отображением синей точки уведомления
+            const timePassed = Date.now() - lastClaim;
+            const isRewardAvailable = (timePassed >= 86400000 || lastClaim === 0);
+            const dotEl = document.getElementById('bonus-dot');
+            if (dotEl) {
+                dotEl.style.display = isRewardAvailable ? 'block' : 'none';
+            }
 
             if(document.getElementById('shop-scr').classList.contains('active')) renderCards();
             if(document.getElementById('bonus-modal').classList.contains('open')) renderDaysGrid();
@@ -844,7 +857,7 @@
             if (uid) {
                 db.ref('users/' + uid).update({
                     coins, username: tg.initDataUnsafe.user.first_name || "Игрок",
-                    stat_streak, stat_total_clicks, stat_games_won, stat_games_lost, stat_wheel_spins
+                    stat_streak, stat_total_clicks, stat_games_won, stat_games_lost, stat_wheel_spins, lastClaim
                 });
             }
         }
@@ -881,12 +894,34 @@
             if (String(tg.initDataUnsafe?.user?.id) !== String(ADMIN_ID)) return tg.showAlert("Ошибка доступа!");
             const tid = String(document.getElementById('target-id').value.trim()); if(!tid) return tg.showAlert("Укажите ID!");
             if(confirm(`Обнулить игрока ${tid}?`)) {
-                db.ref('users/' + tid).update({ coins:0, lvlC:1, lvlE:1, userCards:null, stat_streak:0, stat_total_clicks:0, stat_games_won:0, stat_games_lost:0, stat_wheel_spins:0 }).then(() => {
+                db.ref('users/' + tid).update({ 
+                    coins: 0, 
+                    lvlC: 1, 
+                    lvlE: 1, 
+                    userCards: null, 
+                    stat_streak: 0, 
+                    stat_total_clicks: 0, 
+                    stat_games_won: 0, 
+                    stat_games_lost: 0, 
+                    stat_wheel_spins: 0,
+                    lastClaim: 0 
+                }).then(() => {
                     tg.showAlert("Игрок сброшен.");
                     if(tid === String(tg.initDataUnsafe?.user?.id)) {
-                        coins = 0; lvlC = 1; lvlE = 1; energy = 100; stat_streak=0; stat_total_clicks=0; stat_games_won=0; stat_games_lost=0; stat_wheel_spins=0;
+                        coins = 0; 
+                        lvlC = 1; 
+                        lvlE = 1; 
+                        energy = 100; 
+                        stat_streak = 0; 
+                        stat_total_clicks = 0; 
+                        stat_games_won = 0; 
+                        stat_games_lost = 0; 
+                        stat_wheel_spins = 0;
+                        lastClaim = 0;
                         userCards = { lupi_67: { bought: false }, lupi_drupi: { bought: false }, delo_lupi: { bought: false } };
-                        localStorage.clear(); localStorage.setItem('cc_initialized', 'true'); updateUI();
+                        localStorage.clear(); 
+                        localStorage.setItem('cc_initialized', 'true'); 
+                        updateUI();
                     }
                 });
             }
@@ -998,7 +1033,6 @@
 
                 if(isWin) {
                     coins += t;
-                    // Прибавляем чистую прибыль
                     stat_games_won += (t - b); 
                     tg.HapticFeedback.notificationOccurred('success');
                     
@@ -1008,7 +1042,6 @@
                         : `Congratulations! You won ${Math.floor(t).toLocaleString()} <img src="newcoin.jpg" alt="coin">`
                     );
                 } else {
-                    // Записываем проигрыш ставки
                     stat_games_lost += b; 
                     tg.HapticFeedback.notificationOccurred('error');
                     
