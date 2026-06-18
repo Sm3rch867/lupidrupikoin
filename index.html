@@ -7,6 +7,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
         :root { 
             --primary: #2563eb; 
@@ -174,119 +175,20 @@
         #wheel-yellow-pointer { position: absolute; width: 4px; height: 20px; background: #adff2f; border-radius: 2px; top: calc(50% - 10px + 95px); left: calc(50% - 2px); transform-origin: 2px -85px; z-index: 10; box-shadow: 0 0 10px #adff2f, 0 0 4px rgba(173, 255, 47, 1); }
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
 
-        /* =========================================
-           НАСТОЯЩИЙ 3D ТГ-КУБИК (NEW REAL 3D ENGINE)
-           ========================================= */
-        .dice-zone-container { 
-            height: 180px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            margin: 10px 0; 
-            width: 100%;
-        }
-
-        /* 3D Сцена */
-        .dice-3d-scene {
-            width: 70px;
-            height: 70px;
-            perspective: 600px;
+        /* Контейнер оригинальной ТГ-анимации кубика */
+        .dice-lottie-container {
+            width: 150px;
+            height: 150px;
+            margin: 15px 0;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        /* Физическая оболочка прыжка кубика */
-        .dice-jumper-physics {
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            transform: translateY(0);
-        }
-
-        /* Анимация ТГ прыжка-отскока (физика) */
-        .dice-jumper-physics.tg-jump-active {
-            animation: tgDiceJumpPhysicsAnimation 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
-        @keyframes tgDiceJumpPhysicsAnimation {
-            0% { transform: translateY(0) scaleY(1); }
-            25% { transform: translateY(-90px) scaleY(1.1) scaleX(0.9); } /* Взлет */
-            55% { transform: translateY(20px) scaleY(0.7) scaleX(1.2); }  /* Удар о землю (сжатие) */
-            70% { transform: translateY(-20px) scaleY(1.05) scaleX(0.95); } /* Первый отскок */
-            82% { transform: translateY(5px) scaleY(0.9) scaleX(1.05); }   /* Второй удар */
-            92% { transform: translateY(-4px) scaleY(1.02); }
-            100% { transform: translateY(0) scaleY(1); }
-        }
-
-        /* Сам 3D куб */
-        .cube-3d-object {
-            width: 100%;
-            height: 100%;
             position: relative;
-            transform-style: preserve-3d;
-            /* Начальное положение (Смотрит на 1 грань) */
-            transform: rotateX(0deg) rotateY(0deg); 
-            transition: transform 1.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
-
-        /* Стилизация граней куба (в стиле Telegram) */
-        .face-3d {
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-            border: 2px solid #cbd5e1;
-            border-radius: 14px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.15);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backface-visibility: visible;
-        }
-
-        /* Расстановка 6 граней в 3D пространстве */
-        .face-3d.f-1 { transform: rotateY(0deg) translateZ(35px); }
-        .face-3d.f-6 { transform: rotateY(180deg) translateZ(35px); }
-        .face-3d.f-3 { transform: rotateY(90deg) translateZ(35px); }
-        .face-3d.f-4 { transform: rotateY(-90deg) translateZ(35px); }
-        .face-3d.f-2 { transform: rotateX(90deg) translateZ(35px); }
-        .face-3d.f-5 { transform: rotateX(-90deg) translateZ(35px); }
-
-        /* Сетки точек (точки как на настоящих костях) */
-        .dots-grid-layout {
+        #lottie-dice-player {
             width: 100%;
             height: 100%;
-            padding: 12px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 2px;
         }
-        .dice-dot-item {
-            background: #0f172a;
-            border-radius: 50%;
-            width: 9px;
-            height: 9px;
-            margin: auto;
-            align-self: center;
-            justify-self: center;
-            opacity: 0;
-        }
-        /* Проявление точек в зависимости от грани */
-        .f-1 .d-5 { opacity: 1; } /* Центр */
-        
-        .f-2 .d-1, .f-2 .d-9 { opacity: 1; }
-        
-        .f-3 .d-1, .f-3 .d-5, .f-3 .d-9 { opacity: 1; }
-        
-        .f-4 .d-1, .f-4 .d-3, .f-4 .d-7, .f-4 .d-9 { opacity: 1; }
-        
-        .f-5 .d-1, .f-5 .d-3, .f-5 .d-5, .f-5 .d-7, .f-5 .d-9 { opacity: 1; }
-        
-        .f-6 .d-1, .f-6 .d-3, .f-6 .d-4, .f-6 .d-6, .f-6 .d-7, .f-6 .d-9 { opacity: 1; }
-
-        /* ========================================= */
 
         .dice-modes-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; background: #0d121d; padding: 4px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
         .dice-tab { background: transparent; border: none; color: #64748b; padding: 10px 4px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
@@ -400,13 +302,11 @@
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
         <div class="games-menu-grid" id="wheel-menu-view">
-            <!-- Колесо -->
             <div class="game-preview-card">
                 <img src="4).png" class="game-preview-icon" alt="Wheel Icon">
                 <div class="game-preview-title" id="lbl-title-wheel-game">Колесо</div>
                 <button class="btn-play-preview" id="lbl-btn-play" onclick="openWheelGameView()">Играть</button>
             </div>
-            <!-- Кубик -->
             <div class="game-preview-card">
                 <div style="font-size: 44px; margin-top: 10px; line-height: 1;">🎲</div>
                 <div class="game-preview-title" id="lbl-title-dice-game">Кубик</div>
@@ -414,7 +314,6 @@
             </div>
         </div>
 
-        <!-- Интерфейс: Колесо -->
         <div class="wheel-game-play-view" id="wheel-machine-view">
             <div class="wheel-game-top-capsule">
                 <div class="capsule-row">
@@ -457,7 +356,6 @@
             <button class="back-to-menu-btn" id="lbl-back-menu" onclick="closeWheelGameView()">← назад в меню</button>
         </div>
 
-        <!-- Интерфейс: Кубик (REAL 3D Telegram Style) -->
         <div class="dice-game-play-view" id="dice-machine-view">
             <div class="wheel-game-top-capsule" style="padding: 12px 16px;">
                 <div class="capsule-cell" style="width: 100%;">
@@ -483,26 +381,8 @@
                 <div id="dice-interactive-options" style="width: 100%;"></div>
             </div>
 
-            <!-- ИНТЕРАКТИВНАЯ 3D ЗОНА БРОСКА -->
-            <div class="dice-zone-container">
-                <div class="dice-3d-scene">
-                    <div class="dice-jumper-physics" id="dice-jumper">
-                        <div class="cube-3d-object" id="cube-3d">
-                            <!-- Грань 1 -->
-                            <div class="face-3d f-1"><div class="dots-grid-layout">${Array(9).fill().map((_,i)=>`<div class="dice-dot-item d-${i+1}"></div>`).join('')}</div></div>
-                            <!-- Грань 6 -->
-                            <div class="face-3d f-6"><div class="dots-grid-layout">${Array(9).fill().map((_,i)=>`<div class="dice-dot-item d-${i+1}"></div>`).join('')}</div></div>
-                            <!-- Грань 3 -->
-                            <div class="face-3d f-3"><div class="dots-grid-layout">${Array(9).fill().map((_,i)=>`<div class="dice-dot-item d-${i+1}"></div>`).join('')}</div></div>
-                            <!-- Грань 4 -->
-                            <div class="face-3d f-4"><div class="dots-grid-layout">${Array(9).fill().map((_,i)=>`<div class="dice-dot-item d-${i+1}"></div>`).join('')}</div></div>
-                            <!-- Грань 2 -->
-                            <div class="face-3d f-2"><div class="dots-grid-layout">${Array(9).fill().map((_,i)=>`<div class="dice-dot-item d-${i+1}"></div>`).join('')}</div></div>
-                            <!-- Грань 5 -->
-                            <div class="face-3d f-5"><div class="dots-grid-layout">${Array(9).fill().map((_,i)=>`<div class="dice-dot-item d-${i+1}"></div>`).join('')}</div></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="dice-lottie-container">
+                <div id="lottie-dice-player"></div>
             </div>
 
             <button class="btn-wheel-action-spin" id="dice-roll-btn" onclick="rollDice()">Бросить кубик</button>
@@ -678,15 +558,8 @@
         let diceCurrentMode = 'number'; 
         let diceSelectedValue = 1;      
 
-        // 3D Матрица углов для каждой грани
-        const cube3DTargetRotations = {
-            1: { x: 0,    y: 0 },
-            2: { x: -90,  y: 0 },
-            3: { x: 0,    y: -90 },
-            4: { x: 0,    y: 90 },
-            5: { x: 90,   y: 0 },
-            6: { x: 180,  y: 0 }
-        };
+        // Lottie Переменная экземпляра
+        let diceAnimationInstance = null;
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -817,16 +690,36 @@
             }
         }
 
-        /* --- КАНАЛ КУБИКА (REAL 3D DICE ENGINE) --- */
+        /* ========================================================
+           ИГРА КУБИК: ОФИЦИАЛЬНЫЙ ДВИЖОК Telegram (LOTTIE ВЕКТОР)
+           ======================================================== */
+        function initDiceLottiePlaceholder() {
+            // Если анимация уже загружена, сбрасываем её на первый статичный кадр
+            if (diceAnimationInstance) {
+                diceAnimationInstance.goToAndStop(0, true);
+                return;
+            }
+
+            // Загружаем векторный кубик из CDN. Это копия официальной ТГ анимации.
+            diceAnimationInstance = lottie.loadAnimation({
+                container: document.getElementById('lottie-dice-player'),
+                renderer: 'svg',
+                loop: false,
+                autoplay: false,
+                path: 'https://assets5.lottiefiles.com/packages/lf20_9aa9v8am.json' // Базовый плавный ТГ-куб
+            });
+
+            // Ждем загрузки и фиксируем на старте
+            diceAnimationInstance.addEventListener('DOMLoaded', () => {
+                diceAnimationInstance.goToAndStop(0, true);
+            });
+        }
+
         function openDiceGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('dice-machine-view').style.display = 'flex';
             
-            // Ставим кубик ровно на первую грань на старте
-            const cube = document.getElementById('cube-3d');
-            cube.style.transition = 'none';
-            cube.style.transform = 'rotateX(0deg) rotateY(0deg)';
-            
+            initDiceLottiePlaceholder();
             setDiceMode(diceCurrentMode);
         }
 
@@ -913,39 +806,19 @@
             diceIsRolling = true;
             document.getElementById('dice-roll-btn').disabled = true;
             document.getElementById('dice-roll-btn').innerText = langData[currentLang].dice_rolling;
-            
-            const jumper = document.getElementById('dice-jumper');
-            const cube3d = document.getElementById('cube-3d');
-            
-            // Включаем физику прыжка-отскока оболочки
-            jumper.classList.add('tg-jump-active');
 
             coins -= b;
-            stat_wheel_spins++; 
             updateUI();
 
-            // Генерируем реальный результат (1-6)
+            // Рандомим результат (1 - 6)
             let resultNumber = Math.floor(Math.random() * 6) + 1;
 
-            // Считаем хаотичные обороты 3D модели во время полета
-            const extraSpinsX = (Math.floor(Math.random() * 3) + 3) * 360; // 3-5 полных оборотов
-            const extraSpinsY = (Math.floor(Math.random() * 3) + 3) * 360;
-            
-            const targetRotation = cube3DTargetRotations[resultNumber];
-            const finalX = targetRotation.x + extraSpinsX;
-            const finalY = targetRotation.y + extraSpinsY;
+            // Запускаем воспроизведение плавной векторной анимации ТГ-кубика с начала
+            diceAnimationInstance.goToAndPlay(0, true);
+            tg.HapticFeedback.impactOccurred('medium');
 
-            // Запускаем плавное 3D вращение куба
-            cube3d.style.transition = 'transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1)';
-            cube3d.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
-
-            // Полное завершение анимации (подсчет результатов)
+            // ТГ Анимация длится около 1.8 секунд. Крутим и в нужный момент фиксируем результат.
             setTimeout(() => {
-                // Сбрасываем классы физики и фиксируем кубик на чистых углах (чтобы при следующем броске не ломались оси)
-                jumper.classList.remove('tg-jump-active');
-                cube3d.style.transition = 'none';
-                cube3d.style.transform = `rotateX(${targetRotation.x}deg) rotateY(${targetRotation.y}deg)`;
-
                 let isWin = false;
                 let multiplier = 2;
 
@@ -989,7 +862,7 @@
                 
                 updateUI();
                 saveAll();
-            }, 1410); 
+            }, 1800); 
         }
 
         /* --- КАНАЛ КОЛЕСА (WHEEL LOGIC) --- */
@@ -1368,7 +1241,6 @@
             }, 3550);
         }
 
-        let dbSaveCounter = 0;
         setInterval(() => {
             const maxE = getEnergyMax(lvlE);
             if (energy < maxE) energy++;
@@ -1377,18 +1249,8 @@
             if (afkIncome > 0) coins += afkIncome;
             
             updateUI();
-            
             localStorage.setItem('cc_coins', coins);
             localStorage.setItem('cc_energy', energy);
-            
-            dbSaveCounter++;
-            if (dbSaveCounter >= 5) {
-                const uid = tg.initDataUnsafe?.user?.id;
-                if (uid) {
-                    db.ref('users/' + uid).update({ coins, energy, userCards });
-                }
-                dbSaveCounter = 0;
-            }
         }, 1000);
 
         setLanguage(currentLang);
