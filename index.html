@@ -174,10 +174,34 @@
         #wheel-yellow-pointer { position: absolute; width: 4px; height: 20px; background: #adff2f; border-radius: 2px; top: calc(50% - 10px + 95px); left: calc(50% - 2px); transform-origin: 2px -85px; z-index: 10; box-shadow: 0 0 10px #adff2f, 0 0 4px rgba(173, 255, 47, 1); }
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
 
-        /* Кубик Стили */
-        .dice-box { width: 100px; height: 100px; background: radial-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: 3px solid white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 900; color: white; box-shadow: 0 0 30px rgba(37, 99, 235, 0.6); margin: 15px 0; transition: transform 0.1s ease; }
-        .dice-box.rolling { animation: diceShake 0.15s infinite; color: #60a5fa; }
-        @keyframes diceShake { 0% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.08) rotate(5deg); } 100% { transform: scale(1) rotate(-5deg); } }
+        /* --- КУБИК ТГ АНИМАЦИЯ СТИЛИ --- */
+        .dice-zone-container { 
+            height: 140px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin: 5px 0; 
+            width: 100%;
+        }
+        .tg-style-dice { 
+            font-size: 90px; 
+            line-height: 1;
+            user-select: none; 
+            will-change: transform;
+            transform: scale(1);
+        }
+        /* Анимация ТГ броска кубика */
+        .tg-dice-animation-active {
+            animation: telegramDiceRollEffect 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes telegramDiceRollEffect {
+            0% { transform: scale(1) translateY(0) rotate(0deg); }
+            30% { transform: scale(1.4) translateY(-75px) rotate(360deg); }
+            60% { transform: scale(0.8) translateY(15px) rotate(720deg); }
+            75% { transform: scale(1.1) translateY(-12px) rotate(900deg); }
+            90% { transform: scale(0.95) translateY(0) rotate(1040deg); }
+            100% { transform: scale(1) translateY(0) rotate(1080deg); }
+        }
         
         .dice-modes-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; background: #0d121d; padding: 4px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
         .dice-tab { background: transparent; border: none; color: #64748b; padding: 10px 4px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
@@ -291,13 +315,11 @@
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
         <div class="games-menu-grid" id="wheel-menu-view">
-            <!-- Колесо -->
             <div class="game-preview-card">
                 <img src="4).png" class="game-preview-icon" alt="Wheel Icon">
                 <div class="game-preview-title" id="lbl-title-wheel-game">Колесо</div>
                 <button class="btn-play-preview" id="lbl-btn-play" onclick="openWheelGameView()">Играть</button>
             </div>
-            <!-- Кубик -->
             <div class="game-preview-card">
                 <div style="font-size: 44px; margin-top: 10px; line-height: 1;">🎲</div>
                 <div class="game-preview-title" id="lbl-title-dice-game">Кубик</div>
@@ -305,7 +327,6 @@
             </div>
         </div>
 
-        <!-- Интерфейс: Колесо -->
         <div class="wheel-game-play-view" id="wheel-machine-view">
             <div class="wheel-game-top-capsule">
                 <div class="capsule-row">
@@ -348,7 +369,6 @@
             <button class="back-to-menu-btn" id="lbl-back-menu" onclick="closeWheelGameView()">← назад в меню</button>
         </div>
 
-        <!-- Интерфейс: Кубик -->
         <div class="dice-game-play-view" id="dice-machine-view">
             <div class="wheel-game-top-capsule" style="padding: 12px 16px;">
                 <div class="capsule-cell" style="width: 100%;">
@@ -371,11 +391,12 @@
             </div>
 
             <div class="dice-options-wrapper">
-                <!-- Контент генерируется из JS в зависимости от таба -->
                 <div id="dice-interactive-options" style="width: 100%;"></div>
             </div>
 
-            <div class="dice-box" id="dice-visual-cube">1</div>
+            <div class="dice-zone-container">
+                <div class="tg-style-dice" id="dice-visual-cube">🎲</div>
+            </div>
 
             <button class="btn-wheel-action-spin" id="dice-roll-btn" onclick="rollDice()">Бросить кубик</button>
             <button class="back-to-menu-btn" id="lbl-back-menu-dice" onclick="closeDiceGameView()">← назад в меню</button>
@@ -551,9 +572,9 @@
         let diceIsRolling = false;
         const wheelCircumference = 2 * Math.PI * 95; 
 
-        // Переменные состояния для игры Кубик
-        let diceCurrentMode = 'number'; // 'number', 'evenodd', 'highlow'
-        let diceSelectedValue = 1;      // Для 'number': 1-6; для 'evenodd': 'even'/'odd'; для 'highlow': 'low'/'high'
+        let diceCurrentMode = 'number'; 
+        let diceSelectedValue = 1;      
+        const diceEmojiFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -684,10 +705,11 @@
             }
         }
 
-        /* --- КАНАЛ КУБИКА (DICE LOGIC) --- */
+        /* --- КАНАЛ КУБИКА (DICE LOGIC WITH TELEGRAM ANIMATION) --- */
         function openDiceGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('dice-machine-view').style.display = 'flex';
+            document.getElementById('dice-visual-cube').innerText = '🎲';
             setDiceMode(diceCurrentMode);
         }
 
@@ -737,12 +759,8 @@
         function selectDiceValue(val) {
             if(diceIsRolling) return;
             diceSelectedValue = val;
-            
-            // Снимаем активный класс со всех элементов внутри контейнера
             document.querySelectorAll('#dice-interactive-options button').forEach(b => b.classList.remove('active'));
-            // Добавляем выбранному
             document.getElementById(`d-choice-${val}`).classList.add('active');
-            
             tg.HapticFeedback.selectionChanged();
         }
 
@@ -780,30 +798,33 @@
             document.getElementById('dice-roll-btn').innerText = langData[currentLang].dice_rolling;
             
             const cubeVisual = document.getElementById('dice-visual-cube');
-            cubeVisual.classList.add('rolling');
+            
+            // Сбрасываем текст на базовый смайлик ТГ кубика перед броском
+            cubeVisual.innerText = '🎲';
+            // Запускаем физику прыжка кубика
+            cubeVisual.classList.add('tg-dice-animation-active');
 
             coins -= b;
-            stat_wheel_spins++; // считаем как общую прокрутку в играх
+            stat_wheel_spins++; 
             updateUI();
 
-            // Эффект быстрой смены чисел во время броска
-            let interval = setInterval(() => {
-                cubeVisual.innerText = Math.floor(Math.random() * 6) + 1;
-            }, 80);
+            let resultNumber = Math.floor(Math.random() * 6) + 1;
 
+            // Как и в Telegram, замена скина кубика на выпавшую кость происходит в момент падения (подбираем тайминг)
             setTimeout(() => {
-                clearInterval(interval);
-                cubeVisual.classList.remove('rolling');
-                
-                let resultNumber = Math.floor(Math.random() * 6) + 1;
-                cubeVisual.innerText = resultNumber;
+                cubeVisual.innerText = diceEmojiFaces[resultNumber - 1];
+            }, 750);
+
+            // Полное завершение анимации и подведение итогов
+            setTimeout(() => {
+                cubeVisual.classList.remove('tg-dice-animation-active');
 
                 let isWin = false;
                 let multiplier = 2;
 
                 if (diceCurrentMode === 'number') {
                     isWin = (parseInt(diceSelectedValue) === resultNumber);
-                    multiplier = 5.5; // За точное совпадение коэффициент x5.5
+                    multiplier = 5.5; 
                 } else if (diceCurrentMode === 'evenodd') {
                     let isEven = (resultNumber % 2 === 0);
                     isWin = (diceSelectedValue === 'even' && isEven) || (diceSelectedValue === 'odd' && !isEven);
@@ -841,7 +862,7 @@
                 
                 updateUI();
                 saveAll();
-            }, 1600);
+            }, 1350); // Длина анимации
         }
 
         /* --- КАНАЛ КОЛЕСА (WHEEL LOGIC) --- */
