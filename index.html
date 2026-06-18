@@ -175,13 +175,13 @@
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
 
         /* ==============================================
-           НОВЫЙ ЧЕСТНЫЙ 3D CSS КУБИК (РАБОТАЕТ ВСЕГДА)
+           КЛАССИЧЕСКИЙ КУБИК НА ЧИСТОМ CSS 3D
            ============================================== */
         .dice-3d-scene {
             width: 140px;
             height: 140px;
-            margin: 25px 0;
-            perspective: 600px; /* Эффект глубины */
+            margin: 20px 0;
+            perspective: 600px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -191,36 +191,61 @@
             height: 90px;
             position: relative;
             transform-style: preserve-3d;
-            transform: rotateX(-20deg) rotateY(30deg); /* Стартовый ракурс */
-            transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.3, 1.05);
+            transform: rotateX(-20deg) rotateY(30deg);
+            transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.25, 1.05);
         }
         .cube-face {
             position: absolute;
             width: 90px;
             height: 90px;
-            background: #1e293b;
-            border: 3px solid #3b82f6;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 16px;
-            color: white;
-            font-size: 38px;
-            font-weight: 900;
+            padding: 10px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 15px rgba(59, 130, 246, 0.3), 0 0 10px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            box-shadow: 
+                inset 0 4px 8px rgba(255,255,255,1),
+                inset 0 -4px 8px rgba(0,0,0,0.08),
+                0 6px 15px rgba(0,0,0,0.4);
             backface-visibility: visible;
         }
-        /* Позиционирование 6 граней в 3D пространстве */
-        .face-1 { transform: rotateY(0deg) translateZ(45px); }
-        .face-6 { transform: rotateY(180deg) translateZ(45px); }
-        .face-3 { transform: rotateY(90deg) translateZ(45px); }
-        .face-4 { transform: rotateY(-90deg) translateZ(45px); }
-        .face-2 { transform: rotateX(90deg) translateZ(45px); }
-        .face-5 { transform: rotateX(-90deg) translateZ(45px); }
+        
+        /* Стили точек игральной кости */
+        .cube-dot {
+            display: block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: #1a1a1a;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.6);
+        }
 
-        /* Точки как на настоящих костях */
-        .cube-face span { text-shadow: 0 0 10px #60a5fa; }
+        /* 3D Смещение граней (Половина от размера кубика 90px = 45px) */
+        .face-1 { transform: rotateY(0deg) translateZ(45px); justify-content: center; align-items: center; }
+        .face-6 { transform: rotateY(180deg) translateZ(45px); justify-content: space-between; }
+        .face-2 { transform: rotateY(90deg) translateZ(45px); justify-content: space-between; }
+        .face-5 { transform: rotateY(-90deg) translateZ(45px); justify-content: space-between; }
+        .face-3 { transform: rotateX(90deg) translateZ(45px); justify-content: space-between; }
+        .face-4 { transform: rotateX(-90deg) translateZ(45px); justify-content: space-between; }
 
+        /* Правильная сетка точек для каждой грани кости */
+        .face-2 { flex-direction: column; }
+        .face-2 .cube-dot:nth-child(2) { align-self: flex-end; }
+
+        .face-3 { flex-direction: row; }
+        .face-3 .cube-dot:nth-child(2) { align-self: center; }
+        .face-3 .cube-dot:nth-child(3) { align-self: flex-end; }
+
+        .face-4, .face-5, .face-6 { flex-direction: row; justify-content: space-between; }
+        .face-4 .cube-column, .face-5 .cube-column, .face-6 .cube-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .face-5 .cube-column:nth-child(2) { justify-content: center; }
+
+        /* Вкладки режимов */
         .dice-modes-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; background: #0d121d; padding: 4px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
         .dice-tab { background: transparent; border: none; color: #64748b; padding: 10px 4px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
         .dice-tab.active { background: #16223f; color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
@@ -414,12 +439,53 @@
 
             <div class="dice-3d-scene">
                 <div class="cube-object" id="css-3d-cube">
-                    <div class="cube-face face-1"><span>1</span></div>
-                    <div class="cube-face face-6"><span>6</span></div>
-                    <div class="cube-face face-3"><span>3</span></div>
-                    <div class="cube-face face-4"><span>4</span></div>
-                    <div class="cube-face face-2"><span>2</span></div>
-                    <div class="cube-face face-5"><span>5</span></div>
+                    <div class="cube-face face-1">
+                        <span class="cube-dot"></span>
+                    </div>
+                    <div class="cube-face face-6">
+                        <div class="cube-column">
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                        </div>
+                        <div class="cube-column">
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                        </div>
+                    </div>
+                    <div class="cube-face face-3">
+                        <span class="cube-dot"></span>
+                        <span class="cube-dot"></span>
+                        <span class="cube-dot"></span>
+                    </div>
+                    <div class="cube-face face-4">
+                        <div class="cube-column">
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                        </div>
+                        <div class="cube-column">
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                        </div>
+                    </div>
+                    <div class="cube-face face-2">
+                        <span class="cube-dot"></span>
+                        <span class="cube-dot"></span>
+                    </div>
+                    <div class="cube-face face-5">
+                        <div class="cube-column">
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                        </div>
+                        <div class="cube-column">
+                            <span class="cube-dot"></span>
+                        </div>
+                        <div class="cube-column">
+                            <span class="cube-dot"></span>
+                            <span class="cube-dot"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -596,14 +662,14 @@
         let diceCurrentMode = 'number'; 
         let diceSelectedValue = 1;      
 
-        // 3D CSS Ротации для каждой грани куба [X, Y]
+        // Классические 3D повороты граней кубика кости [X, Y]
         const faceRotations = {
             1: [0, 0],
             6: [0, 180],
-            3: [0, -90],
-            4: [0, 90],
-            2: [-90, 0],
-            5: [90, 0]
+            3: [-90, 0],
+            4: [90, 0],
+            2: [0, -90],
+            5: [0, 90]
         };
 
         if (isFirstTime) {
@@ -735,14 +801,11 @@
             }
         }
 
-        /* ========================================================
-           ЛОГИКА ИГРЫ КУБИК (3D CSS)
-           ======================================================== */
+        /* ЛОГИКА ИГРЫ КУБИК */
         function openDiceGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('dice-machine-view').style.display = 'flex';
             
-            // Возвращаем в дефолтное положение
             const cube = document.getElementById('css-3d-cube');
             cube.style.transition = 'none';
             cube.style.transform = `rotateX(-20deg) rotateY(30deg)`;
@@ -837,15 +900,11 @@
             coins -= b;
             updateUI();
 
-            // Рандомим результат (от 1 до 6)
             let resultNumber = Math.floor(Math.random() * 6) + 1;
-
             const cube = document.getElementById('css-3d-cube');
             
-            // Включаем плавную анимацию
-            cube.style.transition = 'transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            cube.style.transition = 'transform 1.5s cubic-bezier(0.2, 0.8, 0.25, 1)';
             
-            // Вычисляем угол вращения: берем базовый угол грани и добавляем 3-4 полных оборота (720-1080 градусов) для безумного вращения
             let baseRot = faceRotations[resultNumber];
             let extraX = (Math.floor(Math.random() * 2) + 3) * 360; 
             let extraY = (Math.floor(Math.random() * 2) + 3) * 360; 
@@ -853,7 +912,6 @@
             let targetX = baseRot[0] + extraX;
             let targetY = baseRot[1] + extraY;
 
-            // Запускаем 3D-вращение
             cube.style.transform = `rotateX(${targetX}deg) rotateY(${targetY}deg)`;
             tg.HapticFeedback.impactOccurred('heavy');
 
@@ -895,7 +953,6 @@
                     );
                 }
 
-                // Сбрасываем углы обратно в базовые (без лишних сотен градусов), чтобы при следующем броске кубик не крутился назад
                 cube.style.transition = 'none';
                 cube.style.transform = `rotateX(${baseRot[0]}deg) rotateY(${baseRot[1]}deg)`;
 
@@ -908,7 +965,7 @@
             }, 1550); 
         }
 
-        /* --- КАНАЛ КОЛЕСА (WHEEL LOGIC) --- */
+        /* ЛОГИКА КОЛЕСА */
         function openWheelGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('wheel-machine-view').style.display = 'flex';
