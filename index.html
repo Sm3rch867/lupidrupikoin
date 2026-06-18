@@ -11,7 +11,7 @@
         :root { 
             --primary: #2563eb; 
             --primary-glow: rgba(37, 99, 235, 0.6);
-            --bg: linear-gradient(135deg, #020617 0%, #0b1e3d 100%); /* Светлый чёрно-голубой фон */
+            --bg: linear-gradient(135deg, #020617 0%, #0b1e3d 100%); 
             --card: rgba(15, 23, 42, 0.5); 
             --text-muted: #566175;
         }
@@ -147,17 +147,14 @@
             aspect-ratio: 1 / 1.1;
             box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
-        .game-preview-icon {
-            width: 65px;
-            height: 65px;
-            object-fit: contain;
-            margin-top: 10px;
-        }
+        .game-preview-icon { width: 65px; height: 65px; object-fit: contain; margin-top: 10px; }
+        .game-preview-title { font-size: 14px; font-weight: 800; color: white; margin: 5px 0; text-transform: uppercase; }
         
         .btn-play-preview { width: 100%; background: transparent; border: 2px solid white; color: white; border-radius: 14px; padding: 8px; font-size: 14px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
         .btn-play-preview:active { background: white; color: black; }
 
-        .wheel-game-play-view { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 360px; gap: 20px; margin-top: 15px; }
+        /* Вьюшки игр */
+        .wheel-game-play-view, .dice-game-play-view { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 360px; gap: 15px; margin-top: 15px; }
         
         .wheel-game-top-capsule { background: #0d121d; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 16px; width: 100%; display: flex; flex-direction: column; }
         .capsule-row { display: flex; justify-content: space-between; gap: 12px; }
@@ -171,33 +168,30 @@
         .q-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; color: #94a3b8; font-size: 10px; font-weight: 700; padding: 6px 0; cursor: pointer; transition: 0.1s; }
         .q-btn:active { background: rgba(255, 255, 255, 0.1); color: white; }
 
-        .wheel-big-box {
-            position: relative;
-            width: 230px;
-            height: 230px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .wheel-svg-object {
-            transform: none; 
-        }
-        
-        #wheel-yellow-pointer {
-            position: absolute;
-            width: 4px; 
-            height: 20px; 
-            background: #adff2f; 
-            border-radius: 2px;
-            top: calc(50% - 10px + 95px); 
-            left: calc(50% - 2px);
-            transform-origin: 2px -85px; 
-            z-index: 10;
-            box-shadow: 0 0 10px #adff2f, 0 0 4px rgba(173, 255, 47, 1);
-        }
-        
+        /* Колесо */
+        .wheel-big-box { position: relative; width: 230px; height: 230px; display: flex; align-items: center; justify-content: center; }
+        .wheel-svg-object { transform: none; }
+        #wheel-yellow-pointer { position: absolute; width: 4px; height: 20px; background: #adff2f; border-radius: 2px; top: calc(50% - 10px + 95px); left: calc(50% - 2px); transform-origin: 2px -85px; z-index: 10; box-shadow: 0 0 10px #adff2f, 0 0 4px rgba(173, 255, 47, 1); }
         .wheel-center-percent-only { position: absolute; font-size: 34px; font-weight: 800; color: white; letter-spacing: -0.5px; z-index: 2; }
+
+        /* Кубик Стили */
+        .dice-box { width: 100px; height: 100px; background: radial-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: 3px solid white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 900; color: white; box-shadow: 0 0 30px rgba(37, 99, 235, 0.6); margin: 15px 0; transition: transform 0.1s ease; }
+        .dice-box.rolling { animation: diceShake 0.15s infinite; color: #60a5fa; }
+        @keyframes diceShake { 0% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.08) rotate(5deg); } 100% { transform: scale(1) rotate(-5deg); } }
+        
+        .dice-modes-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; background: #0d121d; padding: 4px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
+        .dice-tab { background: transparent; border: none; color: #64748b; padding: 10px 4px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
+        .dice-tab.active { background: #16223f; color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
+
+        .dice-options-wrapper { width: 100%; min-height: 55px; display: flex; justify-content: center; align-items: center; }
+        .dice-grid-numbers { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; }
+        .dice-btn-choice { background: #0d121d; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; color: white; font-size: 16px; font-weight: 800; padding: 12px 0; cursor: pointer; transition: 0.1s; }
+        .dice-btn-choice.active { background: var(--primary); border-color: #60a5fa; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+        
+        .dice-half-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .dice-btn-half { background: #0d121d; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; color: white; padding: 14px 0; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .dice-btn-half span { display: block; font-size: 10px; color: #4ade80; margin-top: 2px; }
+        .dice-btn-half.active { background: var(--primary); border-color: #60a5fa; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
 
         .btn-wheel-action-spin {
             width: 100%;
@@ -215,18 +209,8 @@
             transition: all 0.2s ease;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        .btn-wheel-action-spin:active {
-            transform: scale(0.98);
-            box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
-            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-        }
-        .btn-wheel-action-spin:disabled {
-            background: #161f30 !important;
-            color: #4b586e !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            cursor: not-allowed;
-        }
+        .btn-wheel-action-spin:active { transform: scale(0.98); box-shadow: 0 0 10px rgba(37, 99, 235, 0.3); background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); }
+        .btn-wheel-action-spin:disabled { background: #161f30 !important; color: #4b586e !important; box-shadow: none !important; text-shadow: none !important; cursor: not-allowed; }
         
         .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
@@ -307,12 +291,21 @@
         <div class="shop-section-title" id="lbl-game-title-main">Мини-игры</div>
         
         <div class="games-menu-grid" id="wheel-menu-view">
+            <!-- Колесо -->
             <div class="game-preview-card">
                 <img src="4).png" class="game-preview-icon" alt="Wheel Icon">
+                <div class="game-preview-title" id="lbl-title-wheel-game">Колесо</div>
                 <button class="btn-play-preview" id="lbl-btn-play" onclick="openWheelGameView()">Играть</button>
+            </div>
+            <!-- Кубик -->
+            <div class="game-preview-card">
+                <div style="font-size: 44px; margin-top: 10px; line-height: 1;">🎲</div>
+                <div class="game-preview-title" id="lbl-title-dice-game">Кубик</div>
+                <button class="btn-play-preview" id="lbl-btn-play-dice" onclick="openDiceGameView()">Играть</button>
             </div>
         </div>
 
+        <!-- Интерфейс: Колесо -->
         <div class="wheel-game-play-view" id="wheel-machine-view">
             <div class="wheel-game-top-capsule">
                 <div class="capsule-row">
@@ -353,6 +346,39 @@
 
             <button class="btn-wheel-action-spin" id="wheel-spin-btn" onclick="spinWheel()">Крутить</button>
             <button class="back-to-menu-btn" id="lbl-back-menu" onclick="closeWheelGameView()">← назад в меню</button>
+        </div>
+
+        <!-- Интерфейс: Кубик -->
+        <div class="dice-game-play-view" id="dice-machine-view">
+            <div class="wheel-game-top-capsule" style="padding: 12px 16px;">
+                <div class="capsule-cell" style="width: 100%;">
+                    <label id="lbl-dice-bet-title">Ставка:</label>
+                    <div class="capsule-input-wrapper">
+                        <input type="number" id="dice-bet-input" value="1000" min="1000">
+                    </div>
+                    <div class="capsule-quick-row">
+                        <button class="q-btn" onclick="setDiceBetPreset('min')">MIN</button>
+                        <button class="q-btn" onclick="setDiceBetPreset('x2')">X2</button>
+                        <button class="q-btn" onclick="setDiceBetPreset('max')">MAX</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dice-modes-tabs">
+                <button class="dice-tab active" id="d-tab-number" onclick="setDiceMode('number')">Число</button>
+                <button class="dice-tab" id="d-tab-evenodd" onclick="setDiceMode('evenodd')">Чет/Нечет</button>
+                <button class="dice-tab" id="d-tab-highlow" onclick="setDiceMode('highlow')">Диапазон</button>
+            </div>
+
+            <div class="dice-options-wrapper">
+                <!-- Контент генерируется из JS в зависимости от таба -->
+                <div id="dice-interactive-options" style="width: 100%;"></div>
+            </div>
+
+            <div class="dice-box" id="dice-visual-cube">1</div>
+
+            <button class="btn-wheel-action-spin" id="dice-roll-btn" onclick="rollDice()">Бросить кубик</button>
+            <button class="back-to-menu-btn" id="lbl-back-menu-dice" onclick="closeDiceGameView()">← назад в меню</button>
         </div>
     </div>
 
@@ -478,7 +504,8 @@
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
                 member: "Участник с", buy_btn: "Купить за", owned_btn: "Куплено", load_top: "Загрузка топа...",
                 claimed_today: "Следующая награда будет доступна завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней",
-                w_bet: "Ставка:", w_target: "Выигрыш:", w_spin: "ЕЩЕ РАЗ", w_spinning: "КРУТИМ...", btn_play: "Играть", back_menu: "← назад в меню"
+                w_bet: "Ставка:", w_target: "Выигрыш:", w_spin: "ЕЩЕ РАЗ", w_spinning: "КРУТИМ...", btn_play: "Играть", back_menu: "← назад в меню",
+                title_wheel: "Колесо", title_dice: "Кубик", dice_rolling: "БРОСАЕМ...", dice_roll_btn: "Бросить кубик"
             },
             en: {
                 energy: "⚡ Energy", clickpower: "👆 Click Power:", cards: "CARDS", game_title_main: "Mini Games",
@@ -489,13 +516,13 @@
                 nv_game: "Home", nv_shop: "Shop", nv_games: "Mini Games", nv_profile: "Profile",
                 member: "Member since", buy_btn: "Buy for", owned_btn: "Owned", load_top: "Loading top...",
                 claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "day", days_format: "days",
-                w_bet: "Bet:", w_target: "Target:", w_spin: "SPIN", w_spinning: "SPINNING...", btn_play: "Play", back_menu: "← back to menu"
+                w_bet: "Bet:", w_target: "Target:", w_spin: "SPIN", w_spinning: "SPINNING...", btn_play: "Play", back_menu: "← back to menu",
+                title_wheel: "Wheel", title_dice: "Dice", dice_rolling: "ROLLING...", dice_roll_btn: "Roll Dice"
             }
         };
 
         const dailyRewardsConfig = [1000, 2000, 2000, 5000, 5000, 7000, 10000];
 
-        // Имена удалены, оставлены только картинки, стоимость и пассивный доход
         const CARDS_DATA = {
             lupi_67: { img: '67lupi.png', cost: 670000, pps: 67 },
             lupi_drupi: { img: 'lupidrupi.jpg', cost: 1000000, pps: 20 },
@@ -521,7 +548,12 @@
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
 
         let wheelIsSpinning = false;
+        let diceIsRolling = false;
         const wheelCircumference = 2 * Math.PI * 95; 
+
+        // Переменные состояния для игры Кубик
+        let diceCurrentMode = 'number'; // 'number', 'evenodd', 'highlow'
+        let diceSelectedValue = 1;      // Для 'number': 1-6; для 'evenodd': 'even'/'odd'; для 'highlow': 'low'/'high'
 
         if (isFirstTime) {
             coins = dailyRewardsConfig[0]; 
@@ -652,6 +684,167 @@
             }
         }
 
+        /* --- КАНАЛ КУБИКА (DICE LOGIC) --- */
+        function openDiceGameView() {
+            document.getElementById('wheel-menu-view').style.display = 'none';
+            document.getElementById('dice-machine-view').style.display = 'flex';
+            setDiceMode(diceCurrentMode);
+        }
+
+        function closeDiceGameView() {
+            if(diceIsRolling) return;
+            document.getElementById('dice-machine-view').style.display = 'none';
+            document.getElementById('wheel-menu-view').style.display = 'grid';
+        }
+
+        function setDiceMode(mode) {
+            if(diceIsRolling) return;
+            diceCurrentMode = mode;
+            
+            document.getElementById('d-tab-number').classList.toggle('active', mode === 'number');
+            document.getElementById('d-tab-evenodd').classList.toggle('active', mode === 'evenodd');
+            document.getElementById('d-tab-highlow').classList.toggle('active', mode === 'highlow');
+
+            const optionsContainer = document.getElementById('dice-interactive-options');
+            
+            if (mode === 'number') {
+                diceSelectedValue = 1;
+                optionsContainer.innerHTML = `
+                    <div class="dice-grid-numbers">
+                        ${[1,2,3,4,5,6].map(n => `<button class="dice-btn-choice ${n===1?'active':''}" id="d-choice-${n}" onclick="selectDiceValue(${n})">${n}</button>`).join('')}
+                    </div>
+                `;
+            } else if (mode === 'evenodd') {
+                diceSelectedValue = 'even';
+                optionsContainer.innerHTML = `
+                    <div class="dice-half-container">
+                        <button class="dice-btn-half active" id="d-choice-even" onclick="selectDiceValue('even')">${currentLang==='ru'?'Чётное':'Even'}<span>X2 (2,4,6)</span></button>
+                        <button class="dice-btn-half" id="d-choice-odd" onclick="selectDiceValue('odd')">${currentLang==='ru'?'Нечётное':'Odd'}<span>X2 (1,3,5)</span></button>
+                    </div>
+                `;
+            } else if (mode === 'highlow') {
+                diceSelectedValue = 'low';
+                optionsContainer.innerHTML = `
+                    <div class="dice-half-container">
+                        <button class="dice-btn-half active" id="d-choice-low" onclick="selectDiceValue('low')">${currentLang==='ru'?'Меньше':'Less'}<span>X2 (1-3)</span></button>
+                        <button class="dice-btn-half" id="d-choice-high" onclick="selectDiceValue('high')">${currentLang==='ru'?'Больше':'More'}<span>X2 (4-6)</span></button>
+                    </div>
+                `;
+            }
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function selectDiceValue(val) {
+            if(diceIsRolling) return;
+            diceSelectedValue = val;
+            
+            // Снимаем активный класс со всех элементов внутри контейнера
+            document.querySelectorAll('#dice-interactive-options button').forEach(b => b.classList.remove('active'));
+            // Добавляем выбранному
+            document.getElementById(`d-choice-${val}`).classList.add('active');
+            
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function setDiceBetPreset(action) {
+            if(diceIsRolling) return;
+            const bInput = document.getElementById('dice-bet-input');
+            let b = parseFloat(bInput.value) || 1000;
+            if(action === 'min') b = 1000;
+            else if (action === 'x2') b = b * 2;
+            else if (action === 'max') {
+                b = Math.floor(coins);
+                if(b < 1000) b = 1000;
+            }
+            bInput.value = b;
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function rollDice() {
+            if(diceIsRolling) return;
+            
+            const bInput = document.getElementById('dice-bet-input');
+            let b = parseFloat(bInput.value) || 0;
+
+            if(b < 1000) {
+                tg.showAlert(currentLang === 'ru' ? "Минимальная ставка — 1 000 монет!" : "Minimum bet is 1,000 coins!");
+                return;
+            }
+            if(coins < b) {
+                tg.showAlert(currentLang === 'ru' ? "Недостаточно монет!" : "Not enough coins!");
+                return;
+            }
+
+            diceIsRolling = true;
+            document.getElementById('dice-roll-btn').disabled = true;
+            document.getElementById('dice-roll-btn').innerText = langData[currentLang].dice_rolling;
+            
+            const cubeVisual = document.getElementById('dice-visual-cube');
+            cubeVisual.classList.add('rolling');
+
+            coins -= b;
+            stat_wheel_spins++; // считаем как общую прокрутку в играх
+            updateUI();
+
+            // Эффект быстрой смены чисел во время броска
+            let interval = setInterval(() => {
+                cubeVisual.innerText = Math.floor(Math.random() * 6) + 1;
+            }, 80);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                cubeVisual.classList.remove('rolling');
+                
+                let resultNumber = Math.floor(Math.random() * 6) + 1;
+                cubeVisual.innerText = resultNumber;
+
+                let isWin = false;
+                let multiplier = 2;
+
+                if (diceCurrentMode === 'number') {
+                    isWin = (parseInt(diceSelectedValue) === resultNumber);
+                    multiplier = 5.5; // За точное совпадение коэффициент x5.5
+                } else if (diceCurrentMode === 'evenodd') {
+                    let isEven = (resultNumber % 2 === 0);
+                    isWin = (diceSelectedValue === 'even' && isEven) || (diceSelectedValue === 'odd' && !isEven);
+                    multiplier = 2;
+                } else if (diceCurrentMode === 'highlow') {
+                    let isLow = (resultNumber <= 3);
+                    isWin = (diceSelectedValue === 'low' && isLow) || (diceSelectedValue === 'high' && !isLow);
+                    multiplier = 2;
+                }
+
+                let totalPayout = Math.floor(b * multiplier);
+
+                if (isWin) {
+                    coins += totalPayout;
+                    stat_games_won += (totalPayout - b);
+                    tg.HapticFeedback.notificationOccurred('success');
+                    showCustomResultDialog(
+                        currentLang === 'ru' 
+                        ? `Выпало: ${resultNumber}. Вы выиграли ${totalPayout.toLocaleString()} <img src="newcoin.jpg" alt="coin">`
+                        : `Dropped: ${resultNumber}. You won ${totalPayout.toLocaleString()} <img src="newcoin.jpg" alt="coin">`
+                    );
+                } else {
+                    stat_games_lost += b;
+                    tg.HapticFeedback.notificationOccurred('error');
+                    showCustomResultDialog(
+                        currentLang === 'ru'
+                        ? `Выпало: ${resultNumber}. Вы проиграли!`
+                        : `Dropped: ${resultNumber}. You lost!`
+                    );
+                }
+
+                diceIsRolling = false;
+                document.getElementById('dice-roll-btn').disabled = false;
+                document.getElementById('dice-roll-btn').innerText = langData[currentLang].dice_roll_btn;
+                
+                updateUI();
+                saveAll();
+            }, 1600);
+        }
+
+        /* --- КАНАЛ КОЛЕСА (WHEEL LOGIC) --- */
         function openWheelGameView() {
             document.getElementById('wheel-menu-view').style.display = 'none';
             document.getElementById('wheel-machine-view').style.display = 'flex';
@@ -692,15 +885,19 @@
             document.getElementById('lbl-st-6').innerText = l.st_6;
             document.getElementById('lbl-m-title').innerText = l.m_title;
             
+            document.getElementById('lbl-title-wheel-game').innerText = l.title_wheel;
+            document.getElementById('lbl-title-dice-game').innerText = l.title_dice;
             document.getElementById('lbl-btn-play').innerText = l.btn_play;
+            document.getElementById('lbl-btn-play-dice').innerText = l.btn_play;
             document.getElementById('lbl-back-menu').innerText = l.back_menu;
+            document.getElementById('lbl-back-menu-dice').innerText = l.back_menu;
 
             document.getElementById('lbl-capsule-bet').innerText = l.w_bet;
             document.getElementById('lbl-capsule-target').innerText = l.w_target;
+            document.getElementById('lbl-dice-bet-title').innerText = l.w_bet;
             
-            if(!wheelIsSpinning) {
-                document.getElementById('wheel-spin-btn').innerText = l.w_spin;
-            }
+            if(!wheelIsSpinning) document.getElementById('wheel-spin-btn').innerText = l.w_spin;
+            if(!diceIsRolling) document.getElementById('dice-roll-btn').innerText = l.dice_roll_btn;
 
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('click-val').innerText = getClickPower(lvlC).toLocaleString();
@@ -714,7 +911,6 @@
 
             document.getElementById('st-coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('st-total-clicks').innerText = stat_total_clicks.toLocaleString();
-            
             document.getElementById('st-games-won').innerText = Math.floor(stat_games_won).toLocaleString();
             
             let profit = stat_games_won - stat_games_lost;
@@ -737,9 +933,7 @@
             const timePassed = Date.now() - lastClaim;
             const isRewardAvailable = (timePassed >= 86400000 || lastClaim === 0);
             const dotEl = document.getElementById('bonus-dot');
-            if (dotEl) {
-                dotEl.style.display = isRewardAvailable ? 'block' : 'none';
-            }
+            if (dotEl) dotEl.style.display = isRewardAvailable ? 'block' : 'none';
 
             if(document.getElementById('shop-scr').classList.contains('active')) renderCards();
             if(document.getElementById('bonus-modal').classList.contains('open')) renderDaysGrid();
@@ -753,7 +947,6 @@
                 const state = userCards[id];
                 const profitText = currentLang === 'ru' ? `Доход: +${cfg.pps}/сек` : `Income: +${cfg.pps}/sec`;
                 
-                // Из блоков ниже удалены теги <b> с именами карточек
                 if (!state.bought) {
                     return `
                         <div class="card-item">
@@ -830,6 +1023,7 @@
 
             if (s === 'games') {
                 document.getElementById('wheel-machine-view').style.display = 'none';
+                document.getElementById('dice-machine-view').style.display = 'none';
                 document.getElementById('wheel-menu-view').style.display = 'grid';
             }
 
@@ -896,33 +1090,13 @@
             const tid = String(document.getElementById('target-id').value.trim()); if(!tid) return tg.showAlert("Укажите ID!");
             if(confirm(`Обнулить игрока ${tid}?`)) {
                 db.ref('users/' + tid).update({ 
-                    coins: 0, 
-                    lvlC: 1, 
-                    lvlE: 1, 
-                    userCards: null, 
-                    stat_streak: 0, 
-                    stat_total_clicks: 0, 
-                    stat_games_won: 0, 
-                    stat_games_lost: 0, 
-                    stat_wheel_spins: 0,
-                    lastClaim: 0 
+                    coins: 0, lvlC: 1, lvlE: 1, userCards: null, stat_streak: 0, stat_total_clicks: 0, stat_games_won: 0, stat_games_lost: 0, stat_wheel_spins: 0, lastClaim: 0 
                 }).then(() => {
                     tg.showAlert("Игрок сброшен.");
                     if(tid === String(tg.initDataUnsafe?.user?.id)) {
-                        coins = 0; 
-                        lvlC = 1; 
-                        lvlE = 1; 
-                        energy = 100; 
-                        stat_streak = 0; 
-                        stat_total_clicks = 0; 
-                        stat_games_won = 0; 
-                        stat_games_lost = 0; 
-                        stat_wheel_spins = 0;
-                        lastClaim = 0;
+                        coins = 0; lvlC = 1; lvlE = 1; energy = 100; stat_streak = 0; stat_total_clicks = 0; stat_games_won = 0; stat_games_lost = 0; stat_wheel_spins = 0; lastClaim = 0;
                         userCards = { lupi_67: { bought: false }, lupi_drupi: { bought: false }, delo_lupi: { bought: false } };
-                        localStorage.clear(); 
-                        localStorage.setItem('cc_initialized', 'true'); 
-                        updateUI();
+                        localStorage.clear(); localStorage.setItem('cc_initialized', 'true'); updateUI();
                     }
                 });
             }
@@ -935,10 +1109,7 @@
             let b = parseFloat(betInput.value) || 0;
             let t = parseFloat(targetInput.value) || 0;
 
-            if(t <= b) {
-                t = b * 2;
-                targetInput.value = t;
-            }
+            if(t <= b) { t = b * 2; targetInput.value = t; }
 
             let chance = (b / t) * 100;
             if(chance > 95) chance = 95;
@@ -961,11 +1132,9 @@
         function setBetPreset(action) {
             if(wheelIsSpinning) return;
             let b = parseFloat(betInput.value) || 1000;
-            if(action === 'min') {
-                b = 1000;
-            } else if (action === 'x2') {
-                b = b * 2;
-            } else if (action === 'max') {
+            if(action === 'min') b = 1000;
+            else if (action === 'x2') b = b * 2;
+            else if (action === 'max') {
                 b = Math.floor(coins);
                 if(b < 1000) b = 1000;
             }
@@ -1012,7 +1181,6 @@
             if(chance > 95) chance = 95;
 
             let halfSpreadDegrees = ((chance / 100) * 360) / 2;
-
             let finalAngle = Math.floor(Math.random() * 360);
             let spinDegrees = 1440 + finalAngle; 
 
@@ -1036,7 +1204,6 @@
                     coins += t;
                     stat_games_won += (t - b); 
                     tg.HapticFeedback.notificationOccurred('success');
-                    
                     showCustomResultDialog(
                         currentLang === 'ru' 
                         ? `Поздравляю! Вы выиграли ${Math.floor(t).toLocaleString()} <img src="newcoin.jpg" alt="coin">`
@@ -1045,16 +1212,11 @@
                 } else {
                     stat_games_lost += b; 
                     tg.HapticFeedback.notificationOccurred('error');
-                    
                     showCustomResultDialog(
-                        currentLang === 'ru'
-                        ? `К сожалению, вы проиграли`
-                        : `Unfortunately, you lost`
+                        currentLang === 'ru' ? `К сожалению, вы проиграли` : `Unfortunately, you lost`
                     );
                 }
-
-                updateUI();
-                saveAll();
+                updateUI(); saveAll();
             }, 3550);
         }
 
@@ -1064,9 +1226,7 @@
             if (energy < maxE) energy++;
             
             const afkIncome = getPassiveIncomePerSecond();
-            if (afkIncome > 0) {
-                coins += afkIncome;
-            }
+            if (afkIncome > 0) coins += afkIncome;
             
             updateUI();
             
@@ -1077,9 +1237,7 @@
             if (dbSaveCounter >= 5) {
                 const uid = tg.initDataUnsafe?.user?.id;
                 if (uid) {
-                    db.ref('users/' + uid).update({
-                        coins, energy, userCards
-                    });
+                    db.ref('users/' + uid).update({ coins, energy, userCards });
                 }
                 dbSaveCounter = 0;
             }
