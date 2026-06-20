@@ -133,31 +133,75 @@
         
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
-        .games-menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-top: 10px; }
+        .games-menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; margin-top: 10px; }
         
         .game-preview-card {
             background: #0d121d;
             border: 2px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 25px 15px 20px 15px;
+            border-radius: 20px;
+            padding: 20px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            aspect-ratio: 1 / 1.1;
+            aspect-ratio: 1 / 1.15;
             box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
         
         .wheel-svg-icon {
-            width: 65px;
-            height: 65px;
+            width: 55px;
+            height: 55px;
             filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.6));
-            animation: slowRotate 12s linear infinite;
         }
+        .rotating { animation: slowRotate 12s linear infinite; }
         @keyframes slowRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .btn-play-preview { width: 100%; background: transparent; border: 2px solid white; color: white; border-radius: 14px; padding: 8px; font-size: 14px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+        .btn-play-preview { width: 100%; background: transparent; border: 2px solid white; color: white; border-radius: 12px; padding: 8px; font-size: 13px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin-top: 8px; }
         .btn-play-preview:active { background: white; color: black; }
+
+        /* СТИЛИ ПОЛНОЭКРАННЫХ ВЬЮШЕК ИГР */
+        .fullscreen-game-view {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #020617;
+            z-index: 1500;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+        .game-view-title { font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; color: white; letter-spacing: 0.5px; }
+        .game-bet-container { width: 100%; max-width: 320px; background: #0d121d; border-radius: 16px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .game-input-label { font-size: 12px; color: #64748b; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; }
+        .game-bet-input { width: 100%; background: #020617; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; color: white; font-size: 16px; font-weight: 700; outline: none; margin-bottom: 8px; text-align: center; }
+        
+        .btn-game-back { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #64748b; border-radius: 12px; padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: auto; transition: 0.2s; }
+        .btn-game-back:active { background: rgba(255,255,255,0.05); color: white; }
+
+        /* Сапёр: Сетка */
+        .mines-board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; width: 100%; max-width: 300px; margin: 15px 0; }
+        .mines-cell { aspect-ratio: 1; background: #161f30; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease; }
+        .mines-cell.safe { background: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
+        .mines-cell.mine { background: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+
+        /* Крипто-Интуит */
+        .crypto-chart-mock { width: 100%; max-width: 320px; height: 120px; background: #050814; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin: 15px 0; overflow: hidden; }
+        .crypto-price-display { font-size: 26px; font-weight: 800; color: #4ade80; text-shadow: 0 0 10px rgba(74,222,128,0.2); }
+        .crypto-choice-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 320px; }
+        .btn-prediction { border: none; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 800; color: white; cursor: pointer; text-transform: uppercase; }
+        .btn-prediction.up { background: #22c55e; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+        .btn-prediction.down { background: #ef4444; box-shadow: 0 4px 12px rgba(239,68,68,0.3); }
+        .btn-prediction:disabled, .mines-cell:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+        /* Кибер башня */
+        .tower-building { display: flex; flex-direction: column-reverse; gap: 8px; width: 100%; max-width: 320px; margin: 15px 0; }
+        .tower-floor { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 6px; background: rgba(13,18,29,0.6); border-radius: 10px; border: 1px solid rgba(255,255,255,0.02); }
+        .tower-floor.active-floor { background: rgba(37,99,235,0.15); border-color: rgba(37,99,235,0.4); }
+        .tower-block { height: 42px; background: #161f30; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
+        .tower-block.success { background: #22c55e !important; }
+        .tower-block.fail { background: #ef4444 !important; }
+        .tower-block:disabled { cursor: not-allowed; }
 
         .btn-wheel-action-spin {
             width: 100%;
@@ -255,24 +299,42 @@
         
         <div class="games-menu-grid">
             <div class="game-preview-card">
-                <svg class="wheel-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="wheel-svg-icon rotating" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <path d="M12 2v20M2 12h20M19.07 4.93L4.93 19.07M4.93 4.93l14.14 14.14"></path>
                     <circle cx="12" cy="12" r="3" fill="#1e3a8a"></circle>
                 </svg>
-                <div style="font-weight: 700; font-size: 13px; text-transform: uppercase; margin: 10px 0;" id="lbl-menu-wheel-title">Колесо Фортуны</div>
+                <div style="font-weight: 700; font-size: 12px; text-transform: uppercase; margin: 10px 0; text-align:center;" id="lbl-menu-wheel-title">Колесо Фортуны</div>
                 <button class="btn-play-preview" onclick="location.href='roulette.html'">Играть</button>
             </div>
 
             <div class="game-preview-card">
-                <svg class="wheel-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: none;">
+                <svg class="wheel-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <circle cx="8.5" cy="8.5" r="1.5" fill="#3b82f6"></circle>
                     <circle cx="15.5" cy="15.5" r="1.5" fill="#3b82f6"></circle>
                     <circle cx="12" cy="12" r="2" fill="white"></circle>
                 </svg>
-                <div style="font-weight: 700; font-size: 13px; text-transform: uppercase; margin: 10px 0;" id="lbl-menu-dice-title">Кубик краш</div>
+                <div style="font-weight: 700; font-size: 12px; text-transform: uppercase; margin: 10px 0; text-align:center;" id="lbl-menu-dice-title">Кубик краш</div>
                 <button class="btn-play-preview" onclick="location.href='dice.html'">Играть</button>
+            </div>
+
+            <div class="game-preview-card">
+                <div style="font-size: 42px; filter: drop-shadow(0 0 8px #ef4444);">💣</div>
+                <div style="font-weight: 700; font-size: 12px; text-transform: uppercase; margin: 10px 0; text-align:center;" id="lbl-gmenu-mines">Сапёр</div>
+                <button class="btn-play-preview" onclick="openInlineGame('mines')">Играть</button>
+            </div>
+
+            <div class="game-preview-card">
+                <div style="font-size: 42px; filter: drop-shadow(0 0 8px #22c55e);">📈</div>
+                <div style="font-weight: 700; font-size: 12px; text-transform: uppercase; margin: 10px 0; text-align:center;" id="lbl-gmenu-crypto">Крипто-Интуит</div>
+                <button class="btn-play-preview" onclick="openInlineGame('crypto')">Играть</button>
+            </div>
+
+            <div class="game-preview-card">
+                <div style="font-size: 42px; filter: drop-shadow(0 0 8px #f59e0b);">🏰</div>
+                <div style="font-weight: 700; font-size: 12px; text-transform: uppercase; margin: 10px 0; text-align:center;" id="lbl-gmenu-tower">Кибер башня</div>
+                <button class="btn-play-preview" onclick="openInlineGame('tower')">Играть</button>
             </div>
         </div>
     </div>
@@ -312,6 +374,61 @@
 
         <div class="shop-section-title" id="lbl-top-title">ТАБЛИЦА ЛИДЕРОВ 🏆</div>
         <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
+    </div>
+
+    <div class="fullscreen-game-view" id="view-game-mines">
+        <div class="game-view-title" id="lbl-mines-title">Сапёр</div>
+        
+        <div class="game-bet-container">
+            <div class="game-input-label" id="lbl-bet-title-1">Ставка</div>
+            <input type="number" class="game-bet-input" id="mines-bet-input" value="100" min="10">
+            <div class="game-input-label" id="lbl-mines-count-title">Количество мин (1-10)</div>
+            <input type="number" class="game-bet-input" id="mines-count-input" value="3" min="1" max="10">
+        </div>
+
+        <div id="mines-multiplier-status" style="font-weight: 800; font-size: 16px; color: #4ade80; margin-bottom: 5px;">x1.00</div>
+        <button class="btn-wheel-action-spin" id="btn-mines-action" onclick="minesStartOrCashout()" style="max-width:320px; padding:12px; font-size:16px;">Начать игру</button>
+        
+        <div class="mines-board" id="mines-board-grid"></div>
+
+        <button class="btn-game-back" onclick="closeInlineGame('mines')">← Назад</button>
+    </div>
+
+    <div class="fullscreen-game-view" id="view-game-crypto">
+        <div class="game-view-title" id="lbl-crypto-title">Крипто-Интуит</div>
+        
+        <div class="game-bet-container">
+            <div class="game-input-label" id="lbl-bet-title-2">Ставка</div>
+            <input type="number" class="game-bet-input" id="crypto-bet-input" value="100" min="10">
+        </div>
+
+        <div class="crypto-chart-mock">
+            <div style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; margin-bottom:4px;">BTC / USD</div>
+            <div class="crypto-price-display" id="crypto-btc-price">$65,240.50</div>
+            <div style="font-size:11px; color:#475467; margin-top:4px;" id="crypto-status-text">Ожидание ставки...</div>
+        </div>
+
+        <div class="crypto-choice-btns">
+            <button class="btn-prediction up" id="btn-crypto-up" onclick="playCrypto('up')">Вверх 📈</button>
+            <button class="btn-prediction down" id="btn-crypto-down" onclick="playCrypto('down')">Вниз 📉</button>
+        </div>
+
+        <button class="btn-game-back" onclick="closeInlineGame('crypto')">← Назад</button>
+    </div>
+
+    <div class="fullscreen-game-view" id="view-game-tower">
+        <div class="game-view-title" id="lbl-tower-title">Кибер башня</div>
+        
+        <div class="game-bet-container">
+            <div class="game-input-label" id="lbl-bet-title-3">Ставка</div>
+            <input type="number" class="game-bet-input" id="tower-bet-input" value="100" min="10">
+        </div>
+
+        <button class="btn-wheel-action-spin" id="btn-tower-action" onclick="towerStartOrCashout()" style="max-width:320px; padding:12px; font-size:16px; margin-bottom:15px;">Начать восхождение</button>
+
+        <div class="tower-building" id="tower-building-grid"></div>
+
+        <button class="btn-game-back" onclick="closeInlineGame('tower')">← Назад</button>
     </div>
 
     <div class="nav">
@@ -483,6 +600,16 @@
             
             document.getElementById(screenId + '-scr').classList.add('active');
             document.getElementById('n-' + screenId).classList.add('active');
+        }
+
+        // УПРАВЛЕНИЕ МИНИ-ИГРАМИ ВНУТРИ СТРАНИЦЫ
+        function openInlineGame(gameKey) {
+            document.getElementById('view-game-' + gameKey).style.display = 'flex';
+            if (gameKey === 'mines') initMinesBoard();
+            if (gameKey === 'tower') initTowerGame();
+        }
+        function closeInlineGame(gameKey) {
+            document.getElementById('view-game-' + gameKey).style.display = 'none';
         }
 
         // ОБНОВЛЕНИЕ СТАТИСТИКИ И ИНТЕРФЕЙСА (HUD)
@@ -668,6 +795,359 @@
                 ? `Вы успешно забрали ежедневную награду: ${prize.toLocaleString()} монет!`
                 : `You successfully claimed your daily reward: ${prize.toLocaleString()} coins!`
             );
+        }
+
+        // ==========================================
+        // ЛОГИКА МИНИ-ИГРЫ 1: САПЁР (MINES)
+        // ==========================================
+        let minesGameState = 'idle'; // idle, playing
+        let minesGrid = [];
+        let minesCurrentBet = 0;
+        let minesCount = 3;
+        let minesOpenedCount = 0;
+
+        function initMinesBoard() {
+            const gridContainer = document.getElementById('mines-board-grid');
+            gridContainer.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('button');
+                cell.className = 'mines-cell';
+                cell.dataset.index = i;
+                cell.disabled = true;
+                cell.onclick = () => clickMinesCell(i);
+                gridContainer.appendChild(cell);
+            }
+            document.getElementById('mines-multiplier-status').innerText = 'x1.00';
+            document.getElementById('btn-mines-action').innerText = currentLang === 'ru' ? 'Начать игру' : 'Start Game';
+        }
+
+        function minesStartOrCashout() {
+            if (minesGameState === 'idle') {
+                const betInput = document.getElementById('mines-bet-input');
+                const countInput = document.getElementById('mines-count-input');
+                minesCurrentBet = parseInt(betInput.value) || 0;
+                minesCount = parseInt(countInput.value) || 3;
+
+                if (minesCurrentBet <= 0) return;
+                if (minesCount < 1 || minesCount > 20) return;
+                if (coins < minesCurrentBet) {
+                    tg.showAlert(currentLang === 'ru' ? "Недостаточно монет!" : "Not enough coins!");
+                    return;
+                }
+
+                coins -= minesCurrentBet;
+                stat_games_lost += minesCurrentBet;
+                minesOpenedCount = 0;
+                minesGameState = 'playing';
+                updateUI();
+
+                // Генерация мин
+                minesGrid = Array(25).fill('gem');
+                let plantedMines = 0;
+                while (plantedMines < minesCount) {
+                    let randPos = Math.floor(Math.random() * 25);
+                    if (minesGrid[randPos] === 'gem') {
+                        minesGrid[randPos] = 'mine';
+                        plantedMines++;
+                    }
+                }
+
+                // Активация поля
+                document.querySelectorAll('.mines-cell').forEach(cell => {
+                    cell.className = 'mines-cell';
+                    cell.innerText = '';
+                    cell.disabled = false;
+                });
+                betInput.disabled = true;
+                countInput.disabled = true;
+
+                updateMinesMultiplier();
+                document.getElementById('btn-mines-action').innerText = currentLang === 'ru' ? 'Забрать выигрыш' : 'Cash Out';
+            } else {
+                // Забрать деньги
+                const currentMult = calculateMinesMultiplier();
+                const totalWin = Math.floor(minesCurrentBet * currentMult);
+                coins += totalWin;
+                stat_games_won += totalWin;
+                
+                showCustomResultDialog(currentLang === 'ru' ? `Вы забрали ${totalWin.toLocaleString()} монет!` : `You cashed out ${totalWin.toLocaleString()} coins!`);
+                endMinesGame(true);
+            }
+        }
+
+        function clickMinesCell(idx) {
+            if (minesGameState !== 'playing') return;
+            const cell = document.querySelector(`.mines-cell[data-index='${idx}']`);
+            if (!cell || cell.disabled || cell.classList.contains('safe')) return;
+
+            if (minesGrid[idx] === 'mine') {
+                cell.classList.add('mine');
+                cell.innerText = '💣';
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                showCustomResultDialog(currentLang === 'ru' ? 'Бум! Вы подорвались на мине.' : 'Boom! You hit a mine.');
+                endMinesGame(false);
+            } else {
+                cell.classList.add('safe');
+                cell.innerText = '💎';
+                minesOpenedCount++;
+                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+                
+                if (minesOpenedCount === (25 - minesCount)) {
+                    // Победа — открыты все кристаллы
+                    const currentMult = calculateMinesMultiplier();
+                    const totalWin = Math.floor(minesCurrentBet * currentMult);
+                    coins += totalWin;
+                    stat_games_won += totalWin;
+                    showCustomResultDialog(currentLang === 'ru' ? `Идеально! Чистая победа: +${totalWin} монет!` : `Perfect! Clean win: +${totalWin} coins!`);
+                    endMinesGame(true);
+                } else {
+                    updateMinesMultiplier();
+                }
+            }
+        }
+
+        function calculateMinesMultiplier() {
+            if (minesOpenedCount === 0) return 1.0;
+            // Математическая формула симуляции роста коэффициентов в зависимости от сложности
+            let num = 1;
+            for(let i = 0; i < minesOpenedCount; i++) {
+                num *= (25 - i) / (25 - minesCount - i);
+            }
+            return parseFloat((num * 0.95).toFixed(2)); // 5% маржа игры
+        }
+
+        function updateMinesMultiplier() {
+            const m = calculateMinesMultiplier();
+            document.getElementById('mines-multiplier-status').innerText = `x${m.toFixed(2)}`;
+        }
+
+        function endMinesGame(isWin) {
+            minesGameState = 'idle';
+            document.getElementById('mines-bet-input').disabled = false;
+            document.getElementById('mines-count-input').disabled = false;
+            document.getElementById('btn-mines-action').innerText = currentLang === 'ru' ? 'Начать игру' : 'Start Game';
+
+            // Показать расположение всех элементов
+            for (let i = 0; i < 24; i++) {
+                const cell = document.querySelector(`.mines-cell[data-index='${i}']`);
+                if(cell) {
+                    cell.disabled = true;
+                    if (minesGrid[i] === 'mine' && !cell.classList.contains('mine')) {
+                        cell.innerText = '💣';
+                        cell.style.background = 'rgba(239, 68, 68, 0.2)';
+                    }
+                }
+            }
+            updateUI();
+            saveAll();
+        }
+
+        // ==========================================
+        // ЛОГИКА МИНИ-ИГРЫ 2: КРИПТО-ИНТУИТ (CRYPTO)
+        // ==========================================
+        let btcBasePrice = 65240.50;
+
+        function playCrypto(prediction) {
+            const betInput = document.getElementById('crypto-bet-input');
+            const bet = parseInt(betInput.value) || 0;
+
+            if (bet <= 0) return;
+            if (coins < bet) {
+                tg.showAlert(currentLang === 'ru' ? "Недостаточно монет!" : "Not enough coins!");
+                return;
+            }
+
+            coins -= bet;
+            stat_games_lost += bet;
+            updateUI();
+
+            document.getElementById('btn-crypto-up').disabled = true;
+            document.getElementById('btn-crypto-down').disabled = true;
+            betInput.disabled = true;
+
+            const statusText = document.getElementById('crypto-status-text');
+            const priceDisplay = document.getElementById('crypto-btc-price');
+            statusText.innerText = currentLang === 'ru' ? "Анализ рынка..." : "Analyzing market...";
+
+            let ticks = 0;
+            let currentPrice = btcBasePrice;
+
+            let interval = setInterval(() => {
+                ticks++;
+                let change = (Math.random() - 0.49) * 120; // Небольшое отклонение курса
+                currentPrice += change;
+                priceDisplay.innerText = `$${currentPrice.toFixed(2)}`;
+                
+                if (change > 0) priceDisplay.style.color = '#4ade80';
+                else priceDisplay.style.color = '#ef4444';
+
+                if (ticks >= 8) {
+                    clearInterval(interval);
+                    
+                    const isUp = currentPrice > btcBasePrice;
+                    const won = (prediction === 'up' && isUp) || (prediction === 'down' && !isUp);
+
+                    if (won) {
+                        let winAmount = Math.floor(bet * 1.9);
+                        coins += winAmount;
+                        stat_games_won += winAmount;
+                        if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                        showCustomResultDialog(currentLang === 'ru' ? `Прогноз верный! Вы выиграли ${winAmount} монет.` : `Right prediction! You won ${winAmount} coins.`);
+                    } else {
+                        if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                        showCustomResultDialog(currentLang === 'ru' ? `Рынок пошел против вас. Ставка проиграна.` : `The market went against you. You lost.`);
+                    }
+
+                    btcBasePrice = currentPrice;
+                    statusText.innerText = currentLang === 'ru' ? "Ожидание ставки..." : "Waiting for bet...";
+                    document.getElementById('btn-crypto-up').disabled = false;
+                    document.getElementById('btn-crypto-down').disabled = false;
+                    betInput.disabled = false;
+                    
+                    updateUI();
+                    saveAll();
+                }
+            }, 300);
+        }
+
+        // ==========================================
+        // ЛОГИКА МИНИ-ИГРЫ 3: КИБЕР БАШНЯ (TOWER)
+        // ==========================================
+        let towerGameState = 'idle'; // idle, climbing
+        let towerCurrentFloor = 0; // 0-4 уровни
+        let towerBet = 0;
+        let towerStructure = [];
+        const towerMultipliers = [1.25, 1.70, 2.40, 3.60, 5.50];
+
+        function initTowerGame() {
+            const container = document.getElementById('tower-building-grid');
+            container.innerHTML = '';
+            
+            for (let f = 0; f < 5; f++) {
+                const floorRow = document.createElement('div');
+                floorRow.className = 'tower-floor';
+                floorRow.id = `tower-floor-${f}`;
+                
+                for (let b = 0; b < 3; b++) {
+                    const block = document.createElement('button');
+                    block.className = 'tower-block';
+                    block.id = `tower-block-${f}-${b}`;
+                    block.innerText = `x${towerMultipliers[f].toFixed(2)}`;
+                    block.disabled = true;
+                    block.onclick = () => chooseTowerBlock(f, b);
+                    floorRow.appendChild(block);
+                }
+                container.appendChild(floorRow);
+            }
+            document.getElementById('btn-tower-action').innerText = currentLang === 'ru' ? 'Начать восхождение' : 'Start Climb';
+        }
+
+        function towerStartOrCashout() {
+            if (towerGameState === 'idle') {
+                const betInput = document.getElementById('tower-bet-input');
+                towerBet = parseInt(betInput.value) || 0;
+
+                if (towerBet <= 0) return;
+                if (coins < towerBet) {
+                    tg.showAlert(currentLang === 'ru' ? "Недостаточно монет!" : "Not enough coins!");
+                    return;
+                }
+
+                coins -= towerBet;
+                stat_games_lost += towerBet;
+                towerCurrentFloor = 0;
+                towerGameState = 'climbing';
+                updateUI();
+
+                // Создаем структуру башни: в каждом ряду 1 случайная мина (0, 1 или 2)
+                towerStructure = [];
+                for(let i=0; i<5; i++) {
+                    towerStructure.push(Math.floor(Math.random() * 3));
+                }
+
+                initTowerGame(); // Сброс визуальной сетки
+                betInput.disabled = true;
+                setActiveTowerFloor(0);
+
+                document.getElementById('btn-tower-action').innerText = currentLang === 'ru' ? 'Забрать монеты' : 'Cash Out';
+            } else {
+                // Игрок решил забрать деньги
+                if (towerCurrentFloor > 0) {
+                    let finalMult = towerMultipliers[towerCurrentFloor - 1];
+                    let totalWin = Math.floor(towerBet * finalMult);
+                    coins += totalWin;
+                    stat_games_won += totalWin;
+                    showCustomResultDialog(currentLang === 'ru' ? `Вы успешно спустились с башни, забрав ${totalWin} монет!` : `You safely left the tower with ${totalWin} coins!`);
+                }
+                endTowerGame();
+            }
+        }
+
+        function setActiveTowerFloor(floorIdx) {
+            document.querySelectorAll('.tower-floor').forEach(f => f.classList.remove('active-floor'));
+            document.querySelectorAll('.tower-block').forEach(b => b.disabled = true);
+
+            if (floorIdx < 5) {
+                document.getElementById(`tower-floor-${floorIdx}`).classList.add('active-floor');
+                for (let b = 0; b < 3; b++) {
+                    document.getElementById(`tower-block-${floorIdx}-${b}`).disabled = false;
+                }
+            }
+        }
+
+        function chooseTowerBlock(floor, blockIdx) {
+            if (towerGameState !== 'climbing' || floor !== towerCurrentFloor) return;
+
+            const selectedBtn = document.getElementById(`tower-block-${floor}-${blockIdx}`);
+            const mineIndex = towerStructure[floor];
+
+            if (blockIdx === mineIndex) {
+                // Проигрыш ловушка
+                selectedBtn.classList.add('fail');
+                selectedBtn.innerText = '💥';
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                showCustomResultDialog(currentLang === 'ru' ? 'Защита пробита! Башня обрушилась.' : 'Defense breached! The tower collapsed.');
+                endTowerGame();
+            } else {
+                // Успешный подъем
+                selectedBtn.classList.add('success');
+                selectedBtn.innerText = '✔';
+                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                
+                towerCurrentFloor++;
+
+                if (towerCurrentFloor === 5) {
+                    // Башня полностью пройдена
+                    let maxWin = Math.floor(towerBet * towerMultipliers[4]);
+                    coins += maxWin;
+                    stat_games_won += maxWin;
+                    showCustomResultDialog(currentLang === 'ru' ? `Легендарно! Вы покорили вершину башни: +${maxWin} монет!` : `Legendary! You reached the top: +${maxWin} coins!`);
+                    endTowerGame();
+                } else {
+                    setActiveTowerFloor(towerCurrentFloor);
+                }
+            }
+        }
+
+        function endTowerGame() {
+            towerGameState = 'idle';
+            document.getElementById('tower-bet-input').disabled = false;
+            document.getElementById('btn-tower-action').innerText = currentLang === 'ru' ? 'Начать восхождение' : 'Start Climb';
+            
+            // Открываем все мины башни игроку
+            towerStructure.forEach((mineIdx, floorIdx) => {
+                const mineBtn = document.getElementById(`tower-block-${floorIdx}-${mineIdx}`);
+                if (mineBtn && !mineBtn.classList.contains('fail')) {
+                    mineBtn.innerText = '💥';
+                    mineBtn.style.background = 'rgba(239, 68, 68, 0.2)';
+                }
+            });
+
+            document.querySelectorAll('.tower-block').forEach(b => b.disabled = true);
+            document.querySelectorAll('.tower-floor').forEach(f => f.classList.remove('active-floor'));
+
+            updateUI();
+            saveAll();
         }
 
         // СИСТЕМНЫЕ ДИАЛОГИ, ТАБЛИЦА ЛИДЕРОВ И ЯЗЫКИ
