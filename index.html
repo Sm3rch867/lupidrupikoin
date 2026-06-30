@@ -1,233 +1,273 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <title>Lupi Drupi Coin</title>
-<link rel="preload" href="assets/coin.jpg" as="image">
+<link rel="preload" href="assets/coin.png" as="image">
 <style>
   :root {
-    --bg-gradient: radial-gradient(1200px 800px at 50% 30%, #0f1c3a 0%, #0a1020 50%, #050a14 100%);
-    --panel-bg: rgba(13, 23, 47, 0.75);
-    --panel-border: 1px solid #1c356a;
-    --text-main: #e9f0ff;
-    --text-muted: #7e9bbd;
+    --bg-color: #060b16;
+    --panel-bg: #111a2e;
+    --panel-border: 1px solid #1e2d4a;
     --accent-blue: #2e6bff;
-    --accent-gold: #ffaa22;
+    --text-color: #e9f0ff;
+    --text-muted: #8aa0c8;
+    --neon-shadow: 0 0 15px rgba(46, 107, 255, 0.4);
   }
 
   * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; margin: 0; padding: 0; background: #050a14; color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow: hidden; }
+  html, body { height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
   
-  .app-container { display: flex; flex-direction: column; height: 100%; background: var(--bg-gradient); }
+  /* Главный контейнер во весь экран */
+  .app { display: flex; flex-direction: column; height: 100%; position: relative; }
 
-  /* ХЕДЕР: Баланс и Энергия */
-  header { padding: 20px 16px 10px; display: flex; flex-direction: column; align-items: center; position: relative; }
-  .balance-container { font-size: 44px; font-weight: 800; letter-spacing: 1px; margin-bottom: 12px; text-shadow: 0 4px 12px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px; }
-  .balance-container span { color: #fff; }
+  /* ХЕДЕР (Баланс, Награды и Энергия) */
+  header { padding: 16px; display: flex; flex-direction: column; align-items: center; position: relative; }
+  .balance-block { font-size: 42px; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
   
-  .energy-container { width: 90%; max-width: 360px; display: flex; flex-direction: column; gap: 4px; }
-  .energy-bar { width: 100%; height: 10px; background: #0b1528; border-radius: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 0 0 1px #162a54; }
+  /* Кнопка Дневных наград в виде огонька */
+  .daily-trigger { position: absolute; right: 16px; top: 16px; background: #131f37; border: 1px solid #22375e; border-radius: 12px; color: #ff9d22; padding: 8px 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: var(--neon-shadow); font-size: 14px; }
+
+  .energy-box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 6px; }
+  .energy-bar { width: 100%; height: 12px; background: #090f1c; border: 1px solid #1b2c4c; border-radius: 10px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
   .energy-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #3aa0ff, var(--accent-blue)); transition: width 0.1s linear; }
 
-  /* Кнопка ежедневных наград на главном экране */
-  .daily-streak-btn { position: absolute; right: 16px; top: 20px; background: #0e1b35; border: 1px solid #203b75; border-radius: 12px; color: var(--accent-gold); padding: 8px 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
-  /* ОСНОВНОЙ ЭКРАН */
-  .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 20px; }
-  .page { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; }
+  /* ОСНОВНОЙ КОНТЕНТ (СКРОЛЛ) */
+  .content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 0 16px 16px; }
+  .page { display: none; width: 100%; flex-direction: column; align-items: center; }
   .page.active { display: flex; }
 
-  /* СТИЛЬ 4.1: ГЛАВНАЯ СТРАНИЦА И КЛИКЕР */
-  .clicker-screen { justify-content: center; position: relative; }
-  .coin-wrapper { width: 270px; height: 270px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #122852 0%, #071329 70%, #040a17 100%); box-shadow: 0 0 50px 10px rgba(46, 107, 255, 0.25), inset 0 0 30px rgba(0,0,0,0.6); display: grid; place-items: center; cursor: pointer; transition: transform 0.05s ease; margin-top: -20px; }
-  .coin-wrapper:active { transform: scale(0.96); }
-  .coin-wrapper img { width: 130px; height: 130px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); pointer-events: none; }
-  .click-hint { margin-top: 24px; color: var(--text-muted); font-size: 13px; letter-spacing: 0.5px; }
+  /* 1. ГЛАВНАЯ СТРАНИЦА: КЛИКЕР */
+  .clicker-page { height: 100%; justify-content: center; min-height: 320px; }
+  .coin-container { width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #15274d 0%, #0a1224 70%, #050912 100%); border: 1px solid #1c3364; box-shadow: 0 0 40px rgba(46,107,255,0.2), inset 0 0 25px rgba(0,0,0,0.6); display: grid; place-items: center; cursor: pointer; transition: transform 0.05s ease; margin-top: -10px; }
+  .coin-container:active { transform: scale(0.97); }
+  .coin-container img { width: 125px; height: 125px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5)); pointer-events: none; }
+  .hint-text { margin-top: 20px; color: var(--text-muted); font-size: 13px; }
 
-  /* СТИЛИ ПАНЕЛЕЙ И ВЕРСТКИ (ДЛЯ МАГАЗИНА, ИГР И ПРОФИЛЯ) */
-  .custom-panel { width: 92%; max-width: 440px; background: var(--panel-bg); border: var(--panel-border); border-radius: 18px; padding: 18px; margin: 10px 0; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-  .wip-text { text-align: center; color: var(--text-muted); font-size: 16px; padding: 20px 0; }
+  /* ОБЩИЙ СТИЛЬ ДЛЯ ПАНЕЛЕЙ */
+  .panel { width: 100%; max-width: 440px; background: var(--panel-bg); border: var(--panel-border); border-radius: 16px; padding: 16px; margin-top: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+  .wip-box { text-align: center; color: var(--text-muted); font-size: 15px; padding: 30px 0; }
 
-  /* МЕНЮ МИНИ-ИГР */
-  .games-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 92%; max-width: 440px; margin-top: 12px; }
-  .game-card { background: #0b1428; border: 1px solid #193266; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; justify-content: space-between; }
-  .game-card h3 { margin: 0; font-size: 16px; font-weight: 700; color: #fff; }
-  .game-card p { margin: 0; font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-  .game-card button { background: linear-gradient(180deg, #1d3d85, #142a5c); border: 1px solid #2852b3; color: #fff; border-radius: 10px; padding: 10px; font-weight: 600; cursor: pointer; font-size: 13px; transition: background 0.2s; }
-  .game-card button:active { background: #142a5c; }
+  /* 2. МИНИ-ИГРЫ СПИСОК */
+  .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 440px; margin-top: 14px; }
+  .game-item { background: #0e1626; border: 1px solid #1a2944; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+  .game-item h3 { margin: 0; font-size: 15px; font-weight: 700; color: #fff; }
+  .game-item p { margin: 0; font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  .game-item button { background: linear-gradient(180deg, #1d3668, #112140); border: 1px solid #264787; color: #fff; border-radius: 8px; padding: 8px; font-weight: 600; cursor: pointer; font-size: 12px; }
+  .game-item button:active { background: #112140; }
 
-  /* ЭКРАН ИГРЫ (ОКНО ДЛЯ ВНЕШНИХ ФАЙЛОВ ИГР) */
-  .iframe-container { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; inset: 0; background: #050a14; z-index: 10; }
-  .iframe-container header { flex-direction: row; justify-content: space-between; padding: 12px 16px; background: #091122; border-bottom: 1px solid #172a52; }
-  .iframe-container iframe { flex: 1; border: none; width: 100%; height: 100%; }
-
-  /* ЭКРАН ПРОФИЛЯ (Дизайн 4.1 как ты заказывал) */
-  .profile-header { display: flex; align-items: center; gap: 16px; }
-  .profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #2e6bff, #a43aff); box-shadow: 0 4px 10px rgba(46,107,255,0.4); }
-  .profile-info h2 { margin: 0; font-size: 18px; font-weight: 700; }
-  .profile-info p { margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted); }
+  /* 3. ПРОФИЛЬ И ЛИДЕРБОРД */
+  .profile-meta { display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #2e6bff, #8a2eff); }
+  .profile-name { font-size: 16px; font-weight: 700; color: #fff; }
+  .profile-tag { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   
-  .lang-selector { display: flex; gap: 10px; margin: 10px 0; }
-  .lang-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #203c7a; background: #0c162d; color: var(--text-muted); font-weight: 600; cursor: pointer; }
-  .lang-btn.active { background: #1b3573; border-color: #3b6ee8; color: #fff; }
+  .lang-box { display: flex; gap: 8px; margin: 12px 0 4px; }
+  .lang-tab { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #1d2d4a; background: #0b111e; color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .lang-tab.active { background: #1b2d54; border-color: #315294; color: #fff; }
 
-  .stats-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-  .stats-table td { padding: 10px 0; border-bottom: 1px solid #162a54; font-size: 14px; }
-  .stats-table td:last-child { text-align: right; font-weight: 700; color: #fff; }
-  .stats-table tr:last-child td { border: none; }
+  .table-data { width: 100%; border-collapse: collapse; }
+  .table-data td { padding: 8px 0; border-bottom: 1px solid #19263e; font-size: 13px; color: #cfe0ff; }
+  .table-data td:last-child { text-align: right; font-weight: 700; color: #fff; }
+  .table-data tr:last-child td { border: none; }
 
-  /* НИЖНЯЯ НАВИГАЦИЯ (ТАББАР) */
-  nav { height: 72px; background: #060c1a; border-top: 1px solid #15274d; display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); }
-  nav button { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: color 0.15s; width: 22%; }
+  /* Лидерборд список */
+  .leaderboard-title { font-size: 15px; font-weight: 700; margin: 4px 0 10px 0; color: #fff; }
+  .leader-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #19263e; font-size: 13px; }
+  .leader-row:last-child { border: none; }
+  .leader-user { display: flex; align-items: center; gap: 10px; }
+  .leader-rank { font-weight: 800; color: #4b89ff; width: 18px; }
+  .leader-coins { font-weight: 700; color: #fff; }
+
+  /* НИЖНЕЕ МЕНЮ НАВИГАЦИИ (БОЛЬШИЕ КВАДРАТНЫЕ КНОПКИ С КАРТИНКИ) */
+  nav { height: 74px; background: #080d1a; border-top: 1px solid #182642; display: flex; }
+  nav button { flex: 1; background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
   nav button svg { width: 22px; height: 22px; fill: currentColor; }
-  nav button.active { color: #528bff; }
+  nav button.active { color: #4985ff; background: #0c1426; box-shadow: inset 0 3px 0 #4985ff; }
 
-  /* ВСПЛЫВАЮЩЕЕ ОКНО НА ПОЛОВИНУ ЭКРАНА (ДНЕВНЫЕ НАГРАДЫ) */
-  .bottom-sheet-modal { position: fixed; inset: 0; background: rgba(2, 4, 10, 0.8); display: none; align-items: flex-end; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.3s ease; }
-  .bottom-sheet-modal.show { display: flex; opacity: 1; }
-  .bottom-sheet { width: 100%; max-width: 480px; background: #081124; border-top: 1px solid #203b75; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 20px 16px 30px; transform: translateY(100%); transition: transform 0.3s ease; max-height: 75vh; overflow-y: auto; }
-  .bottom-sheet-modal.show .bottom-sheet { transform: translateY(0); }
+  /* ОКНО НА ПОЛОВИНУ ЭКРАНА ДЛЯ ЕЖЕДНЕВНЫХ НАГРАД */
+  .sheet-backdrop { position: fixed; inset: 0; background: rgba(3, 6, 12, 0.85); display: none; align-items: flex-end; justify-content: center; z-index: 100; opacity: 0; transition: opacity 0.25s ease; }
+  .sheet-backdrop.show { display: flex; opacity: 1; }
+  .sheet { width: 100%; max-width: 460px; background: #0a1120; border-top: 1px solid #223965; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 18px 16px 24px; transform: translateY(100%); transition: transform 0.25s ease; max-height: 75vh; overflow-y: auto; box-shadow: 0 -5px 25px rgba(0,0,0,0.5); }
+  .sheet-backdrop.show .sheet { transform: translateY(0); }
   
-  .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .sheet-header h3 { margin: 0; font-size: 20px; font-weight: 800; }
-  .close-sheet-btn { background: #162649; border: 1px solid #253e77; color: var(--text-main); border-radius: 10px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+  .sheet-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .sheet-top h3 { margin: 0; font-size: 18px; font-weight: 800; }
+  .sheet-close { background: #14223c; border: 1px solid #233963; color: var(--text-color); border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
   
-  .rewards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-  .reward-box { background: #0d1933; border: 1px solid #1d3568; border-radius: 14px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .reward-box.current { border-color: var(--accent-blue); background: #112248; }
-  .reward-box span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
-  .reward-box img { width: 44px; height: 44px; object-fit: contain; }
-  .reward-box .coins-count { font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 3px; }
+  .days-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+  .day-card { background: #0f182b; border: 1px solid #1d2f52; border-radius: 12px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .day-card.active-day { border-color: var(--accent-blue); background: #142340; box-shadow: var(--neon-shadow); }
+  .day-card .day-title { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+  .day-card img { width: 40px; height: 40px; object-fit: contain; margin: 2px 0; }
+  .day-card .day-reward { font-size: 12px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 2px; }
   
-  .claim-reward-btn { width: 100%; background: linear-gradient(90deg, #2e6bff, #1b4ec2); border: none; color: #fff; padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(46,107,255,0.4); }
-  .claim-reward-btn:active { background: #1b4ec2; }
+  .claim-action-btn { width: 100%; background: linear-gradient(180deg, #3275ff, #1a52cc); border: none; color: #fff; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(46,107,255,0.3); }
+  .claim-action-btn:active { background: #1a52cc; }
 
-  /* ЭФФЕКТ ВЫЛЕТАЮЩИХ ЦИФР КЛИКА (+1) */
-  .floating-number { position: absolute; color: #a3c7ff; font-weight: 800; font-size: 24px; pointer-events: none; animation: floatUp 0.6s ease-out forwards; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-  @keyframes floatUp { 0% { transform: translate(-50%, 0) scale(1); opacity: 1; } 100% { transform: translate(-50%, -60px) scale(0.8); opacity: 0; } }
+  /* ЭКРАН С IFRAME ДЛЯ ИГР */
+  .game-layer { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; inset: 0; background: var(--bg-color); z-index: 50; }
+  .game-layer-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #09101e; border-bottom: 1px solid #1a2b49; }
+  .game-layer iframe { flex: 1; border: none; width: 100%; height: 100%; }
+
+  /* ЭФФЕКТ ЦИФР КЛИКА (+1) */
+  .click-pop { position: absolute; color: #7cb2ff; font-weight: 800; font-size: 24px; pointer-events: none; animation: popMove 0.5s ease-out forwards; text-shadow: 0 2px 6px rgba(0,0,0,0.6); }
+  @keyframes popMove { 0% { transform: translate(-50%, 0) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50px) scale(0.8); opacity: 0; } }
 </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app">
   
-  <header id="appHeader">
-    <div class="balance-container">
-      <span id="balanceDisplay">0</span>
+  <header>
+    <div class="balance-block">
+      <span id="gameBalance">0</span>
     </div>
-    <button class="daily-streak-btn" id="btnOpenRewards">🔥 Награды</button>
-    <div class="energy-container">
+    <button class="daily-trigger" id="openDailyBtn">🔥 Награды</button>
+    <div class="energy-box">
       <div class="energy-bar">
-        <div class="energy-fill" id="energyFill"></div>
+        <div class="energy-fill" id="energyBarFill"></div>
       </div>
     </div>
   </header>
 
-  <div class="main-content">
+  <div class="content">
     
-    <div id="page-home" class="page active clicker-screen">
-      <div class="coin-wrapper" id="coinTapTarget">
-        <img src="assets/coin.jpg" alt="Lupi Coin">
+    <div id="view-home" class="page active clicker-page">
+      <div class="coin-container" id="coinClickTarget">
+        <img src="assets/coin.png" alt="Lupi Coin">
       </div>
-      <div class="click-hint">1 клик = 1 монета</div>
+      <div class="hint-text">1 клик = 1 монета</div>
     </div>
 
-    <div id="page-shop" class="page">
-      <div class="custom-panel">
-        <div class="wip-text">Магазин находится в разработке...</div>
+    <div id="view-shop" class="page">
+      <div class="panel">
+        <div class="wip-box">Магазин находится в разработке</div>
       </div>
     </div>
 
-    <div id="page-games" class="page">
-      <div class="games-list">
-        <div class="game-card">
+    <div id="view-games" class="page">
+      <div class="games-grid">
+        <div class="game-item">
           <div>
             <h3>Сапёр (Mines)</h3>
-            <p>Ищи безопасные клетки и копи огромные иксы ставки.</p>
+            <p>Ищи безопасные ячейки и увеличивай свой куш.</p>
           </div>
-          <button onclick="launchGame('games/mines.html')">Играть</button>
+          <button onclick="startGame('games/mines.html')">Играть</button>
         </div>
-        <div class="game-card">
+        <div class="game-item">
           <div>
             <h3>Крипто-Интуит</h3>
-            <p>Угадай, куда пойдёт график курса — вверх или вниз.</p>
+            <p>Угадай направление графика курса — вверх или вниз.</p>
           </div>
-          <button onclick="launchGame('games/crypto.html')">Играть</button>
+          <button onclick="startGame('games/crypto.html')">Играть</button>
         </div>
-        <div class="game-card">
+        <div class="game-item">
           <div>
             <h3>Dice</h3>
-            <p>Быстрые кубики: ставки на диапазоны и точные числа.</p>
+            <p>Быстрые кубики: ставки на диапазоны чисел.</p>
           </div>
-          <button onclick="launchGame('games/dice.html')">Играть</button>
+          <button onclick="startGame('games/dice.html')">Играть</button>
         </div>
-        <div class="game-card">
+        <div class="game-item">
           <div>
             <h3>Plinko</h3>
-            <p>Запускай шарики через пирамиду преград в лунки.</p>
+            <p>Запускай шары через препятствия в прибыльные лунки.</p>
           </div>
-          <button onclick="launchGame('games/plinko.html')">Играть</button>
+          <button onclick="startGame('games/plinko.html')">Играть</button>
         </div>
-        <div class="game-card" style="grid-column: span 2;">
+        <div class="game-item" style="grid-column: span 2;">
           <div>
             <h3>Двери (Doors)</h3>
-            <p>Выбирай правильные двери комната за комнатой, собирая сокровища.</p>
+            <p>Выбирай верные двери комната за комнатой, избегая тупиков.</p>
           </div>
-          <button onclick="launchGame('games/doors.html')">Играть</button>
+          <button onclick="startGame('games/doors.html')">Играть</button>
         </div>
       </div>
     </div>
 
-    <div id="page-profile" class="page">
-      <div class="custom-panel">
-        <div class="profile-header">
-          <div class="profile-avatar"></div>
-          <div class="profile-info">
-            <h2>IvanZolo2004 (@IvanSolo2021)</h2>
-            <p>Статус: Игрок</p>
+    <div id="view-profile" class="page">
+      <div class="panel">
+        <div class="profile-meta">
+          <div class="avatar"></div>
+          <div>
+            <div class="profile-name">IvanZolo2004 (@IvanSolo2021)</div>
+            <div class="profile-tag">Участник проекта</div>
           </div>
         </div>
       </div>
       
-      <div class="custom-panel" style="margin-top:0;">
-        <div class="lang-selector">
-          <button class="lang-btn active">Русский</button>
-          <button class="lang-btn">English</button>
+      <div class="panel" style="margin-top: 10px;">
+        <div class="lang-box">
+          <button class="lang-tab active">Русский</button>
+          <button class="lang-tab">English</button>
         </div>
-        <table class="stats-table">
-          <tr><td>Баланс коинов</td><td><span id="statCoins">0</span> коинов</td></tr>
-          <tr><td>Всего тапов</td><td><span id="statTaps">0</span> раз</td></tr>
-          <tr><td>Выиграно в играх</td><td><span id="statGamesWin">0</span> коинов</td></tr>
-          <tr><td>Ежедневный стрик</td><td><span id="statStreak">0</span> дн.</td></tr>
+        <table class="table-data">
+          <tr><td>Баланс коинов</td><td><span id="lblCoins">0</span></td></tr>
+          <tr><td>Количество тапов</td><td><span id="lblTaps">0</span></td></tr>
+          <tr><td>Выиграно в играх</td><td><span id="lblGameWins">0</span></td></tr>
+          <tr><td>Ежедневный стрик</td><td><span>1 день</span></td></tr>
         </table>
+      </div>
+
+      <div class="panel" style="margin-top: 10px;">
+        <div class="leaderboard-title">Лидерборд</div>
+        <div class="leader-row">
+          <div class="leader-user">
+            <span class="leader-rank">1</span>
+            <span>Mellstroy</span>
+          </div>
+          <span class="leader-coins">999 999 999</span>
+        </div>
+        <div class="leader-row">
+          <div class="leader-user">
+            <span class="leader-rank">2</span>
+            <span>Litvin</span>
+          </div>
+          <span class="leader-coins">500 000 000</span>
+        </div>
+        <div class="leader-row">
+          <div class="leader-user">
+            <span class="leader-rank">3</span>
+            <span>Buster</span>
+          </div>
+          <span class="leader-coins">250 000 000</span>
+        </div>
+        <div class="leader-row" style="background: rgba(46,107,255,0.1); border-radius: 6px; padding: 6px 4px; margin-top: 4px;">
+          <div class="leader-user">
+            <span class="leader-rank" style="color: #fff;">4</span>
+            <strong>IvanZolo2004 (Вы)</strong>
+          </div>
+          <span class="leader-coins" id="lblLeaderCoins">0</span>
+        </div>
       </div>
     </div>
 
   </div>
 
-  <div class="iframe-container" id="iframeGameWrapper">
-    <header>
-      <div style="font-weight:700;" id="gameTitle">Загрузка игры...</div>
-      <button class="close-sheet-btn" onclick="exitGame()">Закрыть игру</button>
-    </header>
-    <iframe id="gameIframe" src="about:blank"></iframe>
+  <div class="game-layer" id="gameLayer">
+    <div class="game-layer-header">
+      <div style="font-weight:700;" id="gameLayerTitle">Игра</div>
+      <button class="sheet-close" onclick="stopGame()">Выйти в меню</button>
+    </div>
+    <iframe id="gameLayerIframe" src="about:blank"></iframe>
   </div>
 
   <nav>
-    <button class="active" onclick="switchTab('home')">
+    <button class="active" onclick="navigateTo('home')">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       Главная
     </button>
-    <button onclick="switchTab('shop')">
+    <button onclick="navigateTo('shop')">
       <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
       Магазин
     </button>
-    <button onclick="switchTab('games')">
+    <button onclick="navigateTo('games')">
       <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
       Мини-игры
     </button>
-    <button onclick="switchTab('profile')">
+    <button onclick="navigateTo('profile')">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg>
       Профиль
     </button>
@@ -235,159 +275,155 @@
 
 </div>
 
-<div class="bottom-sheet-modal" id="modalRewards">
-  <div class="bottom-sheet">
-    <div class="sheet-header">
+<div class="sheet-backdrop" id="dailySheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-top">
       <h3>Ежедневные награды</h3>
-      <button class="close-sheet-btn" id="btnCloseRewards">Закрыть</button>
+      <button class="sheet-close" id="closeDailySheetBtn">Закрыть</button>
     </div>
     
-    <div class="rewards-grid">
-      <div class="reward-box current"><span>День 1</span><img src="assets/stopka1.jpg"><div class="coins-count">1 000</div></div>
-      <div class="reward-box"><span>День 2</span><img src="assets/stopka1.jpg"><div class="coins-count">2 000</div></div>
-      <div class="reward-box"><span>День 3</span><img src="assets/stopka1.jpg"><div class="coins-count">3 000</div></div>
-      <div class="reward-box"><span>День 4</span><img src="assets/stopka1.jpg"><div class="coins-count">4 000</div></div>
-      <div class="reward-box"><span>День 5</span><img src="assets/stopka1.jpg"><div class="coins-count">5 000</div></div>
-      <div class="reward-box"><span>День 6</span><img src="assets/stopka3.jpg"><div class="coins-count">10 000</div></div>
+    <div class="days-grid">
+      <div class="day-card active-day"><span>1 день</span><img src="assets/stopka1.jpg"><div class="day-reward">1 000</div></div>
+      <div class="day-card"><span>2 день</span><img src="assets/stopka1.jpg"><div class="day-reward">2 000</div></div>
+      <div class="day-card"><span>3 день</span><img src="assets/stopka1.jpg"><div class="day-reward">3 000</div></div>
+      <div class="day-card"><span>4 день</span><img src="assets/stopka1.jpg"><div class="day-reward">4 000</div></div>
+      <div class="day-card"><span>5 день</span><img src="assets/stopka1.jpg"><div class="day-reward">5 000</div></div>
+      <div class="day-card"><span>6 день</span><img src="assets/stopka3.jpg"><div class="day-reward">10 000</div></div>
     </div>
     
-    <button class="claim-reward-btn" id="btnClaimDay">Забрать награду за сегодня</button>
+    <button class="claim-action-btn" id="claimRewardBtn">Забрать награду</button>
   </div>
 </div>
 
 <script>
-  // Локальные данные приложения
+  // Загрузка сохранённого прогресса
   let coins = parseInt(localStorage.getItem('coins') || '6500');
-  let totalTaps = parseInt(localStorage.getItem('taps') || '0');
-  let gamesProfit = parseInt(localStorage.getItem('gamesProfit') || '0');
-  let currentEnergy = parseInt(localStorage.getItem('energy') || '100');
+  let taps = parseInt(localStorage.getItem('taps') || '0');
+  let wins = parseInt(localStorage.getItem('wins') || '0');
+  let energy = parseInt(localStorage.getItem('energy') || '100');
   const maxEnergy = 100;
 
-  // Элементы UI
-  const balanceDisplay = document.getElementById('balanceDisplay');
-  const energyFill = document.getElementById('energyFill');
-  const coinTapTarget = document.getElementById('coinTapTarget');
+  // Элементы
+  const gameBalance = document.getElementById('gameBalance');
+  const energyBarFill = document.getElementById('energyBarFill');
+  const coinClickTarget = document.getElementById('coinClickTarget');
   
-  // Элементы статистики профиля
-  const statCoins = document.getElementById('statCoins');
-  const statTaps = document.getElementById('statTaps');
-  const statGamesWin = document.getElementById('statGamesWin');
-  const statStreak = document.getElementById('statStreak');
+  // Поля текстов в профиле
+  const lblCoins = document.getElementById('lblCoins');
+  const lblTaps = document.getElementById('lblTaps');
+  const lblGameWins = document.getElementById('lblGameWins');
+  const lblLeaderCoins = document.getElementById('lblLeaderCoins');
 
-  // Функция перерисовки значений на экране
-  function updateUI() {
-    const formattedCoins = coins.toLocaleString('ru-RU');
-    balanceDisplay.textContent = formattedCoins;
+  function updateInterface() {
+    const txt = coins.toLocaleString('ru-RU');
+    gameBalance.textContent = txt;
     
-    // Статистика в профиле
-    if (statCoins) statCoins.textContent = formattedCoins;
-    if (statTaps) statTaps.textContent = totalTaps.toLocaleString('ru-RU');
-    if (statGamesWin) statGamesWin.textContent = gamesProfit.toLocaleString('ru-RU');
-    if (statStreak) statStreak.textContent = '1';
+    if (lblCoins) lblCoins.textContent = txt;
+    if (lblLeaderCoins) lblLeaderCoins.textContent = txt;
+    if (lblTaps) lblTaps.textContent = taps.toLocaleString('ru-RU');
+    if (lblGameWins) lblGameWins.textContent = wins.toLocaleString('ru-RU');
 
-    // Энергетическая шкала
-    energyFill.style.width = (currentEnergy / maxEnergy * 100) + '%';
+    energyBarFill.style.width = (energy / maxEnergy * 100) + '%';
 
-    // Сохранение изменений в память браузера
     localStorage.setItem('coins', coins);
-    localStorage.setItem('taps', totalTaps);
-    localStorage.setItem('gamesProfit', gamesProfit);
-    localStorage.setItem('energy', currentEnergy);
+    localStorage.setItem('taps', taps);
+    localStorage.setItem('wins', wins);
+    localStorage.setItem('energy', energy);
   }
 
-  // Логика клика по монете
-  coinTapTarget.addEventListener('click', (e) => {
-    if (currentEnergy <= 0) return;
+  // Нажатие на монетку
+  coinClickTarget.addEventListener('click', (e) => {
+    if (energy <= 0) return;
 
     coins += 1;
-    totalTaps += 1;
-    currentEnergy -= 1;
+    taps += 1;
+    energy -= 1;
 
-    // Вылет цифры клика (+1)
-    const floating = document.createElement('div');
-    floating.className = 'floating-number';
-    floating.textContent = '+1';
-    floating.style.left = e.clientX + 'px';
-    floating.style.top = e.clientY + 'px';
-    document.body.appendChild(floating);
-    setTimeout(() => floating.remove(), 600);
+    // Эффект +1
+    const pop = document.createElement('div');
+    pop.className = 'click-pop';
+    pop.textContent = '+1';
+    pop.style.left = e.clientX + 'px';
+    pop.style.top = e.clientY + 'px';
+    document.body.appendChild(pop);
+    setTimeout(() => pop.remove(), 500);
 
-    updateUI();
+    updateInterface();
   });
 
-  // Восстановление энергии каждую секунду (+1)
+  // Авто-восстановление энергии
   setInterval(() => {
-    if (currentEnergy < maxEnergy) {
-      currentEnergy++;
-      updateUI();
+    if (energy < maxEnergy) {
+      energy++;
+      updateInterface();
     }
   }, 1000);
 
-  // Логика переключения между вкладками
-  function switchTab(tabId) {
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Переключение вкладок меню
+  function navigateTo(id) {
+    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
     
-    const activeBtn = document.querySelector(`nav button[onclick="switchTab('${tabId}')"]`);
+    const activeBtn = document.querySelector(`nav button[onclick="navigateTo('${id}')"]`);
     if(activeBtn) activeBtn.classList.add('active');
     
-    const activePage = document.getElementById(`page-${tabId}`);
+    const activePage = document.getElementById(`view-${id}`);
     if(activePage) activePage.classList.add('active');
   }
 
-  // Управление всплывающим окном наград на половину экрана
-  const modalRewards = document.getElementById('modalRewards');
-  document.getElementById('btnOpenRewards').onclick = () => modalRewards.classList.add('show');
-  document.getElementById('btnCloseRewards').onclick = () => modalRewards.classList.remove('show');
+  // Логика Полуоконных Наград (Нижнее окно)
+  const backdrop = document.getElementById('dailySheetBackdrop');
+  document.getElementById('openDailyBtn').onclick = () => backdrop.classList.add('show');
+  document.getElementById('closeDailySheetBtn').onclick = () => backdrop.classList.remove('show');
   
-  document.getElementById('btnClaimDay').onclick = () => {
+  document.getElementById('claimRewardBtn').onclick = () => {
     coins += 1000;
-    updateUI();
-    modalRewards.classList.remove('show');
+    updateInterface();
+    backdrop.classList.remove('show');
   };
 
-  // ИНТЕГРАЦИЯ С ОДЕЛЬНЫМИ ИГРАМИ (через iframe и postMessage)
-  const iframeWrapper = document.getElementById('iframeGameWrapper');
-  const gameIframe = document.getElementById('gameIframe');
-  const gameTitle = document.getElementById('gameTitle');
+  // УПРАВЛЕНИЕ ИГРАМИ ЧЕРЕЗ IFRAME
+  const gameLayer = document.getElementById('gameLayer');
+  const gameLayerIframe = document.getElementById('gameLayerIframe');
+  const gameLayerTitle = document.getElementById('gameLayerTitle');
 
-  function launchGame(gamePath) {
-    let title = "Мини-игра";
-    if(gamePath.includes('mines')) title = "Сапёр (Mines)";
-    if(gamePath.includes('crypto')) title = "Крипто-Интуит";
-    if(gamePath.includes('dice')) title = "Dice";
-    if(gamePath.includes('plinko')) title = "Plinko";
-    if(gamePath.includes('doors')) title = "Двери (Doors)";
+  function startGame(path) {
+    let t = "Мини-игра";
+    if(path.includes('mines')) t = "Сапёр (Mines)";
+    if(path.includes('crypto')) t = "Крипто-Интуит";
+    if(path.includes('dice')) t = "Dice";
+    if(path.includes('plinko')) t = "Plinko";
+    if(path.includes('doors')) t = "Двери (Doors)";
 
-    gameTitle.textContent = title;
-    gameIframe.src = gamePath;
-    iframeWrapper.style.display = 'flex';
+    gameLayerTitle.textContent = t;
+    gameLayerIframe.src = path;
+    gameLayer.style.display = 'flex';
   }
 
-  function exitGame() {
-    gameIframe.src = 'about:blank';
-    iframeWrapper.style.display = 'none';
+  function stopGame() {
+    gameLayerIframe.src = 'about:blank';
+    gameLayer.style.display = 'none';
   }
 
-  // Общение по postMessage для синхронизации баланса с файлами игр
+  // Обмен балансом по postMessage с файлами игр
   window.addEventListener('message', (e) => {
-    const data = e.data || {};
-    if (data.type === 'getBalance') {
+    const req = e.data || {};
+    if (req.type === 'getBalance') {
       e.source.postMessage({ type: 'balance', value: coins }, '*');
-    } else if (data.type === 'add') {
-      const amt = Math.max(0, parseInt(data.amount || 0));
-      coins += amt;
-      gamesProfit += amt;
-      updateUI();
-    } else if (data.type === 'sub') {
-      const amt = Math.max(0, parseInt(data.amount || 0));
-      coins = Math.max(0, coins - amt);
-      updateUI();
+    } else if (req.type === 'add') {
+      const v = Math.max(0, parseInt(req.amount || 0));
+      coins += v;
+      wins += v;
+      updateInterface();
+    } else if (req.type === 'sub') {
+      const v = Math.max(0, parseInt(req.amount || 0));
+      coins = Math.max(0, coins - v);
+      updateInterface();
     }
   });
 
-  // Первичный запуск отрисовки данных
-  updateUI();
+  // Запуск
+  updateInterface();
 </script>
 </body>
 </html>
