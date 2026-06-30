@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tap Game</title>
+<link rel="preload" href="assets/coin.png" as="image">
+<style>
+  :root{
+    --bg1:#0a1020;
+    --bg2:#071326;
+    --panel:#121a2e;
+    --text:#e9f0ff;
+    --muted:#8aa0c8;
+    --accent:#2e6bff;
+    --ok:#19c37d;
+    --warn:#ffb020;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+  body{
+    color:var(--text);
+    background: radial-gradient(1200px 800px at 50% 30%, #0b1c3a 0%, var(--bg1) 40%, var(--bg2) 100%);
+    overflow:hidden;
+  }
+  .wrap{display:flex;flex-direction:column;height:100%}
+  header{
+    padding:18px 16px 6px;
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .energy{
+    width:88%;
+    height:10px;background:#0f1c36;border-radius:10px;overflow:hidden;margin:8px auto 0;
+    box-shadow:0 0 0 1px #0f254a inset;
+  }
+  .bar{height:100%;background:linear-gradient(90deg,#3aa0ff,#2e6bff);width:100%;transition:width .15s ease}
+  .coins{
+    text-align:center;font-weight:800;font-size:42px;letter-spacing:1px;
+  }
+  .daily-btn{
+    position:absolute;right:14px;top:14px;background:#131f37;border:1px solid #1b2b4f;color:#ffa43a;
+    padding:6px 10px;border-radius:10px;display:flex;gap:6px;align-items:center;cursor:pointer;
+  }
+  .daily-btn::before{content:"🔥"}
+  .screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+  .tap-zone{
+    margin-top:40px;width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(60% 60% at 50% 45%, #102243 0%, #0a1833 60%, #08132a 100%);
+    box-shadow:0 0 40px 6px rgba(46,107,255,.18), inset 0 0 50px rgba(0,0,0,.55);
+    display:grid;place-items:center;cursor:pointer;user-select:none;position:relative;
+  }
+  .tap-zone img{width:120px;height:120px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
+  .hint{color:var(--muted);font-size:13px;margin-top:10px}
+  /* навигация */
+  nav{height:68px;background:#0b1226;border-top:1px solid #152141;display:flex}
+  nav button{
+    flex:1;background:transparent;color:var(--muted);border:0;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;
+  }
+  nav button.active{color:#89aaff}
+  /* панели контента */
+  .page{display:none;width:100%;height:100%}
+  .page.active{display:block}
+  .panel{background:rgba(9,17,36,.65);border:1px solid #13254a;border-radius:16px;padding:16px;margin:16px}
+  /* магазин-заглушка */
+  .wip{font-size:16px;color:#a6b7de}
+  /* мини-игры контейнер */
+  .games-wrap{height:100%;padding:0 12px 12px;width:100%}
+  iframe.game{width:100%;height:100%;border:0;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
+  .game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px}
+  .game-card{background:#0e1730;border:1px solid #162a56;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .game-card h4{margin:0 0 4px 0}
+  .game-card button{background:#17306a;border:1px solid #24479a;color:#dce6ff;border-radius:10px;padding:10px;cursor:pointer}
+  /* профиль */
+  .profile{padding:12px}
+  .user{display:flex;gap:12px;align-items:center}
+  .avatar{width:44px;height:44px;border-radius:50%;background:#1a2b55}
+  .lang{margin:12px 0;display:flex;gap:8px}
+  .lang button{padding:8px 10px;border-radius:10px;border:1px solid #223a7b;background:#111c3a;color:#bcd0ff;cursor:pointer}
+  .lang button.active{background:#1a2d64;border-color:#345fdf}
+  .stat table{width:100%;border-collapse:collapse}
+  .stat td{padding:8px 4px;border-bottom:1px solid #162a56;color:#cfe0ff}
+  .leader .item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #162a56}
+  /* модал дневных наград */
+  .modal{position:fixed;inset:0;background:rgba(2,6,16,.6);display:none;align-items:flex-end;justify-content:center}
+  .modal.show{display:flex}
+  .sheet{width:100%;max-width:520px;background:#0b132a;border-top-left-radius:18px;border-top-right-radius:18px;border:1px solid #162a56;max-height:70vh;overflow:auto;padding:14px}
+  .sheet h3{margin:6px 0 10px 6px}
+  .reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding-bottom:10px}
+  .reward{background:#0f1b39;border:1px solid #1a2c59;border-radius:12px;padding:10px;text-align:center}
+  .reward img{width:70px;height:70px;object-fit:contain;margin:4px auto 8px auto;display:block}
+  .r-day{color:#9db1dc;font-size:12px}
+  .r-amt{font-weight:700}
+  .claim{position:sticky;bottom:0;background:#12306a;border:1px solid #2b55cc;color:#e9f0ff;border-radius:12px;padding:12px 14px;width:100%;margin-top:8px;cursor:pointer}
+  .close-x{position:sticky;top:0;float:right;background:#172449;border:1px solid #233468;border-radius:10px;color:#bcd0ff;padding:6px 10px;cursor:pointer}
+  /* всплывающие "+1" */
+  .pop{position:absolute;color:#aee2ff;font-weight:700;pointer-events:none;animation:rise .7s ease-out forwards}
+  @keyframes rise{from{transform:translate(-50%,0);opacity:1} to{transform:translate(-50%,-60px);opacity:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="coins" id="coins">0</div>
+    <button class="daily-btn" id="openDaily">Награды</button>
+    <div class="energy"><div class="bar" id="energyBar"></div></div>
+  </header>
+
+  <div class="screen">
+    <!-- страницы -->
+    <div id="page-home" class="page active">
+      <div class="tap-zone" id="tapZone" aria-label="tap">
+        <img src="assets/coin.png" alt="coin">
+      </div>
+      <div class="hint">Нажимай на монету. 1 клик = 1 монета.</div>
+    </div>
+
+    <div id="page-shop" class="page">
+      <div class="panel wip">Магазин в разработке.</div>
+    </div>
+
+    <div id="page-games" class="page">
+      <div class="game-grid" id="gamesList">
+        <div class="game-card">
+          <h4>Сапёр (Mines)</h4>
+          <div class="muted">Открывай клетки, избегая мин, забирай множитель.</div>
+          <button data-game="games/mines.html">Играть</button>
+        </div>
+        <div class="game-card">
+          <h4>Крипто‑Интуит</h4>
+          <div class="muted">Угадай: BTC вверх или вниз.</div>
+          <button data-game="games/crypto.html">Играть</button>
+        </div>
+        <div class="game-card">
+          <h4>Dice</h4>
+          <div class="muted">Ставка на число или больше/меньше.</div>
+          <button data-game="games/dice.html">Играть</button>
+        </div>
+        <div class="game-card">
+          <h4>Plinko</h4>
+          <div class="muted">Шар падает, ловим коэффициент.</div>
+          <button data-game="games/plinko.html">Играть</button>
+        </div>
+        <div class="game-card">
+          <h4>Doors</h4>
+          <div class="muted">Выбирай дверь, наращивай множитель.</div>
+          <button data-game="games/doors.html">Играть</button>
+        </div>
+      </div>
+      <div class="games-wrap" id="gameWrap" style="display:none">
+        <div class="panel" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <button id="backToList" class="close-x">Назад</button>
+          <div style="opacity:.8">Мини‑игра</div>
+        </div>
+        <iframe class="game" id="gameFrame" src="about:blank"></iframe>
+      </div>
+    </div>
+
+    <div id="page-profile" class="page">
+      <div class="profile">
+        <div class="panel user">
+          <div class="avatar"></div>
+          <div>
+            <div><strong>IvanZolo2004 (@IvanSolo2021)</strong></div>
+            <div class="muted" style="color:#9db1dc">Участник с Jun 30, 2026</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="lang">
+            <button class="active">Русский</button>
+            <button>English</button>
+          </div>
+          <div class="stat">
+            <table>
+              <tr><td>Количество монет</td><td style="text-align:right" id="statCoins">0</td></tr>
+              <tr><td>Количество тапов</td><td style="text-align:right" id="statTaps">0</td></tr>
+              <tr><td>Выиграно в мини‑играх</td><td style="text-align:right" id="statMini">0</td></tr>
+              <tr><td>Прибыль</td><td style="text-align:right" id="statProfit">0</td></tr>
+              <tr><td>Стрик наград</td><td style="text-align:right" id="statStreak">0 дней</td></tr>
+              <tr><td>Прокрутил колесо фортуны</td><td style="text-align:right">0</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel leader">
+          <div style="margin-bottom:10px"><strong>Топ игроков 🏆</strong></div>
+          <div class="item"><span>1. Fm*n24|<</span><span>5435</span></div>
+          <div class="item"><span>2. necessary2k#forever young 🕺</span><span>1471</span></div>
+          <div class="item"><span>3. IvanZolo2004</span><span>244</span></div>
+          <div class="item"><span>4. LupiPlayer</span><span>0</span></div>
+          <div class="item"><span>5. Игрок</span><span>0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <button class="active" data-tab="home">Главная</button>
+    <button data-tab="shop">Магазин</button>
+    <button data-tab="games">Мини‑игры</button>
+    <button data-tab="profile">Профиль</button>
+  </nav>
+</div>
+
+<!-- Модал дневных наград -->
+<div class="modal" id="dailyModal" aria-hidden="true">
+  <div class="sheet">
+    <button class="close-x" id="closeDaily">Закрыть</button>
+    <h3>Ежедневная награда</h3>
+    <div class="reward-grid" id="rewardGrid"></div>
+    <button class="claim" id="claimBtn">Забрать награду</button>
+  </div>
+</div>
+
+<script>
+  // ---------- БАЗОВАЯ ЛОГИКА СЧЁТЧИКА/ЭНЕРГИИ ----------
+  const coinsEl = document.getElementById('coins');
+  const energyBar = document.getElementById('energyBar');
+  const tapZone = document.getElementById('tapZone');
+  const statCoins = document.getElementById('statCoins');
+  const statTaps  = document.getElementById('statTaps');
+  const statMini  = document.getElementById('statMini');
+  const statProfit= document.getElementById('statProfit');
+
+  let coins = +(localStorage.getItem('coins')||6500);
+  let taps = +(localStorage.getItem('taps')||0);
+  let miniProfit = +(localStorage.getItem('miniProfit')||5500);
+  let energy = +(localStorage.getItem('energy')||100);
+  const maxEnergy = 100;
+
+  function render(){
+    coinsEl.textContent = coins.toLocaleString('ru-RU');
+    statCoins.textContent = coins.toLocaleString('ru-RU');
+    statTaps.textContent = taps.toLocaleString('ru-RU');
+    statMini.textContent = miniProfit.toLocaleString('ru-RU');
+    statProfit.textContent = ('+'+miniProfit.toLocaleString('ru-RU'));
+    energyBar.style.width = Math.max(0,Math.min(energy,maxEnergy))/maxEnergy*100 + '%';
+    localStorage.setItem('coins',coins);
+    localStorage.setItem('taps',taps);
+    localStorage.setItem('miniProfit',miniProfit);
+    localStorage.setItem('energy',energy);
+  }
+  render();
+
+  // Восстановление энергии: +1 в сек до 100
+  setInterval(()=>{ if(energy<maxEnergy){ energy++; render(); } },1000);
+
+  // Тап: 1 клик = 1 монета, расход энергии 1
+  tapZone.addEventListener('click', (e)=>{
+    if(energy<=0) return;
+    coins += 1;
+    taps += 1;
+    energy -= 1;
+    pop(e.clientX, e.clientY, '+1');
+    render();
+  });
+
+  // Всплывающая анимация "+1"
+  function pop(x,y,text){
+    const p=document.createElement('div');
+    p.className='pop';
+    p.textContent=text;
+    document.body.appendChild(p);
+    const r=tapZone.getBoundingClientRect();
+    p.style.left = (x|| (r.left+r.width/2))+'px';
+    p.style.top  = (y|| (r.top+r.height/2))+'px';
+    setTimeout(()=>p.remove(),700);
+  }
+
+  // ---------- ТАБЫ ----------
+  const tabs=[...document.querySelectorAll('nav button')];
+  const pages={
+    home:document.getElementById('page-home'),
+    shop:document.getElementById('page-shop'),
+    games:document.getElementById('page-games'),
+    profile:document.getElementById('page-profile'),
+  };
+  tabs.forEach(b=>b.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    Object.values(pages).forEach(p=>p.classList.remove('active'));
+    pages[b.dataset.tab].classList.add('active');
+  }));
+
+  // ---------- ДНЕВНЫЕ НАГРАДЫ ----------
+  const dailyModal = document.getElementById('dailyModal');
+  const openDaily  = document.getElementById('openDaily');
+  const closeDaily = document.getElementById('closeDaily');
+  const rewardGrid = document.getElementById('rewardGrid');
+  const claimBtn   = document.getElementById('claimBtn');
+
+  // Конфиг наград: дни 1-3 stopka1.png; 4-5 stopka2.png; 6-7 stopka3.png
+  const dailyConfig = [
+    {day:1, amt:1000, img:'assets/stopka1.png'},
+    {day:2, amt:2000, img:'assets/stopka1.png'},
+    {day:3, amt:2000, img:'assets/stopka1.png'},
+    {day:4, amt:5000, img:'assets/stopka2.png'},
+    {day:5, amt:5000, img:'assets/stopka2.png'},
+    {day:6, amt:7000, img:'assets/stopka3.png'},
+    {day:7, amt:10000,img:'assets/stopka3.png'},
+  ];
+
+  function buildRewards(){
+    rewardGrid.innerHTML='';
+    dailyConfig.forEach(r=>{
+      const d=document.createElement('div');
+      d.className='reward';
+      d.innerHTML=`
+        <div class="r-day">${r.day} день</div>
+        <img src="${r.img}" alt="reward ${r.day}">
+        <div class="r-amt">${r.amt.toLocaleString('ru-RU')} <img src="assets/coin.png" alt="" style="width:16px;height:16px;vertical-align:-3px"></div>
+      `;
+      rewardGrid.appendChild(d);
+    });
+  }
+
+  const keyStreak='daily.streak';
+  const keyLast='daily.last';
+  const keyIdx='daily.index';
+  const todayStr=()=> new Date().toDateString();
+
+  function canClaimToday(){
+    const last=localStorage.getItem(keyLast);
+    return last!==todayStr();
+  }
+
+  function advanceIndex(){
+    let idx=+(localStorage.getItem(keyIdx)||0);
+    idx = (idx+1)%7;
+    localStorage.setItem(keyIdx,idx);
+    // обновим стрик
+    const last=localStorage.getItem(keyLast);
+    const yesterday=new Date(Date.now()-86400000).toDateString();
+    let streak=+(localStorage.getItem(keyStreak)||0);
+    if(last===yesterday) streak+=1; else streak=1;
+    localStorage.setItem(keyStreak,streak);
+    document.getElementById('statStreak').textContent = streak+' дней';
+  }
+
+  function updateStreakOnLoad(){
+    let streak=+(localStorage.getItem(keyStreak)||0);
+    if(!streak) document.getElementById('statStreak').textContent='0 дней';
+    else document.getElementById('statStreak').textContent=streak+' дней';
+  }
+  updateStreakOnLoad();
+
+  openDaily.addEventListener('click',()=>{ buildRewards(); dailyModal.classList.add('show'); dailyModal.setAttribute('aria-hidden','false'); });
+  closeDaily.addEventListener('click',()=>{ dailyModal.classList.remove('show'); dailyModal.setAttribute('aria-hidden','true'); });
+
+  claimBtn.addEventListener('click',()=>{
+    if(!canClaimToday()){ closeDaily.click(); return; }
+    const idx=+(localStorage.getItem(keyIdx)||0);
+    const reward=dailyConfig[idx];
+    coins += reward.amt;
+    miniProfit += reward.amt; // в демо считаем как выигрыш
+    localStorage.setItem(keyLast,todayStr());
+    advanceIndex();
+    render();
+    closeDaily.click();
+    pop(null,null,'+'+reward.amt.toLocaleString('ru-RU'));
+  });
+
+  // ---------- МИНИ‑ИГРЫ В IFRAME ----------
+  const list = document.getElementById('gamesList');
+  const wrap = document.getElementById('gameWrap');
+  const frame= document.getElementById('gameFrame');
+  const back = document.getElementById('backToList');
+
+  list.addEventListener('click',(e)=>{
+    const btn = e.target.closest('button[data-game]');
+    if(!btn) return;
+    list.style.display='none';
+    wrap.style.display='block';
+    frame.src = btn.dataset.game;
+  });
+  back.addEventListener('click',()=>{
+    frame.src='about:blank';
+    wrap.style.display='none';
+    list.style.display='grid';
+  });
+
+  // Обмен монетами с мини‑играми (postMessage)
+  window.addEventListener('message',(e)=>{
+    // ожидаем события вида {type:'getBalance'|'add'|'sub', amount?:number}
+    const msg=e.data||{};
+    if(msg.type==='getBalance'){
+      e.source.postMessage({type:'balance', value:coins}, e.origin);
+    }else if(msg.type==='add'){
+      const v = Math.max(0, parseInt(msg.amount||0));
+      coins += v; miniProfit += v; render();
+      e.source.postMessage({type:'ok'}, e.origin);
+    }else if(msg.type==='sub'){
+      const v = Math.max(0, parseInt(msg.amount||0));
+      coins = Math.max(0, coins - v); render();
+      e.source.postMessage({type:'ok'}, e.origin);
+    }
+  });
+</script>
+</body>
+</html>
