@@ -3,18 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tap Game</title>
-<link rel="preload" href="assets/coin.png" as="image">
+<title>Lupi Drupi Coin</title>
+<link rel="preload" href="assets/coin.jpg" as="image">
 <style>
   :root{
-    --bg1:#0a1020;
-    --bg2:#071326;
-    --panel:#121a2e;
-    --text:#e9f0ff;
-    --muted:#8aa0c8;
-    --accent:#2e6bff;
-    --ok:#19c37d;
-    --warn:#ffb020;
+    --bg1:#0a1020; --bg2:#071326; --panel:#121a2e; --text:#e9f0ff;
+    --muted:#8aa0c8; --accent:#2e6bff; --ok:#19c37d; --warn:#ffb020;
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
@@ -24,23 +18,11 @@
     overflow:hidden;
   }
   .wrap{display:flex;flex-direction:column;height:100%}
-  header{
-    padding:18px 16px 6px;
-    display:flex;align-items:center;justify-content:center;position:relative;
-  }
-  .energy{
-    width:88%;
-    height:10px;background:#0f1c36;border-radius:10px;overflow:hidden;margin:8px auto 0;
-    box-shadow:0 0 0 1px #0f254a inset;
-  }
+  header{ padding:18px 16px 6px; display:flex;align-items:center;justify-content:center;position:relative; }
+  .energy{ width:88%; height:10px;background:#0f1c36;border-radius:10px;overflow:hidden;margin:8px auto 0; box-shadow:0 0 0 1px #0f254a inset; }
   .bar{height:100%;background:linear-gradient(90deg,#3aa0ff,#2e6bff);width:100%;transition:width .15s ease}
-  .coins{
-    text-align:center;font-weight:800;font-size:42px;letter-spacing:1px;
-  }
-  .daily-btn{
-    position:absolute;right:14px;top:14px;background:#131f37;border:1px solid #1b2b4f;color:#ffa43a;
-    padding:6px 10px;border-radius:10px;display:flex;gap:6px;align-items:center;cursor:pointer;
-  }
+  .coins{ text-align:center;font-weight:800;font-size:42px;letter-spacing:1px; }
+  .daily-btn{ position:absolute;right:14px;top:14px;background:#131f37;border:1px solid #1b2b4f;color:#ffa43a; padding:6px 10px;border-radius:10px;display:flex;gap:6px;align-items:center;cursor:pointer; }
   .daily-btn::before{content:"🔥"}
   .screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
   .tap-zone{
@@ -51,50 +33,52 @@
   }
   .tap-zone img{width:120px;height:120px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
   .hint{color:var(--muted);font-size:13px;margin-top:10px}
-  /* навигация */
   nav{height:68px;background:#0b1226;border-top:1px solid #152141;display:flex}
-  nav button{
-    flex:1;background:transparent;color:var(--muted);border:0;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;
-  }
+  nav button{ flex:1;background:transparent;color:var(--muted);border:0;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer; }
   nav button.active{color:#89aaff}
-  /* панели контента */
   .page{display:none;width:100%;height:100%}
   .page.active{display:block}
   .panel{background:rgba(9,17,36,.65);border:1px solid #13254a;border-radius:16px;padding:16px;margin:16px}
-  /* магазин-заглушка */
   .wip{font-size:16px;color:#a6b7de}
-  /* мини-игры контейнер */
-  .games-wrap{height:100%;padding:0 12px 12px;width:100%}
-  iframe.game{width:100%;height:100%;border:0;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
   .game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px}
   .game-card{background:#0e1730;border:1px solid #162a56;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
   .game-card h4{margin:0 0 4px 0}
   .game-card button{background:#17306a;border:1px solid #24479a;color:#dce6ff;border-radius:10px;padding:10px;cursor:pointer}
-  /* профиль */
-  .profile{padding:12px}
-  .user{display:flex;gap:12px;align-items:center}
-  .avatar{width:44px;height:44px;border-radius:50%;background:#1a2b55}
-  .lang{margin:12px 0;display:flex;gap:8px}
-  .lang button{padding:8px 10px;border-radius:10px;border:1px solid #223a7b;background:#111c3a;color:#bcd0ff;cursor:pointer}
-  .lang button.active{background:#1a2d64;border-color:#345fdf}
-  .stat table{width:100%;border-collapse:collapse}
-  .stat td{padding:8px 4px;border-bottom:1px solid #162a56;color:#cfe0ff}
+  .profile{padding:12px} .user{display:flex;gap:12px;align-items:center} .avatar{width:44px;height:44px;border-radius:50%;background:#1a2b55}
+  .lang{margin:12px 0;display:flex;gap:8px} .lang button{padding:8px 10px;border-radius:10px;border:1px solid #223a7b;background:#111c3a;color:#bcd0ff;cursor:pointer} .lang button.active{background:#1a2d64;border-color:#345fdf}
+  .stat table{width:100%;border-collapse:collapse} .stat td{padding:8px 4px;border-bottom:1px solid #162a56;color:#cfe0ff}
   .leader .item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #162a56}
-  /* модал дневных наград */
-  .modal{position:fixed;inset:0;background:rgba(2,6,16,.6);display:none;align-items:flex-end;justify-content:center}
+  
+  /* Модалки для наград и ИГР */
+  .modal{position:fixed;inset:0;background:rgba(2,6,16,.85);display:none;align-items:center;justify-content:center;z-index:100}
   .modal.show{display:flex}
-  .sheet{width:100%;max-width:520px;background:#0b132a;border-top-left-radius:18px;border-top-right-radius:18px;border:1px solid #162a56;max-height:70vh;overflow:auto;padding:14px}
-  .sheet h3{margin:6px 0 10px 6px}
+  .sheet{width:92%;max-width:480px;background:#0b132a;border-radius:18px;border:1px solid #162a56;max-height:85vh;overflow:auto;padding:16px;position:relative}
   .reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding-bottom:10px}
   .reward{background:#0f1b39;border:1px solid #1a2c59;border-radius:12px;padding:10px;text-align:center}
-  .reward img{width:70px;height:70px;object-fit:contain;margin:4px auto 8px auto;display:block}
-  .r-day{color:#9db1dc;font-size:12px}
-  .r-amt{font-weight:700}
-  .claim{position:sticky;bottom:0;background:#12306a;border:1px solid #2b55cc;color:#e9f0ff;border-radius:12px;padding:12px 14px;width:100%;margin-top:8px;cursor:pointer}
-  .close-x{position:sticky;top:0;float:right;background:#172449;border:1px solid #233468;border-radius:10px;color:#bcd0ff;padding:6px 10px;cursor:pointer}
-  /* всплывающие "+1" */
+  .reward img{width:60px;height:60px;object-fit:contain;margin:4px auto 8px auto;display:block}
+  .r-day{color:#9db1dc;font-size:12px} .r-amt{font-weight:700}
+  .claim{background:#12306a;border:1px solid #2b55cc;color:#e9f0ff;border-radius:12px;padding:12px 14px;width:100%;margin-top:8px;cursor:pointer}
+  .close-x{background:#172449;border:1px solid #233468;border-radius:10px;color:#bcd0ff;padding:6px 12px;cursor:pointer;margin-bottom:10px}
   .pop{position:absolute;color:#aee2ff;font-weight:700;pointer-events:none;animation:rise .7s ease-out forwards}
   @keyframes rise{from{transform:translate(-50%,0);opacity:1} to{transform:translate(-50%,-60px);opacity:0}}
+
+  /* Стили встроенных игр */
+  .game-container{display:none;width:100%}
+  .game-container.active{display:block}
+  .g-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .g-panel{background:#0f1b39;border:1px solid #1a2c59;border-radius:10px;padding:8px;font-size:14px}
+  .g-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+  .g-cell{aspect-ratio:1;border-radius:8px;background:#111f45;border:1px solid #1b2f67;display:grid;place-items:center;cursor:pointer;font-weight:700}
+  .g-cell.open{background:#153a6e} .g-cell.mine{background:#5b1630}
+  .g-row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .g-chart{height:120px;background:linear-gradient(180deg,#112552,#0c1a37);border:1px solid #1a2c59;border-radius:12px;position:relative;overflow:hidden;margin-bottom:10px}
+  .g-canvas{position:absolute;left:0;top:0;width:100%;height:100%}
+  .g-room{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .g-door{height:100px;background:linear-gradient(180deg,#1b2a56,#0f1c3f);border:1px solid #20376e;border-radius:8px;display:grid;place-items:center;cursor:pointer;position:relative;font-size:14px}
+  .g-door::after{content:"";position:absolute;right:8px;top:50%;width:6px;height:6px;background:#d6a64b;border-radius:50%}
+  .g-input, .g-select{background:#0e1836;color:#fff;border:1px solid #284aa0;border-radius:6px;padding:4px 6px;width:80px}
+  .g-btn{background:#17306a;color:#dce6ff;border:1px solid #2b55cc;border-radius:8px;padding:8px 12px;cursor:pointer}
+  .g-btn:disabled{opacity:0.4;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -106,55 +90,46 @@
   </header>
 
   <div class="screen">
-    <!-- страницы -->
+    <!-- HOME -->
     <div id="page-home" class="page active">
-      <div class="tap-zone" id="tapZone" aria-label="tap">
-        <img src="assets/coin.png" alt="coin">
+      <div class="tap-zone" id="tapZone">
+        <img src="assets/coin.jpg" alt="coin">
       </div>
       <div class="hint">Нажимай на монету. 1 клик = 1 монета.</div>
     </div>
 
+    <!-- SHOP -->
     <div id="page-shop" class="page">
       <div class="panel wip">Магазин в разработке.</div>
     </div>
 
+    <!-- GAMES GRID -->
     <div id="page-games" class="page">
-      <div class="game-grid" id="gamesList">
+      <div class="game-grid">
         <div class="game-card">
           <h4>Сапёр (Mines)</h4>
-          <div class="muted">Открывай клетки, избегая мин, забирай множитель.</div>
-          <button data-game="games/mines.html">Играть</button>
+          <button onclick="openGame('mines')">Играть</button>
         </div>
         <div class="game-card">
           <h4>Крипто‑Интуит</h4>
-          <div class="muted">Угадай: BTC вверх или вниз.</div>
-          <button data-game="games/crypto.html">Играть</button>
+          <button onclick="openGame('crypto')">Играть</button>
         </div>
         <div class="game-card">
           <h4>Dice</h4>
-          <div class="muted">Ставка на число или больше/меньше.</div>
-          <button data-game="games/dice.html">Играть</button>
+          <button onclick="openGame('dice')">Играть</button>
         </div>
         <div class="game-card">
           <h4>Plinko</h4>
-          <div class="muted">Шар падает, ловим коэффициент.</div>
-          <button data-game="games/plinko.html">Играть</button>
+          <button onclick="openGame('plinko')">Играть</button>
         </div>
         <div class="game-card">
           <h4>Doors</h4>
-          <div class="muted">Выбирай дверь, наращивай множитель.</div>
-          <button data-game="games/doors.html">Играть</button>
+          <button onclick="openGame('doors')">Играть</button>
         </div>
-      </div>
-      <div class="games-wrap" id="gameWrap" style="display:none">
-        <div class="panel" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <button id="backToList" class="close-x">Назад</button>
-          <div style="opacity:.8">Мини‑игра</div>
-        </div>
-        <iframe class="game" id="gameFrame" src="about:blank"></iframe>
       </div>
     </div>
 
+    <!-- PROFILE -->
     <div id="page-profile" class="page">
       <div class="profile">
         <div class="panel user">
@@ -164,12 +139,8 @@
             <div class="muted" style="color:#9db1dc">Участник с Jun 30, 2026</div>
           </div>
         </div>
-
         <div class="panel">
-          <div class="lang">
-            <button class="active">Русский</button>
-            <button>English</button>
-          </div>
+          <div class="lang"><button class="active">Русский</button><button>English</button></div>
           <div class="stat">
             <table>
               <tr><td>Количество монет</td><td style="text-align:right" id="statCoins">0</td></tr>
@@ -177,18 +148,8 @@
               <tr><td>Выиграно в мини‑играх</td><td style="text-align:right" id="statMini">0</td></tr>
               <tr><td>Прибыль</td><td style="text-align:right" id="statProfit">0</td></tr>
               <tr><td>Стрик наград</td><td style="text-align:right" id="statStreak">0 дней</td></tr>
-              <tr><td>Прокрутил колесо фортуны</td><td style="text-align:right">0</td></tr>
             </table>
           </div>
-        </div>
-
-        <div class="panel leader">
-          <div style="margin-bottom:10px"><strong>Топ игроков 🏆</strong></div>
-          <div class="item"><span>1. Fm*n24|<</span><span>5435</span></div>
-          <div class="item"><span>2. necessary2k#forever young 🕺</span><span>1471</span></div>
-          <div class="item"><span>3. IvanZolo2004</span><span>244</span></div>
-          <div class="item"><span>4. LupiPlayer</span><span>0</span></div>
-          <div class="item"><span>5. Игрок</span><span>0</span></div>
         </div>
       </div>
     </div>
@@ -203,7 +164,7 @@
 </div>
 
 <!-- Модал дневных наград -->
-<div class="modal" id="dailyModal" aria-hidden="true">
+<div class="modal" id="dailyModal">
   <div class="sheet">
     <button class="close-x" id="closeDaily">Закрыть</button>
     <h3>Ежедневная награда</h3>
@@ -212,62 +173,117 @@
   </div>
 </div>
 
-<script>
-  // ---------- БАЗОВАЯ ЛОГИКА СЧЁТЧИКА/ЭНЕРГИИ ----------
-  const coinsEl = document.getElementById('coins');
-  const energyBar = document.getElementById('energyBar');
-  const tapZone = document.getElementById('tapZone');
-  const statCoins = document.getElementById('statCoins');
-  const statTaps  = document.getElementById('statTaps');
-  const statMini  = document.getElementById('statMini');
-  const statProfit= document.getElementById('statProfit');
+<!-- Модал для ИГР -->
+<div class="modal" id="gameModal">
+  <div class="sheet">
+    <button class="close-x" onclick="closeGameModal()">Выйти в меню</button>
+    
+    <!-- MINES -->
+    <div id="g-mines" class="game-container">
+      <div class="g-top">
+        <div class="g-panel">Ставка: <input id="m-bet" type="number" class="g-input" value="10"></div>
+        <div class="g-panel">множ: x<span id="m-mult">1.00</span></div>
+      </div>
+      <div class="g-row"><button class="g-btn" id="m-start">Старт</button><button class="g-btn" id="m-cash" disabled>Забрать</button></div>
+      <div class="g-grid" id="m-grid"></div>
+    </div>
 
+    <!-- CRYPTO -->
+    <div id="g-crypto" class="game-container">
+      <div class="g-top">
+        <div class="g-panel">Ставка: <input id="c-bet" type="number" class="g-input" value="10"></div>
+      </div>
+      <div class="g-chart"><canvas id="c-canvas" class="g-canvas"></canvas></div>
+      <div class="g-row" style="justify-content:center;gap:20px;"><button class="g-btn" id="c-up">Вверх</button><button class="g-btn" id="c-down">Вниз</button></div>
+    </div>
+
+    <!-- DICE -->
+    <div id="g-dice" class="game-container">
+      <div class="g-top">
+        <div class="g-panel">Ставка: <input id="d-bet" type="number" class="g-input" value="10"></div>
+      </div>
+      <div class="g-row">
+        <select id="d-mode" class="g-select" style="width:140px">
+          <option value="gt">&gt; 3.5 (x1.9)</option>
+          <option value="lt">&lt; 3.5 (x1.9)</option>
+          <option value="eq">Точное число (x5)</option>
+        </select>
+        <input id="d-num" type="number" class="g-input" min="1" max="6" value="6" style="display:none;width:50px">
+        <button class="g-btn" id="d-roll">Бросок</button>
+      </div>
+      <div class="g-panel" id="d-res" style="margin-top:10px; text-align:center">Результат: —</div>
+    </div>
+
+    <!-- PLINKO -->
+    <div id="g-plinko" class="game-container">
+      <div class="g-top">
+        <div class="g-panel">Ставка: <input id="p-bet" type="number" class="g-input" value="10"></div>
+        <button class="g-btn" id="p-drop">Пустить шар</button>
+      </div>
+      <canvas id="p-canvas" style="width:100%;height:240px;background:#0c1733;border-radius:10px"></canvas>
+    </div>
+
+    <!-- DOORS -->
+    <div id="g-doors" class="game-container">
+      <div class="g-top">
+        <div class="g-panel">Ставка: <input id="dr-bet" type="number" class="g-input" value="10"></div>
+        <div class="g-panel">Коэф: x<span id="dr-k">1.00</span></div>
+      </div>
+      <div class="g-row"><button class="g-btn" id="dr-start">Старт</button><button class="g-btn" id="dr-take" disabled>Забрать</button></div>
+      <div class="g-panel" style="margin:10px 0">Комната: <span id="dr-roomN">0</span></div>
+      <div class="g-room" id="dr-room"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Основные переменные баланса кликера
   let coins = +(localStorage.getItem('coins')||6500);
   let taps = +(localStorage.getItem('taps')||0);
   let miniProfit = +(localStorage.getItem('miniProfit')||5500);
   let energy = +(localStorage.getItem('energy')||100);
   const maxEnergy = 100;
 
+  const coinsEl = document.getElementById('coins');
+  const energyBar = document.getElementById('energyBar');
+  const tapZone = document.getElementById('tapZone');
+  const statCoins = document.getElementById('statCoins');
+  const statTaps = document.getElementById('statTaps');
+  const statMini = document.getElementById('statMini');
+  const statProfit = document.getElementById('statProfit');
+
   function render(){
     coinsEl.textContent = coins.toLocaleString('ru-RU');
-    statCoins.textContent = coins.toLocaleString('ru-RU');
-    statTaps.textContent = taps.toLocaleString('ru-RU');
-    statMini.textContent = miniProfit.toLocaleString('ru-RU');
-    statProfit.textContent = ('+'+miniProfit.toLocaleString('ru-RU'));
-    energyBar.style.width = Math.max(0,Math.min(energy,maxEnergy))/maxEnergy*100 + '%';
-    localStorage.setItem('coins',coins);
-    localStorage.setItem('taps',taps);
-    localStorage.setItem('miniProfit',miniProfit);
-    localStorage.setItem('energy',energy);
+    if(statCoins) statCoins.textContent = coins.toLocaleString('ru-RU');
+    if(statTaps) statTaps.textContent = taps.toLocaleString('ru-RU');
+    if(statMini) statMini.textContent = miniProfit.toLocaleString('ru-RU');
+    if(statProfit) statProfit.textContent = '+' + miniProfit.toLocaleString('ru-RU');
+    energyBar.style.width = (energy / maxEnergy * 100) + '%';
+    localStorage.setItem('coins', coins);
+    localStorage.setItem('taps', taps);
+    localStorage.setItem('miniProfit', miniProfit);
+    localStorage.setItem('energy', energy);
   }
   render();
 
-  // Восстановление энергии: +1 в сек до 100
-  setInterval(()=>{ if(energy<maxEnergy){ energy++; render(); } },1000);
+  setInterval(()=>{ if(energy<maxEnergy){ energy++; render(); } }, 1000);
 
-  // Тап: 1 клик = 1 монета, расход энергии 1
   tapZone.addEventListener('click', (e)=>{
-    if(energy<=0) return;
-    coins += 1;
-    taps += 1;
-    energy -= 1;
+    if(energy <= 0) return;
+    coins += 1; taps += 1; energy -= 1;
     pop(e.clientX, e.clientY, '+1');
     render();
   });
 
-  // Всплывающая анимация "+1"
   function pop(x,y,text){
-    const p=document.createElement('div');
-    p.className='pop';
-    p.textContent=text;
+    const p=document.createElement('div'); p.className='pop'; p.textContent=text;
     document.body.appendChild(p);
-    const r=tapZone.getBoundingClientRect();
-    p.style.left = (x|| (r.left+r.width/2))+'px';
-    p.style.top  = (y|| (r.top+r.height/2))+'px';
+    p.style.left = (x || window.innerWidth/2)+'px'; p.style.top = (y || window.innerHeight/2)+'px';
     setTimeout(()=>p.remove(),700);
   }
 
-  // ---------- ТАБЫ ----------
+  // Табы меню
   const tabs=[...document.querySelectorAll('nav button')];
   const pages={
     home:document.getElementById('page-home'),
@@ -276,125 +292,141 @@
     profile:document.getElementById('page-profile'),
   };
   tabs.forEach(b=>b.addEventListener('click',()=>{
-    tabs.forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
+    tabs.forEach(x=>x.classList.remove('active')); b.classList.add('active');
     Object.values(pages).forEach(p=>p.classList.remove('active'));
     pages[b.dataset.tab].classList.add('active');
   }));
 
-  // ---------- ДНЕВНЫЕ НАГРАДЫ ----------
+  // Дневные награды
   const dailyModal = document.getElementById('dailyModal');
-  const openDaily  = document.getElementById('openDaily');
+  const openDaily = document.getElementById('openDaily');
   const closeDaily = document.getElementById('closeDaily');
   const rewardGrid = document.getElementById('rewardGrid');
-  const claimBtn   = document.getElementById('claimBtn');
+  const claimBtn = document.getElementById('claimBtn');
 
-  // Конфиг наград: дни 1-3 stopka1.png; 4-5 stopka2.png; 6-7 stopka3.png
   const dailyConfig = [
-    {day:1, amt:1000, img:'assets/stopka1.png'},
-    {day:2, amt:2000, img:'assets/stopka1.png'},
-    {day:3, amt:2000, img:'assets/stopka1.png'},
-    {day:4, amt:5000, img:'assets/stopka2.png'},
-    {day:5, amt:5000, img:'assets/stopka2.png'},
-    {day:6, amt:7000, img:'assets/stopka3.png'},
-    {day:7, amt:10000,img:'assets/stopka3.png'},
+    {day:1, amt:1000, img:'assets/stopka1.jpg'}, {day:2, amt:2000, img:'assets/stopka1.jpg'}, {day:3, amt:2000, img:'assets/stopka1.jpg'},
+    {day:4, amt:5000, img:'assets/stopka1.jpg'}, {day:5, amt:5000, img:'assets/stopka1.jpg'},
+    {day:6, amt:7000, img:'assets/stopka3.jpg'}, {day:7, amt:10000,img:'assets/stopka3.jpg'},
   ];
 
-  function buildRewards(){
+  openDaily.onclick=()=>{
     rewardGrid.innerHTML='';
     dailyConfig.forEach(r=>{
-      const d=document.createElement('div');
-      d.className='reward';
-      d.innerHTML=`
-        <div class="r-day">${r.day} день</div>
-        <img src="${r.img}" alt="reward ${r.day}">
-        <div class="r-amt">${r.amt.toLocaleString('ru-RU')} <img src="assets/coin.png" alt="" style="width:16px;height:16px;vertical-align:-3px"></div>
-      `;
+      const d=document.createElement('div'); d.className='reward';
+      d.innerHTML=`<div class="r-day">${r.day} день</div><img src="${r.img}"><div class="r-amt">${r.amt}</div>`;
       rewardGrid.appendChild(d);
     });
+    dailyModal.classList.add('show');
+  };
+  closeDaily.onclick=()=>dailyModal.classList.remove('show');
+  claimBtn.onclick=()=>{ coins += 1000; miniProfit += 1000; render(); dailyModal.classList.remove('show'); };
+
+  // Логика открытия Окон Игр
+  const gameModal = document.getElementById('gameModal');
+  function openGame(gameType) {
+    document.querySelectorAll('.game-container').forEach(c=>c.classList.remove('active'));
+    gameModal.classList.add('show');
+    document.getElementById('g-'+gameType).classList.add('active');
+    if(gameType==='crypto') initCrypto();
+    if(gameType==='plinko') initPlinko();
   }
+  function closeGameModal() { gameModal.classList.remove('show'); }
 
-  const keyStreak='daily.streak';
-  const keyLast='daily.last';
-  const keyIdx='daily.index';
-  const todayStr=()=> new Date().toDateString();
-
-  function canClaimToday(){
-    const last=localStorage.getItem(keyLast);
-    return last!==todayStr();
-  }
-
-  function advanceIndex(){
-    let idx=+(localStorage.getItem(keyIdx)||0);
-    idx = (idx+1)%7;
-    localStorage.setItem(keyIdx,idx);
-    // обновим стрик
-    const last=localStorage.getItem(keyLast);
-    const yesterday=new Date(Date.now()-86400000).toDateString();
-    let streak=+(localStorage.getItem(keyStreak)||0);
-    if(last===yesterday) streak+=1; else streak=1;
-    localStorage.setItem(keyStreak,streak);
-    document.getElementById('statStreak').textContent = streak+' дней';
-  }
-
-  function updateStreakOnLoad(){
-    let streak=+(localStorage.getItem(keyStreak)||0);
-    if(!streak) document.getElementById('statStreak').textContent='0 дней';
-    else document.getElementById('statStreak').textContent=streak+' дней';
-  }
-  updateStreakOnLoad();
-
-  openDaily.addEventListener('click',()=>{ buildRewards(); dailyModal.classList.add('show'); dailyModal.setAttribute('aria-hidden','false'); });
-  closeDaily.addEventListener('click',()=>{ dailyModal.classList.remove('show'); dailyModal.setAttribute('aria-hidden','true'); });
-
-  claimBtn.addEventListener('click',()=>{
-    if(!canClaimToday()){ closeDaily.click(); return; }
-    const idx=+(localStorage.getItem(keyIdx)||0);
-    const reward=dailyConfig[idx];
-    coins += reward.amt;
-    miniProfit += reward.amt; // в демо считаем как выигрыш
-    localStorage.setItem(keyLast,todayStr());
-    advanceIndex();
-    render();
-    closeDaily.click();
-    pop(null,null,'+'+reward.amt.toLocaleString('ru-RU'));
-  });
-
-  // ---------- МИНИ‑ИГРЫ В IFRAME ----------
-  const list = document.getElementById('gamesList');
-  const wrap = document.getElementById('gameWrap');
-  const frame= document.getElementById('gameFrame');
-  const back = document.getElementById('backToList');
-
-  list.addEventListener('click',(e)=>{
-    const btn = e.target.closest('button[data-game]');
-    if(!btn) return;
-    list.style.display='none';
-    wrap.style.display='block';
-    frame.src = btn.dataset.game;
-  });
-  back.addEventListener('click',()=>{
-    frame.src='about:blank';
-    wrap.style.display='none';
-    list.style.display='grid';
-  });
-
-  // Обмен монетами с мини‑играми (postMessage)
-  window.addEventListener('message',(e)=>{
-    // ожидаем события вида {type:'getBalance'|'add'|'sub', amount?:number}
-    const msg=e.data||{};
-    if(msg.type==='getBalance'){
-      e.source.postMessage({type:'balance', value:coins}, e.origin);
-    }else if(msg.type==='add'){
-      const v = Math.max(0, parseInt(msg.amount||0));
-      coins += v; miniProfit += v; render();
-      e.source.postMessage({type:'ok'}, e.origin);
-    }else if(msg.type==='sub'){
-      const v = Math.max(0, parseInt(msg.amount||0));
-      coins = Math.max(0, coins - v); render();
-      e.source.postMessage({type:'ok'}, e.origin);
+  // --- ИГРА: MINES ---
+  const mGrid=document.getElementById('m-grid'), mMult=document.getElementById('m-mult'), mBet=document.getElementById('m-bet'), mStart=document.getElementById('m-start'), mCash=document.getElementById('m-cash');
+  let mCells=[], mPlaying=false, mOpened=0, mK=1;
+  mStart.onclick=()=>{
+    let b = parseInt(mBet.value)||10; if(b>coins) return alert('Недостаточно монет');
+    coins -= b; mPlaying=true; mOpened=0; mK=1; mMult.textContent='1.00';
+    mGrid.innerHTML=''; mCells=[]; mCash.disabled=false;
+    let mines = Array(25).fill(false); let count=0; while(count<5){ let idx=Math.floor(Math.random()*25); if(!mines[idx]){ mines[idx]=true; count++; } }
+    for(let i=0; i<25; i++) {
+      const c = document.createElement('div'); c.className='g-cell';
+      c.onclick=()=>{
+        if(!mPlaying || c.classList.contains('open')) return;
+        c.classList.add('open');
+        if(mines[i]) { c.classList.add('mine'); c.textContent='💣'; mPlaying=false; mCash.disabled=true; alert('Взрыв!'); render(); }
+        else { c.textContent='✓'; mOpened++; mK *= 1.3; mMult.textContent=mK.toFixed(2); }
+      };
+      mGrid.appendChild(c);
     }
-  });
+    render();
+  };
+  mCash.onclick=()=>{ if(!mPlaying)return; coins+=Math.floor((parseInt(mBet.value)||10)*mK); miniProfit+=Math.floor((parseInt(mBet.value)||10)*mK); mPlaying=false; mCash.disabled=true; render(); };
+
+  // --- ИГРА: CRYPTO ---
+  let cInterval;
+  function initCrypto() {
+    const cvs=document.getElementById('c-canvas'); const ctx=cvs.getContext('2d');
+    cvs.width=cvs.clientWidth; cvs.height=cvs.clientHeight;
+    let pts = [0.5, 0.4, 0.6, 0.5, 0.55];
+    clearInterval(cInterval);
+    cInterval = setInterval(()=>{
+      pts.push(Math.max(0.1, Math.min(0.9, pts[pts.length-1]+(Math.random()-0.5)*0.15))); if(pts.length>30)pts.shift();
+      ctx.clearRect(0,0,cvs.width,cvs.height); ctx.strokeStyle='#4aa3ff'; ctx.lineWidth=3; ctx.beginPath();
+      pts.forEach((v,i)=>{let x=i/(pts.length-1)*cvs.width; let y=(1-v)*cvs.height; i?ctx.lineTo(x,y):ctx.moveTo(x,y);}); ctx.stroke();
+    }, 400);
+    document.getElementById('c-up').onclick=()=>cryptoPlay(true, pts);
+    document.getElementById('c-down').onclick=()=>cryptoPlay(false, pts);
+  }
+  function cryptoPlay(isUp, pts) {
+    let b = parseInt(document.getElementById('c-bet').value)||10; if(b>coins) return alert('Недостаточно монет');
+    coins -= b; let startV = pts[pts.length-1];
+    setTimeout(()=>{
+      let endV = pts[pts.length-1]; let win = (isUp && endV>startV) || (!isUp && endV<startV);
+      if(win){ coins+=Math.floor(b*1.9); miniProfit+=Math.floor(b*1.9); alert('Победа! +'+Math.floor(b*1.9)); } else { alert('Проигрыш'); }
+      render();
+    }, 2000);
+  }
+
+  // --- ИГРА: DICE ---
+  const dMode=document.getElementById('d-mode'), dNum=document.getElementById('d-num'), dRoll=document.getElementById('d-roll'), dRes=document.getElementById('d-res');
+  dMode.onchange=()=>{ dNum.style.display = dMode.value==='eq'?'inline-block':'none'; };
+  dRoll.onclick=()=>{
+    let b = parseInt(document.getElementById('d-bet').value)||10; if(b>coins) return alert('Недостаточно монет');
+    coins -= b; let d = Math.floor(Math.random()*6)+1; let win=false, k=1.9;
+    if(dMode.value==='gt') win = d>3;
+    if(dMode.value==='lt') win = d<3;
+    if(dMode.value==='eq') { win = d===parseInt(dNum.value); k=5; }
+    if(win){ coins+=Math.floor(b*k); miniProfit+=Math.floor(b*k); dRes.textContent=`Выпало: ${d} — Победа!`; }
+    else dRes.textContent=`Выпало: ${d} — Проигрыш`;
+    render();
+  };
+
+  // --- ИГРА: PLINKO ---
+  function initPlinko() {
+    const cvs=document.getElementById('p-canvas'); const ctx=cvs.getContext('2d');
+    cvs.width=cvs.clientWidth; cvs.height=cvs.clientHeight;
+    ctx.clearRect(0,0,cvs.width,cvs.height); ctx.fillStyle='#2d4f9a';
+    for(let r=0;r<6;r++){ for(let c=0;c<=r+2;c++){ ctx.beginPath(); ctx.arc(cvs.width/2 + (c - (r+2)/2)*24, 30 + r*28, 4, 0, Math.PI*2); ctx.fill(); } }
+    document.getElementById('p-drop').onclick=()=>{
+      let b = parseInt(document.getElementById('p-bet').value)||10; if(b>coins) return alert('Недостаточно монет');
+      coins -= b; let mults=[2, 0.5, 1.5, 0.2, 1.5, 0.5, 2]; let m = mults[Math.floor(Math.random()*mults.length)];
+      coins+=Math.floor(b*m); miniProfit+=Math.floor(b*m); alert(`Шар упал! Множитель x${m}. Итог: ${Math.floor(b*m)} монет`); render();
+    };
+  }
+
+  // --- ИГРА: DOORS ---
+  const drStart=document.getElementById('dr-start'), drTake=document.getElementById('dr-take'), drRoomN=document.getElementById('dr-roomN'), drK=document.getElementById('dr-k'), drRoom=document.getElementById('dr-room');
+  let drPlaying=false, drRound=0, drMult=1, drWinDoor=0;
+  drStart.onclick=()=>{
+    let b = parseInt(document.getElementById('dr-bet').value)||10; if(b>coins) return alert('Недостаточно монет');
+    coins -= b; drPlaying=true; drRound=1; drMult=1; drK.textContent='1.00'; drTake.disabled=false; nextDoorRoom(); render();
+  };
+  function nextDoorRoom(){
+    drRoomN.textContent = drRound; drRoom.innerHTML=''; let count = Math.random()<0.5?2:3; drWinDoor = Math.floor(Math.random()*count);
+    for(let i=0; i<count; i++){
+      const d = document.createElement('div'); d.className='g-door'; d.textContent='Дверь';
+      d.onclick=()=>{
+        if(!drPlaying) return;
+        if(i===drWinDoor){ drMult*=1.5; drK.textContent=drMult.toFixed(2); d.style.background='#19c37d'; drRound++; setTimeout(nextDoorRoom, 800); }
+        else { d.style.background='#ff6b6b'; drPlaying=false; drTake.disabled=true; drK.textContent='0.00'; alert('Ловушка! Вы проиграли ставку.'); render(); }
+      };
+      drRoom.appendChild(d);
+    }
+  }
+  drTake.onclick=()=>{ if(!drPlaying) return; coins+=Math.floor((parseInt(document.getElementById('dr-bet').value)||10)*drMult); miniProfit+=Math.floor((parseInt(document.getElementById('dr-bet').value)||10)*drMult); drPlaying=false; drTake.disabled=true; render(); };
 </script>
 </body>
 </html>
