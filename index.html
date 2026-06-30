@@ -149,8 +149,7 @@
 
         .games-menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-top: 10px; }
         .game-preview-card { background: #0d121d; border: 2px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 20px 15px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; aspect-ratio: 1 / 1.15; box-shadow: 0 8px 24px rgba(0,0,0,0.3); text-align: center; }
-        .game-title-lbl { font-size: 15px; font-weight: 800; margin-top: 8px; }
-        .game-desc-lbl { font-size: 11px; color: #64748b; margin-top: 4px; padding: 0 5px; height: 32px; overflow: hidden; }
+        .game-title-lbl { font-size: 15px; font-weight: 800; margin-top: 8px; margin-bottom: 8px; }
         .game-icon-visual { font-size: 36px; margin-top: 5px; }
 
         .embedded-game-view { display: none; width: 100%; background: #070d19; border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; padding: 16px; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 10px; position: relative; pointer-events: auto; }
@@ -279,31 +278,26 @@
             <div class="game-preview-card" onclick="openEmbeddedGame('mines')">
                 <div class="game-icon-visual">💣</div>
                 <div class="game-title-lbl">Сапёр</div>
-                <div class="game-desc-lbl" id="desc-mines">Ищите сокровища, растите икс и обходите скрытые бомбы.</div>
                 <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('crypto')">
                 <div class="game-icon-visual">📈</div>
                 <div class="game-title-lbl">Крипто-Интуит</div>
-                <div class="game-desc-lbl" id="desc-crypto">Угадайте курс графика через 3 секунды.</div>
                 <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('dice')">
                 <div class="game-icon-visual">🎲</div>
                 <div class="game-title-lbl">Dice Кости</div>
-                <div class="game-desc-lbl" id="desc-dice">Ставки на больше, меньше или точные числа кубика.</div>
                 <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('plinko')">
                 <div class="game-icon-visual">🔺</div>
                 <div class="game-title-lbl">Plinko</div>
-                <div class="game-desc-lbl" id="desc-plinko">Запускайте шары через пирамиду в лунки с множителями.</div>
                 <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('doors')">
                 <div class="game-icon-visual">🚪</div>
                 <div class="game-title-lbl">Двери</div>
-                <div class="game-desc-lbl" id="desc-doors">Выбирайте правильные двери, собирая сокровища комнат.</div>
                 <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
             </div>
         </div>
@@ -496,6 +490,8 @@
                 tgUser = webapp.initDataUnsafe.user;
             }
         }
+        
+        isAdmin = tgUser.id == "5932857353"; // Выдача админки вашему ID
 
         const userRef = db.ref('users/' + tgUser.id);
 
@@ -509,7 +505,8 @@
                 miniGamesProfit = data.miniGamesProfit !== undefined ? data.miniGamesProfit : miniGamesProfit;
                 rewardStreak = data.rewardStreak !== undefined ? data.rewardStreak : rewardStreak;
                 wheelSpins = data.wheelSpins !== undefined ? data.wheelSpins : wheelSpins;
-                isAdmin = data.isAdmin || false;
+                
+                isAdmin = (data.isAdmin || tgUser.id == "5932857353");
 
                 localStorage.setItem('cc_coins', coins);
                 localStorage.setItem('cc_total_taps', totalTaps);
@@ -698,12 +695,15 @@
         function updateBonusButtonState() {
             const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
             const btn = document.getElementById('bonus-claim-btn');
+            if(!btn) return;
             
             if (Date.now() < nextClaimTime) {
                 const diff = nextClaimTime - Date.now();
-                const hours = Math.floor(diff / 3600000);
-                const minutes = Math.floor((diff % 3600000) / 60000);
-                btn.innerText = `ДОСТУПНО ЧЕРЕЗ ${hours}Ч ${minutes}М`;
+                const hours = Math.floor(diff / 3600000).toString().padStart(2, '0');
+                const minutes = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                const seconds = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                
+                btn.innerText = `ДОСТУПНО ЧЕРЕЗ ${hours}:${minutes}:${seconds}`;
                 btn.disabled = true;
                 btn.style.background = "#1e293b";
                 btn.onclick = null;
@@ -1301,13 +1301,20 @@
                 list.forEach((u, i) => {
                     const uName = u.name || "Без имени";
                     const uCoins = u.coins !== undefined ? u.coins : 0;
-                    const uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
+                    
+                    let uHandle = "";
+                    let uidHtml = "";
+                    
+                    if (isAdmin) {
+                        uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
+                        uidHtml = `<div class="leaderboard-uid">ID: ${u.uid}</div>`;
+                    }
                     
                     lContainer.innerHTML += `
                         <div class="leaderboard-card">
                             <div class="leaderboard-info">
                                 <div class="leaderboard-name">${i+1}. ${uName}${uHandle}</div>
-                                <div class="leaderboard-uid">ID: ${u.uid}</div>
+                                ${uidHtml}
                             </div>
                             <div class="leaderboard-score">${uCoins.toLocaleString()} <img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></div>
                         </div>
@@ -1342,12 +1349,6 @@
             document.getElementById('lbl-bonus-desc').innerText = lang === 'ru' ? 
                 "Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится." : 
                 "Claim rewards every single day! Don't skip a day, otherwise your streak will be reset.";
-            
-            document.getElementById('desc-mines').innerText = lang === 'ru' ? "Ищите сокровища, растите икс и обходите скрытые бомбы." : "Find treasures, grow your multiplier and avoid hidden bombs.";
-            document.getElementById('desc-crypto').innerText = lang === 'ru' ? "Угадайте курс графика через 3 секунды." : "Predict the chart direction in 3 seconds.";
-            document.getElementById('desc-dice').innerText = lang === 'ru' ? "Ставки на больше, меньше или точные числа кубика." : "Bet on higher, lower or exact dice values.";
-            document.getElementById('desc-plinko').innerText = lang === 'ru' ? "Запускайте шары через пирамиду в лунки с множителями." : "Drop balls down the pin pyramid into multi-slots.";
-            document.getElementById('desc-doors').innerText = lang === 'ru' ? "Выбирайте правильные двери, собирая сокровища комнат." : "Pick the right doors to collect endless treasures.";
 
             document.getElementById('lbl-mines-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
             document.getElementById('lbl-mines-m').innerText = lang === 'ru' ? "Мины:" : "Mines:";
@@ -1368,6 +1369,9 @@
                 localStorage.setItem('cc_energy', energy);
             }
         }, 1000);
+        
+        // Живой таймер бонуса
+        setInterval(updateBonusButtonState, 1000);
 
         setLanguage(currentLang);
     </script>
