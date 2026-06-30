@@ -37,7 +37,7 @@
             padding: 20px 20px 90px 20px; 
             overflow-y: auto;
         }
-        #game-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
+        #game-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; justify-content: center; }
         #games-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
         #profile-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
         #shop-scr { height: calc(100vh - 90px); margin-top: 20px; }
@@ -100,11 +100,11 @@
 
         .coin-btn {
             width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03);
-            background: url('assets/coin.jpg') center/contain no-repeat; margin: auto 0;
-            box-shadow: 0 0 50px rgba(37, 99, 235, 0.25); 
-            overflow: hidden; background-color: transparent;
-            transition: transform 0.05s; touch-action: manipulation;
+            margin: auto 0; box-shadow: 0 0 50px rgba(37, 99, 235, 0.25); 
+            overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center;
+            transition: transform 0.05s; touch-action: manipulation; padding: 0; cursor: pointer;
         }
+        .coin-btn img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
         .coin-btn:active { transform: scale(0.96); }
 
         .shop-section-title { width: 100%; text-align: left; font-size: 15px; font-weight: 700; margin: 10px 0 12px 0; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -114,7 +114,7 @@
         .action-btn.buy { background: var(--primary); }
 
         .profile-header { display: flex; align-items: center; gap: 15px; width: 100%; padding: 14px 18px; background: rgba(13, 19, 32, 0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 20px; }
-        .profile-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
+        .profile-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #131f37; border: 1px solid rgba(255,255,255,0.1); }
         .profile-meta h3 { font-size: 16px; font-weight: 700; color: white; }
         .profile-meta p { font-size: 11px; color: #475467; margin-top: 2px; }
         
@@ -261,7 +261,9 @@
     </div>
 
     <div class="screen active" id="game-scr">
-        <button class="coin-btn" id="coin-clicker" onclick="handleTap(event)"></button>
+        <button class="coin-btn" id="coin-clicker" onclick="handleTap(event)">
+            <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">
+        </button>
     </div>
 
     <div class="screen" id="shop-scr">
@@ -389,10 +391,10 @@
 
     <div class="screen" id="profile-scr">
         <div class="profile-header">
-            <img src="avatar.jpg" class="profile-avatar" id="user-avatar" alt="A">
+            <img src="assets/avatar.jpg" class="profile-avatar" id="user-avatar" onerror="this.src='avatar.jpg'; this.onerror=function(){this.src='https://ui-avatars.com/api/?name=Lupi&background=2563eb&color=fff'}">
             <div class="profile-meta">
-                <h3 id="user-username">IvanZolo2004 (@IvanSolo2021)</h3>
-                <p id="user-joined">Участник с Jun 30, 2026</p>
+                <h3 id="user-username">Игрок</h3>
+                <p id="user-joined">Загрузка данных...</p>
             </div>
         </div>
 
@@ -404,10 +406,10 @@
         <div class="stats-container-card">
             <h3 id="lbl-stats-header">Статистика</h3>
             <div class="stats-list">
-                <div class="stats-row"><span id="st-coins">Количество монет</span><span><span id="stat-coins-val">0</span><img src="assets/coin.jpg" class="coin-mini-icon" alt="c"></span></div>
+                <div class="stats-row"><span id="st-coins">Количество монет</span><span><span id="stat-coins-val">0</span><img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></span></div>
                 <div class="stats-row"><span id="st-taps">Количество тапов</span><span id="stat-taps-val">0</span></div>
-                <div class="stats-row"><span id="st-won">Выиграно в мини играх</span><span><span id="stat-won-val" class="win-color">0</span><img src="assets/coin.jpg" class="coin-mini-icon" alt="c"></span></div>
-                <div class="stats-row"><span id="st-profit">Прибыль</span><span><span id="stat-profit-val" class="win-color">+0</span><img src="assets/coin.jpg" class="coin-mini-icon" alt="c"></span></div>
+                <div class="stats-row"><span id="st-won">Выиграно в мини играх</span><span><span id="stat-won-val" class="win-color">0</span><img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></span></div>
+                <div class="stats-row"><span id="st-profit">Прибыль</span><span><span id="stat-profit-val" class="win-color">+0</span><img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></span></div>
                 <div class="stats-row"><span id="st-streak">Стрик наград</span><span><span id="stat-streak-val">0</span> дней</span></div>
                 <div class="stats-row"><span id="st-wheel">Прокрутил колесо фортуны</span><span id="stat-wheel-val">0</span></div>
             </div>
@@ -518,6 +520,7 @@
 
                 document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
                 updateUI();
+                initTelegramProfile();
             } else {
                 saveToFirebase();
             }
@@ -537,25 +540,49 @@
             });
         }
 
+        function initTelegramProfile() {
+            const nameEl = document.getElementById('user-username');
+            const joinedEl = document.getElementById('user-joined');
+            const avatarEl = document.getElementById('user-avatar');
+
+            const fullName = tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "");
+            const handle = tgUser.username ? ` (@${tgUser.username})` : "";
+            
+            nameEl.innerText = fullName + handle;
+            joinedEl.innerText = `ID: ${tgUser.id}`;
+
+            if(tgUser.photo_url) {
+                avatarEl.src = tgUser.photo_url;
+            }
+        }
+
         // Обновление интерфейса
         function updateUI() {
             document.getElementById('coins').innerText = coins.toLocaleString();
-            document.getElementById('stat-coins-val').innerText = coins.toLocaleString();
-            document.getElementById('stat-taps-val').innerText = totalTaps.toLocaleString();
-            document.getElementById('stat-won-val').innerText = miniGamesWon.toLocaleString();
+            
+            const statsCoins = document.getElementById('stat-coins-val');
+            if(statsCoins) statsCoins.innerText = coins.toLocaleString();
+            
+            const statsTaps = document.getElementById('stat-taps-val');
+            if(statsTaps) statsTaps.innerText = totalTaps.toLocaleString();
+            
+            const statsWon = document.getElementById('stat-won-val');
+            if(statsWon) statsWon.innerText = miniGamesWon.toLocaleString();
             
             const pSign = miniGamesProfit >= 0 ? "+" : "";
             const pEl = document.getElementById('stat-profit-val');
-            pEl.innerText = pSign + miniGamesProfit.toLocaleString();
-            if(miniGamesProfit >= 0) {
-                pEl.className = "win-color";
-            } else {
-                pEl.className = "lose-color";
+            if(pEl) {
+                pEl.innerText = pSign + miniGamesProfit.toLocaleString();
+                pEl.className = miniGamesProfit >= 0 ? "win-color" : "lose-color";
             }
 
-            document.getElementById('stat-streak-val').innerText = rewardStreak;
+            const statsStreak = document.getElementById('stat-streak-val');
+            if(statsStreak) statsStreak.innerText = rewardStreak;
+            
             document.getElementById('top-streak-lbl').innerText = rewardStreak;
-            document.getElementById('stat-wheel-val').innerText = wheelSpins;
+            
+            const statsWheel = document.getElementById('stat-wheel-val');
+            if(statsWheel) statsWheel.innerText = wheelSpins;
 
             document.getElementById('energy-num').innerText = `${energy} / 100`;
             document.getElementById('energy-fill').style.width = `${energy}%`;
@@ -659,8 +686,8 @@
                 container.innerHTML += `
                     <div class="${boxClass}">
                         <div class="day-num">${langData[currentLang].day} ${i+1}</div>
-                        <img src="${imgFile}" class="day-img" onerror="this.src='assets/stopka1.jpg'">
-                        <div class="day-reward-lbl">${rewards[i].toLocaleString()}<img src="assets/coin.jpg" class="coin-mini-icon"></div>
+                        <img src="${imgFile}" class="day-img" onerror="this.src='stopka1.jpg'">
+                        <div class="day-reward-lbl">${rewards[i].toLocaleString()}<img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></div>
                     </div>
                 `;
             }
@@ -695,7 +722,6 @@
             const lastClaimTime = parseInt(localStorage.getItem('cc_last_claim_time')) || 0;
             const oneDay = 24 * 60 * 60 * 1000;
             
-            // Если прошло больше 48 часов с последнего сбора, стрик сбрасывается
             if (lastClaimTime && (Date.now() - lastClaimTime > 2 * oneDay)) {
                 rewardStreak = 0;
             }
@@ -717,7 +743,7 @@
             saveToFirebase();
             renderDaysGrid();
 
-            showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${rewardAmt.toLocaleString()}</span> <img src="assets/coin.jpg">!`);
+            showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${rewardAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
         // ВХОД В МИНИ-ИГРЫ
@@ -802,7 +828,6 @@
                 tile.innerText = "💎";
                 minesOpened++;
                 
-                // Рассчёт множителя
                 let curX = 1;
                 for(let i=0; i<minesOpened; i++) {
                     curX *= (25 - i) / (25 - mCount - i);
@@ -842,7 +867,7 @@
             saveToFirebase();
             revealMinesBoard();
 
-            showCustomResultDialog(`Отлично! Вы забрали куш: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg">!`);
+            showCustomResultDialog(`Отлично! Вы забрали куш: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
         // КРИПТО-ИНТУИТ МЕХАНИКА
@@ -916,7 +941,7 @@
                     coins += winAmt;
                     miniGamesWon += winAmt;
                     miniGamesProfit += winAmt;
-                    showCustomResultDialog(`График пошёл ${direction === 'up'?'вверх':'вниз'}. Вы угадали! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg">`);
+                    showCustomResultDialog(`График пошёл ${direction === 'up'?'вверх':'вниз'}. Вы угадали! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">`);
                 } else {
                     showCustomResultDialog(`Увы, график пошёл в противоположную сторону. Ставка проиграна.`);
                 }
@@ -1002,7 +1027,7 @@
                         coins += winAmt;
                         miniGamesWon += winAmt;
                         miniGamesProfit += winAmt;
-                        showCustomResultDialog(`Выпало число ${finalRoll}. Победа! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg">`);
+                        showCustomResultDialog(`Выпало число ${finalRoll}. Победа! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">`);
                     } else {
                         showCustomResultDialog(`Выпало число ${finalRoll}. Повезёт в следующий раз!`);
                     }
@@ -1027,7 +1052,6 @@
             plinkoCanvas = document.getElementById('plinko-canvas-el');
             plinkoCtx = plinkoCanvas.getContext('2d');
             
-            // Генерация колышков пирамиды
             plinkoPins.length = 0;
             const h = 260;
             const startY = 40;
@@ -1048,7 +1072,6 @@
             const h = plinkoCanvas.height = 260;
             plinkoCtx.clearRect(0, 0, w, h);
 
-            // Отрисовка колышков
             plinkoCtx.fillStyle = "#475467";
             plinkoPins.forEach(p => {
                 const rowW = (p.count - 1) * 24;
@@ -1059,7 +1082,6 @@
                 plinkoCtx.fill();
             });
 
-            // Отрисовка лунок внизу
             const bY = h - 20;
             const bW = w / plinkoBuckets.length;
             plinkoCtx.font = "bold 10px Arial";
@@ -1073,15 +1095,13 @@
                 plinkoCtx.fillText(b + "x", bx + bW/2, bY + 12);
             });
 
-            // Обновление и симуляция шаров
             plinkoCtx.fillStyle = "#ffb020";
             for (let i = plinkoBalls.length - 1; i >= 0; i--) {
                 let ball = plinkoBalls[i];
                 ball.y += ball.vy;
                 ball.x += ball.vx;
-                ball.vy += 0.18; // Гравитация
+                ball.vy += 0.18;
 
-                // Проверка столкновений с колышками
                 plinkoPins.forEach(p => {
                     const dx = ball.x - p.x;
                     const dy = ball.y - p.y;
@@ -1097,7 +1117,6 @@
                 plinkoCtx.arc(ball.x, ball.y, 5, 0, Math.PI * 2);
                 plinkoCtx.fill();
 
-                // Попадание в лунку внизу
                 if (ball.y >= bY) {
                     const bucketIdx = Math.floor(ball.x / bW);
                     const safeIdx = Math.max(0, Math.min(plinkoBuckets.length - 1, bucketIdx));
@@ -1114,7 +1133,7 @@
                     updateUI();
                     saveToFirebase();
 
-                    showCustomResultDialog(`Шар упал в ячейку ${finalX}x. Вы выиграли: <span style="color:#22c55e;">+${wonAmt.toLocaleString()}</span> <img src="assets/coin.jpg">!`);
+                    showCustomResultDialog(`Шар упал в ячейку ${finalX}x. Вы выиграли: <span style="color:#22c55e;">+${wonAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
                     plinkoBalls.splice(i, 1);
                 }
             }
@@ -1234,7 +1253,7 @@
             saveToFirebase();
             document.getElementById('doors-tiles-wrapper').innerHTML = "";
 
-            showCustomResultDialog(`Вы благополучно покинули замок! Награда: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg">!`);
+            showCustomResultDialog(`Вы благополучно покинули замок! Награда: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
         // АДМИН ОПЕРАЦИИ
@@ -1290,7 +1309,7 @@
                                 <div class="leaderboard-name">${i+1}. ${uName}${uHandle}</div>
                                 <div class="leaderboard-uid">ID: ${u.uid}</div>
                             </div>
-                            <div class="leaderboard-score">${uCoins.toLocaleString()} <img src="assets/coin.jpg" class="coin-mini-icon"></div>
+                            <div class="leaderboard-score">${uCoins.toLocaleString()} <img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></div>
                         </div>
                     `;
                 });
@@ -1319,20 +1338,17 @@
             document.getElementById('st-streak').innerText = langData[lang].st_5;
             document.getElementById('st-wheel').innerText = langData[lang].st_6;
             
-            // Заголовки модалки бонуса
             document.getElementById('lbl-bonus-title').innerText = lang === 'ru' ? "Ежедневный Бонус" : "Daily Bonus";
             document.getElementById('lbl-bonus-desc').innerText = lang === 'ru' ? 
                 "Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится." : 
                 "Claim rewards every single day! Don't skip a day, otherwise your streak will be reset.";
             
-            // Описания игр
             document.getElementById('desc-mines').innerText = lang === 'ru' ? "Ищите сокровища, растите икс и обходите скрытые бомбы." : "Find treasures, grow your multiplier and avoid hidden bombs.";
             document.getElementById('desc-crypto').innerText = lang === 'ru' ? "Угадайте курс графика через 3 секунды." : "Predict the chart direction in 3 seconds.";
             document.getElementById('desc-dice').innerText = lang === 'ru' ? "Ставки на больше, меньше или точные числа кубика." : "Bet on higher, lower or exact dice values.";
             document.getElementById('desc-plinko').innerText = lang === 'ru' ? "Запускайте шары через пирамиду в лунки с множителями." : "Drop balls down the pin pyramid into multi-slots.";
             document.getElementById('desc-doors').innerText = lang === 'ru' ? "Выбирайте правильные двери, собирая сокровища комнат." : "Pick the right doors to collect endless treasures.";
 
-            // Подписи в играх
             document.getElementById('lbl-mines-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
             document.getElementById('lbl-mines-m').innerText = lang === 'ru' ? "Мины:" : "Mines:";
             document.getElementById('lbl-crypto-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
@@ -1341,9 +1357,10 @@
             document.getElementById('lbl-doors-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
 
             updateUI();
+            initTelegramProfile();
         }
 
-        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ (1 в сек)
+        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ
         setInterval(() => {
             if (energy < 100) {
                 energy++;
@@ -1352,7 +1369,6 @@
             }
         }, 1000);
 
-        // Инициализация при первой загрузке
         setLanguage(currentLang);
     </script>
 </body>
