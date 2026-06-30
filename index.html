@@ -12,9 +12,9 @@
             --primary: #2563eb;
             --primary-glow: rgba(37, 99, 235, 0.6);
             --bg: linear-gradient(135deg, #020617 0%, #0b1e3d 100%); 
-            --card: #0d1626; 
+            --card: rgba(15, 23, 42, 0.5); 
             --text-muted: #566175;
-            --ok: #22c55e;
+            --ok: #19c37d;
             --warn: #ffb020;
             --danger: #ef4444;
         }
@@ -38,9 +38,6 @@
             overflow-y: auto;
         }
         #game-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
-        #games-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
-        #profile-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
-        #shop-scr { height: calc(100vh - 90px); margin-top: 20px; }
         .active { display: flex; }
 
         .header { 
@@ -50,7 +47,6 @@
             text-align: center; 
             background: linear-gradient(180deg, rgba(2,6,23,0.95) 80%, rgba(2,6,23,0) 100%);
             z-index: 10;
-            pointer-events: none; /* Пропускает клики сквозь хедер к инпутам мини-игр */
         }
 
         .top-bonus-row {
@@ -72,7 +68,6 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
             transition: transform 0.2s;
-            pointer-events: auto; /* Возвращает кликабельность кнопке бонуса */
         }
         .bonus-trigger-btn:active { transform: scale(0.95); }
         .bonus-trigger-btn .streak-num { font-size: 13px; font-weight: 700; color: #ffffff; }
@@ -90,18 +85,16 @@
             z-index: 5;
         }
 
-        #coins { font-size: 42px; font-weight: 800; color: white; letter-spacing: -0.5px; }
+        #coins { font-size: 42px; font-weight: 800; color: white; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        #coins img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         
-        /* Энергия в стиле Снимок экрана 2026-06-30 102113_3.png */
         .energy-box { width: 100%; max-width: 340px; margin: 6px auto 0 auto; }
-        .energy-text-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 5px; }
-        .energy-text-row span { display: flex; align-items: center; gap: 4px; }
-        .energy-bar { width: 100%; height: 6px; background: #131926; border-radius: 10px; overflow: hidden; }
+        .energy-bar { width: 100%; height: 6px; background: #131926; border-radius: 10px; overflow: hidden; margin-top: 6px; }
         #energy-fill { width: 100%; height: 100%; background: #2563eb; transition: 0.2s; }
 
         .coin-btn {
             width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03);
-            background: url('coin.png') center/contain no-repeat; margin: auto 0;
+            background: url('coin.jpg') center/contain no-repeat; margin: auto 0;
             box-shadow: 0 0 50px rgba(37, 99, 235, 0.25); 
             overflow: hidden; background-color: transparent;
             transition: transform 0.05s; touch-action: manipulation;
@@ -110,127 +103,131 @@
 
         .shop-section-title { width: 100%; text-align: left; font-size: 15px; font-weight: 700; margin: 10px 0 12px 0; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
 
+        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
+        .card-item { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .card-img { width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; margin-bottom: 6px; }
+        .card-profit-lbl { font-size: 11px; color: #4ade80; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 3px; }
+
         .btn { background: var(--primary); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .action-btn { padding: 10px 12px; font-size: 12px; border-radius: 10px; font-weight: bold; border: none; color: white; width: 100%; }
         .action-btn.buy { background: var(--primary); }
+        .action-btn.owned { background: #161f30; color: #4b586e; }
 
-        /* Профиль в стиле Снимок экрана 2026-06-30 102130_3.png */
-        .profile-header { display: flex; align-items: center; gap: 15px; width: 100%; padding: 14px 18px; background: rgba(13, 19, 32, 0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 20px; }
-        .profile-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
-        .profile-meta h3 { font-size: 16px; font-weight: 700; color: white; }
-        .profile-meta p { font-size: 11px; color: #475467; margin-top: 2px; }
+        .profile-header { display: flex; align-items: center; gap: 15px; width: 100%; padding: 18px; background: rgba(13, 19, 32, 0.6); border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 20px; margin-top: 10px; }
+        .profile-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+        .profile-meta h3 { font-size: 17px; font-weight: 700; color: white; }
+        .profile-meta p { font-size: 12px; color: #475467; margin-top: 2px; }
         
-        .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; background: rgba(13,19,32,0.4); padding: 5px; border-radius: 12px; margin-bottom: 20px; }
-        .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 11px; font-weight: 700; font-size: 13px; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; width: 100%; }
+        .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; background: rgba(13,19,32,0.7); padding: 5px; border-radius: 12px; margin-bottom: 25px; }
+        .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 12px; font-weight: 700; font-size: 14px; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; width: 100%; }
         .lang-btn.active { background: #1e3a8a; color: white; box-shadow: 0 0 15px var(--primary-glow); }
 
-        .stats-container-card { width: 100%; background: #070d19; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-        .stats-container-card h3 { font-size: 16px; font-weight: 700; color: white; margin-bottom: 16px; }
+        .stats-container-card { width: 100%; background: #0d121d; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+        .stats-container-card h3 { font-size: 18px; font-weight: 700; color: white; margin-bottom: 16px; }
         .stats-list { width: 100%; display: flex; flex-direction: column; }
         
-        .stats-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #64748b; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .stats-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #64748b; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .stats-row:last-child { border-bottom: none; }
-        .stats-row span:last-child { font-weight: 600; color: #ffffff; display: flex; align-items: center; gap: 6px; text-align: right; }
-        .stats-row .win-color { color: #22c55e !important; }
+        .stats-row span:last-child { font-weight: 600; color: #ffffff !important; display: flex; align-items: center; gap: 4px; text-align: right; }
+        .stats-row .win-color { color: #4ade80 !important; }
+        .stats-row .loss-color { color: #f87171 !important; }
         
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
 
-        /* Лидерборд в стиле Снимок экрана 2026-06-30 122858.png */
-        .leaderboard-card { width: 100%; background: #0d1626; border-radius: 14px; padding: 14px 18px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.02); }
-        .leaderboard-info { display: flex; flex-direction: column; gap: 3px; }
-        .leaderboard-name { font-size: 14px; font-weight: 700; color: white; }
-        .leaderboard-uid { font-size: 11px; color: #475467; }
-        .leaderboard-score { font-size: 14px; font-weight: 700; color: #2563eb; display: flex; align-items: center; gap: 6px; }
-
-        /* Админ-меню в стиле Снимок экрана 2026-06-30 122858.png */
-        .admin-panel { display: none; background: #070d19; border: 1px solid #ef4444; border-radius: 16px; padding: 16px; margin-bottom: 20px; width: 100%; text-align: left; }
-        .admin-title { color: #ef4444; font-weight: 700; font-size: 13px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
-        .admin-input-field { width: 100%; background: #0d1626; border: 1px solid rgba(255, 255, 255, 0.05); color: white; padding: 10px 12px; border-radius: 10px; margin-bottom: 10px; font-size: 13px; outline: none; }
-        .admin-input-field:focus { border-color: #ef4444; }
-        .admin-btn-action { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 13px; border: none; color: white; cursor: pointer; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .admin-btn-action.give { background: #22c55e; margin-bottom: 10px; }
-        .admin-btn-action.wipe { background: #ef4444; }
-
         .games-menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-top: 10px; }
-        .game-preview-card { background: #0d121d; border: 2px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 20px 15px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; aspect-ratio: 1 / 1.15; box-shadow: 0 8px 24px rgba(0,0,0,0.3); text-align: center; }
-        .game-title-lbl { font-size: 15px; font-weight: 800; margin-top: 8px; }
-        .game-desc-lbl { font-size: 11px; color: #64748b; margin-top: 4px; padding: 0 5px; height: 32px; overflow: hidden; }
-        .game-icon-visual { font-size: 36px; margin-top: 5px; }
+        .game-preview-card { background: #0d121d; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; min-height: 150px; }
+        .game-preview-icon { font-size: 36px; margin-bottom: 8px; }
+        .game-preview-card h3 { font-size: 16px; font-weight: 700; color: white; margin-bottom: 12px; }
 
-        /* ВСТРОЕННЫЕ ОБОЛОЧКИ ИГР */
-        .embedded-game-view { display: none; width: 100%; background: #070d19; border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; padding: 16px; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 10px; position: relative; pointer-events: auto; }
-        .game-top-capsule { display: flex; width: 100%; justify-content: space-between; background: rgba(255,255,255,0.03); border-radius: 14px; padding: 10px; margin-bottom: 14px; font-size: 13px; font-weight: bold; border: 1px solid rgba(255,255,255,0.02); align-items: center; }
-        .capsule-cell { display: flex; align-items: center; gap: 4px; }
-        .game-input-bet { background: #0e1626; border: 1px solid #2563eb; color: white; border-radius: 8px; padding: 4px 8px; width: 70px; text-align: center; font-weight: bold; font-size: 13px; outline: none; }
-        .back-to-menu-btn { margin-top: 14px; background: transparent; border: none; color: #64748b; font-size: 13px; font-weight: bold; cursor: pointer; transition: color 0.2s; text-transform: uppercase; }
-        .back-to-menu-btn:hover { color: white; }
-
-        /* САПЁР (MINES) */
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; width: 100%; max-width: 280px; margin: 15px 0; }
-        .mines-tile { aspect-ratio: 1/1; background: #131f37; border: 1px solid #23375c; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; font-weight: bold; transition: all 0.15s ease; }
-        .mines-tile.opened { background: #1e3a8a; border-color: #3b82f6; color: #4ade80; }
-        .mines-tile.mine { background: #7f1d1d; border-color: #ef4444; }
-        .mines-select { background: #0e1626; border: 1px solid #2563eb; color: white; border-radius: 8px; padding: 4px; font-weight: bold; font-size: 12px; outline: none; }
-
-        /* КРИПТО-ИНТУИТ (CRYPTO) */
-        .crypto-canvas-container { width: 100%; height: 150px; background: #091122; border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; position: relative; overflow: hidden; margin-bottom: 12px; }
-        .crypto-canvas { width: 100%; height: 100%; display: block; }
-        .crypto-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .embedded-game-view { display: none; flex-direction: column; width: 100%; height: 100%; padding-bottom: 20px; }
         
-        /* DICE С РЕЖИМАМИ */
-        .dice-modes-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; margin-bottom: 12px; }
-        .dice-tab { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 8px; border-radius: 10px; font-size: 12px; font-weight: bold; color: #64748b; cursor: pointer; text-align: center; }
-        .dice-tab.active { background: #2563eb; color: white; border-color: #3b82f6; }
-        .dice-options-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; width: 100%; text-align: center; min-height: 55px; margin-bottom: 12px; }
-        .dice-num-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
-        .dice-num-btn { background: #131f37; border: 1px solid rgba(255,255,255,0.05); padding: 6px; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
-        .dice-num-btn.active { background: #2563eb; border-color: #3b82f6; }
-        .dice-display-result { font-size: 44px; font-weight: 900; color: #ffb020; margin: 10px 0; text-shadow: 0 0 15px rgba(255,176,32,0.4); }
+        /* Стили Колеса Фортуны встроенные */
+        .wheel-game-container { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 10px; }
+        .wheel-wrap-box { position: relative; width: 260px; height: 260px; margin: 15px 0; }
+        .wheel-circle-svg { width: 100%; height: 100%; transform: rotate(-90deg); transition: transform 3.5s cubic-bezier(0.1, 1, 0.1, 1); }
+        .wheel-pointer-arrow { position: absolute; top: -10px; left: calc(50% - 12px); width: 24px; height: 24px; fill: #ffb020; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); z-index: 4; transform: rotate(180deg); }
+        .wheel-center-percent-only { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 34px; font-weight: 800; color: white; text-shadow: 0 0 10px rgba(0,0,0,0.8); z-index: 3; }
+        .wheel-bet-selector-row { display: flex; background: rgba(13,19,32,0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; width: 100%; max-width: 300px; padding: 4px; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .wheel-bet-input { background: transparent; border: none; color: white; font-weight: 800; font-size: 18px; width: 100px; text-align: center; outline: none; }
+        .wheel-preset-btn { background: #1e293b; border: none; color: #94a3b8; font-weight: 700; font-size: 12px; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+        .btn-wheel-action-spin { background: var(--primary); color: white; font-weight: 800; font-size: 16px; border: none; border-radius: 14px; padding: 14px 0; width: 100%; max-width: 300px; cursor: pointer; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-wheel-action-spin:disabled { background: #1e293b; color: #4b5563; box-shadow: none; cursor: not-allowed; }
+        .back-to-menu-btn { background: transparent; border: none; color: #64748b; font-size: 13px; font-weight: 600; margin-top: 15px; cursor: pointer; text-decoration: underline; }
 
-        /* PLINKO */
-        .plinko-canvas-container { width: 100%; height: 260px; background: #091122; border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
-        .plinko-canvas { width: 100%; height: 100%; display: block; }
+        /* Стили Сапера встроенные */
+        .sapper-game-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .sapper-status-bar { display: flex; justify-content: space-between; width: 100%; max-width: 280px; margin-bottom: 12px; font-size: 14px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 10px; }
+        .sapper-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; width: 100%; max-width: 280px; margin-bottom: 15px; }
+        .sapper-cell { aspect-ratio: 1/1; background: #1e293b; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.15s; }
+        .sapper-cell.opened { background: #0f172a; border-color: rgba(255,255,255,0.02); }
+        .sapper-cell.mine { background: var(--danger); }
+        .sapper-cell.gem { color: #4ade80; }
 
-        /* ДВЕРИ (DOORS) */
-        .doors-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin: 15px 0; min-height: 120px; }
-        .door-element { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #334155; border-radius: 14px; height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; position: relative; transition: all 0.2s ease; }
-        .door-element::after { content: ''; position: absolute; right: 8px; top: 50%; width: 6px; height: 6px; background: #eab308; border-radius: 50%; }
-        .door-element.win { border-color: #22c55e; background: rgba(34,197,94,0.15); color: #22c55e; }
-        .door-element.lose { border-color: #ef4444; background: rgba(239,68,68,0.15); color: #ef4444; }
+        /* Диалоговое окно результатов */
+        .custom-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2,6,23,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+        .custom-dialog-box { background: #0f172a; border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 24px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .result-dialog-text { font-size: 16px; font-weight: 600; color: white; margin-bottom: 20px; line-height: 1.5; }
+        .result-dialog-text img { width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-left: 4px; }
+        .result-dialog-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-        /* НАВИГАЦИЯ И ДИАЛОГИ */
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(2, 6, 23, 0.9); border-top: 1px solid rgba(255, 255, 255, 0.04); display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; z-index: 20; backdrop-filter: blur(10px); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #475467; cursor: pointer; font-size: 11px; font-weight: bold; height: 100%; position: relative; transition: color 0.2s; }
+        /* Ежедневный Бонус Модальное Окно */
+        .bonus-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2,6,23,0.8); display: none; justify-content: center; align-items: flex-end; z-index: 90; }
+        .bonus-content-sheet { background: #090d16; border-top: 1px solid rgba(255,255,255,0.08); border-radius: 30px 30px 0 0; width: 100%; max-width: 450px; padding: 24px 20px 40px 20px; display: flex; flex-direction: column; align-items: center; max-height: 85vh; overflow-y: auto; }
+        .bonus-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; text-align: center; }
+        .bonus-desc { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; padding: 0 10px; }
+        
+        /* Таймер в наградах */
+        .bonus-timer-box { font-size: 14px; font-weight: 700; color: var(--warn); margin-bottom: 15px; background: rgba(255, 176, 32, 0.1); padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,176,32,0.2); }
+        
+        .bonus-days-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-bottom: 24px; }
+        .bonus-day-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+        .bonus-day-card.current { border-color: var(--primary); background: rgba(37,99,235,0.08); box-shadow: inset 0 0 10px rgba(37,99,235,0.1); }
+        .bonus-day-card.claimed { opacity: 0.5; }
+        .bonus-day-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #94a3b8; }
+        .bonus-day-img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 6px; }
+        .bonus-day-reward-amount { font-size: 11px; font-weight: 800; color: white; display: flex; align-items: center; gap: 2px; }
+        .bonus-day-reward-amount img { width: 12px; height: 12px; border-radius: 50%; }
+        .bonus-claimed-badge { position: absolute; bottom: 8px; right: 8px; background: #10b981; border-radius: 50%; width: 16px; height: 16px; display: none; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+        .bonus-day-card.claimed .bonus-claimed-badge { display: flex; }
+        .bonus-claim-main-btn { background: var(--primary); color: white; border: none; width: 100%; max-width: 300px; padding: 15px; border-radius: 16px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px var(--primary-glow); }
+        .bonus-claim-main-btn:disabled { background: #1e293b; color: #4b5563; box-shadow: none; cursor: not-allowed; }
+        .bonus-close-text-btn { font-size: 13px; font-weight: 600; color: #475467; margin-top: 16px; cursor: pointer; }
+
+        /* Навигация */
+        .nav { 
+            position: fixed; 
+            bottom: 0; left: 0; right: 0; 
+            height: 76px; 
+            background: #020617; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            border-top: 1px solid rgba(255, 255, 255, 0.04); 
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 10;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #475467; text-decoration: none; font-size: 10px; font-weight: 600; background: transparent; border: none; cursor: pointer; gap: 4px; }
         .nav-item.active { color: #2563eb; }
-        .nav-svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 4px; }
-        .nav-glow { position: absolute; top: -1px; width: 80px; height: 45px; background: radial-gradient(circle, rgba(37, 99, 235, 0.45) 0%, rgba(37, 99, 235, 0) 70%); filter: blur(5px); pointer-events: none; opacity: 0; transition: all 0.3s ease; transform: translateY(-50%); }
-        .nav-item.active .nav-glow { opacity: 1; }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
 
-        .custom-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.85); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; backdrop-filter: blur(4px); }
-        .custom-dialog-overlay.open { display: flex; }
-        .custom-dialog-box { background: #0d1527; border: 1px solid rgba(255, 255, 255, 0.08); width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: zoomIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .result-dialog-text { font-size: 16px; font-weight: bold; color: white; line-height: 1.5; margin-bottom: 20px; }
-        .result-dialog-text img { width: 22px; height: 22px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; margin-left: 4px; margin-top: -3px; }
-        .result-dialog-btn { background: #2563eb; color: white; border: none; width: 100%; padding: 12px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.15s; }
+        /* Встроенные стили для остальных мини-игр */
+        .embedded-frame-container { width: 100%; height: calc(100vh - 180px); background: #0b132a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; margin-top: 10px; position: relative; }
+        .embedded-game-layout { display: flex; flex-direction: column; height: 100%; width: 100%; padding: 12px; overflow-y: auto; }
+        .game-panel-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; background: #0f1b39; border: 1px solid #1a2c59; border-radius: 12px; padding: 10px; margin-bottom: 10px; width: 100%; }
+        .game-input-field { background: #0e1836; color: #fff; border: 1px solid #284aa0; border-radius: 8px; padding: 8px; width: 90px; text-align: center; }
+        .game-select-field { background: #0e1836; color: #fff; border: 1px solid #284aa0; border-radius: 8px; padding: 8px; }
+        .crypto-chart-holder { height: 160px; background: linear-gradient(180deg,#112552,#0c1a37); border: 1px solid #1a2c59; border-radius: 12px; position: relative; overflow: hidden; width: 100%; margin-bottom: 10px; }
+        .crypto-canvas-element { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+        .game-control-btn { background: #17306a; border: 1px solid #2b55cc; color: #e9f0ff; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: bold; }
+        .game-control-btn:active { transform: scale(0.98); }
         
-        .bonus-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.9); display: none; flex-direction: column; justify-content: flex-end; z-index: 90; }
-        .bonus-modal.open { display: flex; }
-        .bonus-content-sheet { background: #090f1d; border-top: 1px solid rgba(255,255,255,0.08); border-radius: 32px 32px 0 0; padding: 24px 20px; text-align: center; max-height: 85vh; overflow-y: auto; }
-        .bonus-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
-        .bonus-desc { font-size: 13px; color: #64748b; margin-bottom: 20px; }
-        .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
-        .day-box { background: #121a2e; border: 1px solid rgba(255,255,255,0.04); border-radius: 14px; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; opacity: 0.6; }
-        .day-box.active { border-color: #2563eb; background: rgba(37,99,235,0.1); opacity: 1; }
-        .day-box.completed { border-color: #22c55e; background: rgba(34,197,94,0.08); opacity: 1; }
-        .day-box .day-num { font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
-        .day-box.active .day-num { color: #3b82f6; }
-        .day-box.completed .day-num { color: #22c55e; }
-        .day-box .day-img { width: 32px; height: 32px; object-fit: contain; margin: 4px 0; }
-        .day-box .day-reward-lbl { font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 2px; }
-
-        .plus-one { position: absolute; color: white; font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 10px var(--primary); z-index: 1000; }
-        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
+        .plinko-canvas-element { width: 100%; height: 240px; background: linear-gradient(180deg,#10224a,#0c1733); border: 1px solid #1a2c59; border-radius: 12px; margin-bottom: 10px; }
+        .doors-wrapper-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; width: 100%; }
+        .door-element { height: 120px; background: linear-gradient(180deg,#1b2a56,#0f1c3f); border: 1px solid #20376e; border-radius: 10px; display: grid; place-items: center; cursor: pointer; font-weight: bold; font-size: 13px; position: relative; }
+        .door-element::after { content: ""; position: absolute; right: 8px; top: 50%; width: 6px; height: 6px; background: #d6a64b; border-radius: 50%; }
+        
+        .sapper-bet-box { display: flex; width: 100%; max-width: 280px; gap: 8px; margin-bottom: 10px; }
+        .sapper-bet-box input { flex: 1; background: #0f172a; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: white; padding: 10px; text-align: center; outline: none; }
     </style>
 </head>
 <body>
@@ -245,168 +242,184 @@
     <div class="bonus-modal" id="bonus-modal">
         <div class="bonus-content-sheet">
             <div class="bonus-title" id="lbl-bonus-title">Ежедневный Бонус</div>
-            <div class="bonus-desc" id="lbl-bonus-desc">Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится.</div>
-            <div class="days-grid" id="days-container"></div>
-            <button class="btn" style="width: 100%; padding: 14px;" id="bonus-claim-btn">ЗАБРАТЬ НАГРАДУ</button>
-            <button class="back-to-menu-btn" style="margin-top: 16px;" onclick="closeBonusModal()">Закрыть</button>
+            <div class="bonus-desc" id="lbl-bonus-desc">Заходите каждый день и собирайте горы монет! При пропуске дня стрик сбрасывается.</div>
+            
+            <div class="bonus-timer-box" id="bonus-timer">Загрузка...</div>
+            
+            <div class="bonus-days-grid" id="bonus-days-container">
+                </div>
+            <button class="bonus-claim-main-btn" id="bonus-claim-clicker" onclick="handleClaimBonusClick()">Забрать Бонус</button>
+            <div class="bonus-close-text-btn" id="lbl-bonus-close" onclick="closeBonusSheet()">Закрыть</div>
         </div>
     </div>
 
     <div class="header">
         <div class="top-bonus-row">
-            <div class="bonus-trigger-btn" onclick="openBonusModal()">
+            <div class="bonus-trigger-btn" onclick="openBonusSheet()">
                 <div id="bonus-dot"></div>
-                <span class="streak-num" id="top-streak-lbl">0</span>
                 <span class="flame-icon">🔥</span>
+                <span class="streak-num" id="header-streak-val">0</span>
             </div>
         </div>
-        <div id="coins">0</div>
-        
-        <!-- Индикатор энергии из Снимок экрана 2026-06-30 102113_3.png -->
+        <div id="coins">0 <img src="coin.jpg" alt="coin"></div>
         <div class="energy-box">
-            <div class="energy-text-row">
-                <span>⚡ Энергия</span>
-                <span id="energy-num">100 / 100</span>
+            <div class="energy-bar">
+                <div id="energy-fill"></div>
             </div>
-            <div class="energy-bar"><div id="energy-fill"></div></div>
         </div>
     </div>
 
-    <div class="screen active" id="game-scr">
-        <button class="coin-btn" id="coin-clicker" onclick="handleTap(event)"></button>
+    <div id="game-scr" class="screen active">
+        <button class="coin-btn" onclick="handleCoinTap(event)"></button>
     </div>
 
-    <!-- Магазин в разработке -->
-    <div class="screen" id="shop-scr">
-        <div style="margin: auto; text-align: center; padding: 40px 20px;">
-            <div style="font-size: 50px; margin-bottom: 15px;">🛠️</div>
-            <div style="font-size: 22px; font-weight: 800; margin-bottom: 10px; color: white;">Магазин в разработке</div>
-            <div style="font-size: 14px; color: #64748b; max-width: 280px; margin: 0 auto; line-height: 1.5;">Совсем скоро здесь можно будет приобрести крутые пассивные улучшения и предметы!</div>
-        </div>
+    <div id="shop-scr" class="screen">
+        <div class="shop-section-title" id="lbl-shop-title">Улучшения</div>
+        <div class="cards-grid" id="shop-cards-container">
+            </div>
     </div>
 
-    <div class="screen" id="games-scr">
+    <div id="games-scr" class="screen">
         <div class="games-menu-grid" id="games-selection-grid">
-            <div class="game-preview-card" onclick="openEmbeddedGame('mines')">
-                <div class="game-icon-visual">💣</div>
-                <div class="game-title-lbl">Сапёр</div>
-                <div class="game-desc-lbl" id="desc-mines">Ищите сокровища, растите икс и обходите скрытые бомбы.</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
+            <div class="game-preview-card" onclick="openEmbeddedGame('wheel')">
+                <div class="game-preview-icon">🎡</div>
+                <h3>Колесо Фортуны</h3>
+                <button class="action-btn buy">Играть</button>
+            </div>
+            <div class="game-preview-card" onclick="openEmbeddedGame('sapper')">
+                <div class="game-preview-icon">💣</div>
+                <h3>Сапёр</h3>
+                <button class="action-btn buy">Играть</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('crypto')">
-                <div class="game-icon-visual">📈</div>
-                <div class="game-title-lbl">Крипто-Интуит</div>
-                <div class="game-desc-lbl" id="desc-crypto">Угадайте курс графика через 3 секунды.</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
+                <div class="game-preview-icon">📈</div>
+                <h3>Крипто-Интуит</h3>
+                <button class="action-btn buy">Играть</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('dice')">
-                <div class="game-icon-visual">🎲</div>
-                <div class="game-title-lbl">Dice Кости</div>
-                <div class="game-desc-lbl" id="desc-dice">Ставки на больше, меньше или точные числа кубика.</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
+                <div class="game-preview-icon">🎲</div>
+                <h3>Dice Кости</h3>
+                <button class="action-btn buy">Играть</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('plinko')">
-                <div class="game-icon-visual">🔺</div>
-                <div class="game-title-lbl">Plinko</div>
-                <div class="game-desc-lbl" id="desc-plinko">Запускайте шары через пирамиду в лунки с множителями.</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
+                <div class="game-preview-icon">🔺</div>
+                <h3>Plinko</h3>
+                <button class="action-btn buy">Играть</button>
             </div>
             <div class="game-preview-card" onclick="openEmbeddedGame('doors')">
-                <div class="game-icon-visual">🚪</div>
-                <div class="game-title-lbl">Двери</div>
-                <div class="game-desc-lbl" id="desc-doors">Выбирайте правильные двери, собирая сокровища комнат.</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
+                <div class="game-preview-icon">🚪</div>
+                <h3>Двери</h3>
+                <button class="action-btn buy">Играть</button>
             </div>
         </div>
 
-        <div class="embedded-game-view" id="view-game-mines">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-mines-b">Ставка:</span><input type="number" id="mines-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell"><span id="lbl-mines-m">Мины:</span>
-                    <select id="mines-count" class="mines-select">
-                        <option value="2">2</option><option value="3" selected>3</option><option value="5">5</option><option value="10">10</option>
-                    </select>
+        <div class="embedded-game-view" id="view-game-wheel">
+            <div class="wheel-game-container">
+                <div class="wheel-wrap-box">
+                    <svg class="wheel-pointer-arrow" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+                    <svg class="wheel-circle-svg" id="wheel-svg-object" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="#0f172a" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="45" fill="transparent" stroke="#2563eb" stroke-width="4" id="wheel-fill-circle" stroke-dasharray="0 283"/>
+                    </svg>
+                    <div class="wheel-center-percent-only" id="wheel-center-percent-lbl">50%</div>
                 </div>
-                <div class="capsule-cell">X<span id="mines-multiplier">1.00</span></div>
+                <div class="wheel-bet-selector-row">
+                    <button class="wheel-preset-btn" onclick="setBetPreset('min')">MIN</button>
+                    <input type="number" class="wheel-bet-input" id="wheel-bet-value" value="10" min="1">
+                    <button class="wheel-preset-btn" onclick="setBetPreset('max')">MAX</button>
+                </div>
+                <button class="btn-wheel-action-spin" id="wheel-spin-trigger" onclick="handleWheelSpinAction()">Испытать удачу</button>
+                <button class="back-to-menu-btn" onclick="closeEmbeddedGame('wheel')">← Назад в меню</button>
             </div>
-            <div class="crypto-buttons" style="margin-bottom:5px;">
-                <button class="btn" style="background:#22c55e;" id="mines-btn-start" onclick="startMinesGame()">Старт</button>
-                <button class="btn" style="background:#eab308;" id="mines-btn-cashout" onclick="cashoutMinesGame()" disabled>Забрать</button>
+        </div>
+
+        <div class="embedded-game-view" id="view-game-sapper">
+            <div class="sapper-game-container">
+                <div class="sapper-status-bar">
+                    <span id="sapper-lbl-mult">Множитель: 1.00x</span>
+                    <span id="sapper-lbl-profit">Куш: 0</span>
+                </div>
+                <div class="sapper-bet-box">
+                    <input type="number" id="sapper-bet-input" value="10" min="1">
+                </div>
+                <div class="sapper-grid" id="sapper-grid-board"></div>
+                <button class="btn-wheel-action-spin" id="sapper-action-btn" onclick="handleSapperMainAction()">Начать игру</button>
+                <button class="back-to-menu-btn" onclick="closeSapperGameView()">← Назад в меню</button>
             </div>
-            <div class="mines-grid" id="mines-grid-board"></div>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('mines')">← Назад в меню</button>
         </div>
 
         <div class="embedded-game-view" id="view-game-crypto">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-crypto-b">Ставка:</span><input type="number" id="crypto-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell"><span id="lbl-crypto-status">Ожидание...</span></div>
+            <div class="embedded-game-layout">
+                <div class="game-panel-row">
+                    <div>Ставка: <input id="crypto-bet" type="number" class="game-input-field" value="10" min="1"></div>
+                </div>
+                <div class="crypto-chart-holder">
+                    <canvas id="crypto-canvas" class="crypto-canvas-element"></canvas>
+                </div>
+                <div style="display:flex; gap:10px; width:100%;">
+                    <button class="game-control-btn" style="flex:1; background:#19c37d; border-color:#20a36e;" onclick="playCrypto('up')">ВВЕРХ 📈</button>
+                    <button class="game-control-btn" style="flex:1; background:#ef4444; border-color:#cc3b3b;" onclick="playCrypto('down')">ВНИЗ 📉</button>
+                </div>
+                <center><button class="back-to-menu-btn" onclick="closeEmbeddedGame('crypto')">← Назад в меню</button></center>
             </div>
-            <div class="crypto-canvas-container"><canvas id="crypto-canvas-el" class="crypto-canvas"></canvas></div>
-            <div class="crypto-buttons" id="crypto-actions-row">
-                <button class="btn" style="background:#22c55e;" onclick="playCrypto('up')">Вверх ▲</button>
-                <button class="btn" style="background:#ef4444;" onclick="playCrypto('down')">Вниз ▼</button>
-            </div>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('crypto')">← Назад в меню</button>
         </div>
 
         <div class="embedded-game-view" id="view-game-dice">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-dice-b">Ставка:</span><input type="number" id="dice-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell">Коэф: <span id="dice-current-k">1.90</span>x</div>
-            </div>
-            <div class="dice-modes-tabs">
-                <div class="dice-tab active" id="dice-tab-gt" onclick="setDiceMode('gt')">Больше 3</div>
-                <div class="dice-tab" id="dice-tab-lt" onclick="setDiceMode('lt')">Меньше 4</div>
-                <div class="dice-tab" id="dice-tab-eq" onclick="setDiceMode('eq')">Точное число</div>
-            </div>
-            <div class="dice-options-box" id="dice-options-wrapper" style="display:none;">
-                <div class="dice-num-grid">
-                    <button class="dice-num-btn active" onclick="selectDiceNum(1)">1</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(2)">2</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(3)">3</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(4)">4</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(5)">5</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(6)">6</button>
+            <div class="embedded-game-layout">
+                <div class="game-panel-row">
+                    <div>Ставка: <input id="dice-bet" type="number" class="game-input-field" value="10" min="1"></div>
+                    <div>Режим: 
+                        <select id="dice-mode" class="game-select-field" onchange="toggleDiceModeOption()">
+                            <option value="gt">Больше 3</option>
+                            <option value="lt">Меньше 4</option>
+                            <option value="eq">Точное число</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="game-panel-row" id="dice-options-wrapper" style="display:none; justify-content:center;">
+                    <input type="number" id="dice-exact-num" class="game-input-field" value="1" min="1" max="6" style="width:60px;">
+                </div>
+                <button class="btn-wheel-action-spin" style="max-width:100%;" onclick="playDice()">Бросить кубик 🎲</button>
+                <center><button class="back-to-menu-btn" onclick="closeEmbeddedGame('dice')">← Назад в меню</button></center>
             </div>
-            <div class="dice-display-result" id="dice-visual-box">—</div>
-            <button class="btn" style="width:100%; padding:14px; background:#2563eb;" id="dice-roll-btn" onclick="rollDiceGame()">БРОСИТЬ КУБИК</button>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('dice')">← Назад в меню</button>
         </div>
 
         <div class="embedded-game-view" id="view-game-plinko">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-plinko-b">Ставка:</span><input type="number" id="plinko-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell">Pyramid: 7 Rows</div>
+            <div class="embedded-game-layout">
+                <div class="game-panel-row">
+                    <div>Ставка: <input id="plinko-bet" type="number" class="game-input-field" value="10" min="1"></div>
+                </div>
+                <canvas id="plinko-canvas" class="plinko-canvas-element"></canvas>
+                <button class="btn-wheel-action-spin" style="max-width:100%;" id="plinko-spawn-btn" onclick="playPlinko()">Запустить шарик 🔴</button>
+                <center><button class="back-to-menu-btn" onclick="closeEmbeddedGame('plinko')">← Назад в меню</button></center>
             </div>
-            <div class="plinko-canvas-container"><canvas id="plinko-canvas-el" class="plinko-canvas"></canvas></div>
-            <button class="btn" style="width:100%; background:#2563eb;" id="plinko-drop-btn" onclick="startPlinkoBall()">ПУСТИТЬ ШАР</button>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('plinko')">← Назад в меню</button>
         </div>
 
         <div class="embedded-game-view" id="view-game-doors">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-doors-b">Ставка:</span><input type="number" id="doors-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell"><span id="lbl-doors-room">Комната: 0</span></div>
-                <div class="capsule-cell">X<span id="doors-multiplier">1.00</span></div>
+            <div class="embedded-game-layout">
+                <div class="game-panel-row">
+                    <span id="doors-status-mult">Множитель: 1.00x</span>
+                    <span id="doors-status-room">Комната: 1</span>
+                </div>
+                <div class="game-panel-row" id="doors-bet-container">
+                    <div>Ставка: <input id="doors-bet" type="number" class="game-input-field" value="10" min="1"></div>
+                </div>
+                <div class="doors-wrapper-grid" id="doors-grid-container"></div>
+                <div style="display:flex; gap:10px; margin-top:15px; width:100%;">
+                    <button class="game-control-btn" style="flex:1; background:var(--primary);" id="doors-start-btn" onclick="startDoorsGame()">Начать</button>
+                    <button class="game-control-btn" style="flex:1; background:#19c37d; border-color:#20a36e;" id="doors-take-btn" onclick="takeDoorsBank()" disabled>Забрать</button>
+                </div>
+                <center><button class="back-to-menu-btn" onclick="closeEmbeddedGame('doors')">← Назад в меню</button></center>
             </div>
-            <div class="crypto-buttons" style="margin-bottom:5px;">
-                <button class="btn" style="background:#22c55e;" id="doors-btn-start" onclick="startDoorsGame()">Старт</button>
-                <button class="btn" style="background:#eab308;" id="doors-btn-take" onclick="takeDoorsPrize()" disabled>Забрать</button>
-            </div>
-            <div class="doors-container" id="doors-tiles-wrapper"></div>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('doors')">← Назад в меню</button>
         </div>
     </div>
 
-    <!-- Профиль восстановлен по Снимок экрана 2026-06-30 102130_3.png и 122858.png -->
-    <div class="screen" id="profile-scr">
+    <div id="profile-scr" class="screen">
         <div class="profile-header">
-            <img src="avatar.jpg" class="profile-avatar" id="user-avatar" alt="A">
+            <img src="avatar.png" id="user-avatar" class="profile-avatar" alt="Ava">
             <div class="profile-meta">
-                <h3 id="user-username">IvanZolo2004 (@IvanSolo2021)</h3>
-                <p id="user-joined">Участник с Jun 30, 2026</p>
+                <h3 id="user-name">Игрок</h3>
+                <p id="user-role">Player</p>
             </div>
         </div>
 
@@ -416,815 +429,343 @@
         </div>
 
         <div class="stats-container-card">
-            <h3 id="lbl-stats-header">Статистика</h3>
+            <h3 id="lbl-stats-title">Статистика игрока</h3>
             <div class="stats-list">
-                <div class="stats-row"><span id="st-coins">Количество монет</span><span><span id="stat-coins-val">0</span><img src="coin.png" class="coin-mini-icon" alt="c"></span></div>
-                <div class="stats-row"><span id="st-taps">Количество тапов</span><span id="stat-taps-val">0</span></div>
-                <div class="stats-row"><span id="st-won">Выиграно в мини играх</span><span><span id="stat-won-val" class="win-color">0</span><img src="coin.png" class="coin-mini-icon" alt="c"></span></div>
-                <div class="stats-row"><span id="st-profit">Прибыль</span><span><span id="stat-profit-val" class="win-color">+0</span><img src="coin.png" class="coin-mini-icon" alt="c"></span></div>
-                <div class="stats-row"><span id="st-streak">Стрик наград</span><span><span id="stat-streak-val">0</span> дней</span></div>
-                <div class="stats-row"><span id="st-wheel">Прокрутил колесо фортуны</span><span id="stat-wheel-val">0</span></div>
+                <div class="stats-row"><span id="lbl-st-streak">Дней подряд:</span><span id="st-streak">0</span></div>
+                <div class="stats-row"><span id="lbl-st-clicks">Всего кликов:</span><span id="st-total-clicks">0</span></div>
+                <div class="stats-row"><span id="lbl-st-won">Выиграно в играх:</span><span id="st-games-won" class="win-color">0</span></div>
+                <div class="stats-row"><span id="lbl-st-lost">Проиграно в играх:</span><span id="st-games-lost" class="loss-color">0</span></div>
+                <div class="stats-row"><span id="lbl-st-spins">Прокрутов колеса:</span><span id="st-wheel-spins">0</span></div>
             </div>
         </div>
-
-        <!-- Панель Администратора по Снимок экрана 2026-06-30 122858.png -->
-        <div class="admin-panel" id="admin-area">
-            <div class="admin-title">♡ АДМИН-МЕНЮ</div>
-            <input type="text" id="target-id" class="admin-input-field" placeholder="ID игрока">
-            <input type="number" id="amount-give" class="admin-input-field" placeholder="Добавить монет" value="100000">
-            <button class="admin-btn-action give" onclick="adminGive()">ВЫДАТЬ РЕСУРСЫ</button>
-            <button class="admin-btn-action wipe" onclick="adminWipe()">◯ СБРОС ИГРОКА</button>
-        </div>
-
-        <div class="shop-section-title" id="lbl-lead-title" style="margin-top: 10px;">ТОП ИГРОКОВ 🏆</div>
-        <div id="leaderboard" style="width:100%; padding-bottom: 20px;">Загрузка топа...</div>
+        
+        <button class="btn" style="background:#ef4444; width:100%; margin-top:10px;" id="lbl-reset-data" onclick="devResetData()">Сбросить прогресс</button>
     </div>
 
-    <!-- Вкладки навигации: Изменено название Игры -> Мини-игры -->
     <div class="nav">
-        <div class="nav-item active" id="n-game" onclick="show('game')">
-            <div class="nav-glow"></div>
-            <svg class="nav-svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            <span id="nv-game">Главная</span>
-        </div>
-        <div class="nav-item" id="n-shop" onclick="show('shop')">
-            <div class="nav-glow"></div>
-            <svg class="nav-svg" viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>
+        <button class="nav-item active" id="btn-nv-game" onclick="showScreen('game')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+            <span id="nv-game">Игра</span>
+        </button>
+        <button class="nav-item" id="btn-nv-shop" onclick="showScreen('shop')">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4L3 12v2c0 .55.45 1 1 1h1v6h14v-6h1c.55 0 1-.45 1-1zm-5 7H8v-6h8v6z"/></svg>
             <span id="nv-shop">Магазин</span>
-        </div>
-        <div class="nav-item" id="n-games" onclick="show('games')">
-            <div class="nav-glow"></div>
-            <svg class="nav-svg" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 3c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-            <span id="nv-games">Мини-игры</span>
-        </div>
-        <div class="nav-item" id="n-profile" onclick="show('profile')">
-            <div class="nav-glow"></div>
-            <svg class="nav-svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+        </button>
+        <button class="nav-item" id="btn-nv-games" onclick="showScreen('games')">
+            <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 3c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            <span id="nv-games">Игры</span>
+        </button>
+        <button class="nav-item" id="btn-nv-profile" onclick="showScreen('profile')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
             <span id="nv-profile">Профиль</span>
-        </div>
+        </button>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
-        const tg = window.Telegram?.WebApp;
-        if(tg) { tg.expand(); tg.ready(); }
-
-        const ADMIN_ID = "7189191024"; 
-
-        // Инициализация Firebase конфигурации
+        const ADMIN_ID = 5932857353;
         const firebaseConfig = {
-            databaseURL: "https://lupidrupikoin-default-rtdb.firebaseio.com/"
+            apiKey: "AIzaSyDSWXC6HPW0QJu73BWDD4rzHdzb6rP7yg",
+            authDomain: "lupidrupikoin.firebaseapp.com",
+            databaseURL: "https://lupidrupikoin-default-rtdb.firebaseio.com",
+            projectId: "lupidrupikoin",
+            storageBucket: "lupidrupikoin.appspot.com",
+            messagingSenderId: "367375217482",
+            appId: "1:367375217482:web:ad206b0521e3381fa2c246"
         };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const database = firebase.database();
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // Переменные состояния игрока
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Переменные баланса и уровней
         let coins = parseInt(localStorage.getItem('cc_coins')) || 0;
         let energy = parseInt(localStorage.getItem('cc_energy')) || 100;
-        let totalTaps = parseInt(localStorage.getItem('cc_taps')) || 0;
+        let lvlE = parseInt(localStorage.getItem('cc_lvlE')) || 0;
+        let lvlC = parseInt(localStorage.getItem('cc_lvlC')) || 0;
+        let lvlP = parseInt(localStorage.getItem('cc_lvlP')) || 0;
+
+        // Стрик и время наград
+        let lastClaim = parseInt(localStorage.getItem('cc_lastClaim')) || 0;
+        let stat_streak = parseInt(localStorage.getItem('cc_streak')) || 0;
+
+        // Дополнительная статистика
+        let stat_total_clicks = parseInt(localStorage.getItem('cc_total_clicks')) || 0;
         let stat_games_won = parseInt(localStorage.getItem('cc_games_won')) || 0;
         let stat_games_lost = parseInt(localStorage.getItem('cc_games_lost')) || 0;
         let stat_wheel_spins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
+
         let currentLang = localStorage.getItem('cc_lang') || 'ru';
 
-        let rewardStreak = parseInt(localStorage.getItem('cc_streak_v2')) || 0;
-        let lastClaimDate = localStorage.getItem('cc_last_claim_v2') || "";
+        // Данные карт
+        const defaultCards = [
+            { id: 0, name_ru: "Базовый Майнер", name_en: "Basic Miner", basePrice: 50, income: 1, img: "miner1.png" },
+            { id: 1, name_ru: "Продвинутая Ферма", name_en: "Advanced Farm", basePrice: 250, income: 5, img: "miner2.png" },
+            { id: 2, name_ru: "Облачный Контракт", name_en: "Cloud Contract", basePrice: 1200, income: 25, img: "miner3.png" },
+            { id: 3, name_ru: "Крипто Корпорация", name_en: "Crypto Corp", basePrice: 8000, income: 150, img: "miner4.png" }
+        ];
+        let userCards = JSON.parse(localStorage.getItem('cc_cards')) || {};
 
-        // Локализация приложения
+        const bonusRewards = [
+            { day: 1, amt: 1000, img: "stopka1.jpg" },
+            { day: 2, amt: 2000, img: "stopka1.jpg" },
+            { day: 3, amt: 5000, img: "stopka1.jpg" },
+            { day: 4, amt: 10000, img: "stopka2.jpg" },
+            { day: 5, amt: 25000, img: "stopka2.jpg" },
+            { day: 6, amt: 50000, img: "stopka3.jpg" },
+            { day: 7, amt: 100000, img: "stopka3.jpg" }
+        ];
+
         const langData = {
             ru: {
-                top_title: "ТОП ИГРОКОВ 🏆", st_1: "Количество монет", st_2: "Количество тапов", st_3: "Выиграно в мини играх", st_4: "Прибыль", st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны",
-                nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль", member: "Участник с", 
-                load_top: "Загрузка топа...", claimed_today: "Следующая награда завтра", claim_now: "ЗАБРАТЬ НАГРАДУ", day: "день", days_format: "дней"
+                nv_game: "Игра", nv_shop: "Магазин", nv_games: "Игры", nv_profile: "Профиль",
+                days_format: "дней", lvl: "Ур.", profit_sec: "в сек"
             },
             en: {
-                top_title: "LEADERBOARD 🏆", st_1: "Coins amount", st_2: "Taps count", st_3: "Won in mini games", st_4: "Profit", st_5: "Rewards streak", st_6: "Wheel spins",
-                nv_game: "Home", nv_shop: "Shop", nv_games: "Mini-games", nv_profile: "Profile", member: "Member since", 
-                load_top: "Loading top...", claimed_today: "Next reward available tomorrow", claim_now: "CLAIM REWARD", day: "day", days_format: "days"
+                nv_game: "Game", nv_shop: "Shop", nv_games: "Games", nv_profile: "Profile",
+                days_format: "days", lvl: "Lvl", profit_sec: "/sec"
             }
         };
 
-        // Сохранение и синхронизация всех данных
+        function showCustomResultDialog(msg) {
+            document.getElementById('result-dialog-msg').innerHTML = msg;
+            document.getElementById('result-dialog').style.display = 'flex';
+        }
+        function closeCustomResultDialog() {
+            document.getElementById('result-dialog').style.display = 'none';
+        }
+
         function saveAll() {
             localStorage.setItem('cc_coins', coins);
             localStorage.setItem('cc_energy', energy);
-            localStorage.setItem('cc_taps', totalTaps);
+            localStorage.setItem('cc_lvlE', lvlE);
+            localStorage.setItem('cc_lvlC', lvlC);
+            localStorage.setItem('cc_lvlP', lvlP);
+            localStorage.setItem('cc_lastClaim', lastClaim);
+            localStorage.setItem('cc_streak', stat_streak);
+            localStorage.setItem('cc_total_clicks', stat_total_clicks);
             localStorage.setItem('cc_games_won', stat_games_won);
             localStorage.setItem('cc_games_lost', stat_games_lost);
             localStorage.setItem('cc_wheel_spins', stat_wheel_spins);
-            localStorage.setItem('cc_streak_v2', rewardStreak);
-            localStorage.setItem('cc_last_claim_v2', lastClaimDate);
+            localStorage.setItem('cc_cards', JSON.stringify(userCards));
 
-            if(tg && tg.initDataUnsafe?.user?.id) {
-                const uid = String(tg.initDataUnsafe.user.id);
-                firebase.database().ref('users/' + uid).set({
-                    id: uid,
-                    username: tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || "User",
-                    coins: coins,
-                    taps: totalTaps,
-                    games_won: stat_games_won,
-                    streak: rewardStreak
+            const uid = tg.initDataUnsafe?.user?.id;
+            if (uid) {
+                db.ref('users/' + uid).update({
+                    coins,
+                    username: tg.initDataUnsafe.user.first_name || "Игрок",
+                    stat_streak,
+                    stat_total_clicks,
+                    stat_games_won,
+                    stat_games_lost,
+                    stat_wheel_spins,
+                    lastClaim,
+                    userCards
                 });
             }
         }
 
-        // Обновление интерфейса
+        function getEnergyMax(lvl) { return 100 + lvl * 50; }
+        function getPassiveIncomePerSecond() {
+            let sum = 0;
+            defaultCards.forEach(c => {
+                const ownedCount = userCards[c.id] || 0;
+                sum += ownedCount * c.income;
+            });
+            return sum;
+        }
+
         function updateUI() {
-            document.getElementById('coins').innerText = Math.floor(coins).toLocaleString('ru-RU');
-            document.getElementById('energy-fill').style.width = energy + "%";
-            document.getElementById('energy-num').innerText = energy + " / 100"; // Синхронизация текста энергии
+            document.getElementById('coins').innerHTML = `${Math.floor(coins).toLocaleString('ru-RU')} <img src="coin.jpg" alt="coin">`;
+            const maxE = getEnergyMax(lvlE);
+            document.getElementById('energy-fill').style.width = (energy / maxE * 100) + "%";
+            document.getElementById('header-streak-val').innerText = stat_streak;
+
+            // Живая проверка доступности награды и таймера
+            const timePassed = Date.now() - lastClaim;
+            const isRewardAvailable = (timePassed >= 86400000 || lastClaim === 0);
             
-            // Настройки профиля
-            document.getElementById('stat-coins-val').innerText = Math.floor(coins).toLocaleString('ru-RU');
-            document.getElementById('stat-taps-val').innerText = totalTaps;
-            document.getElementById('stat-won-val').innerText = stat_games_won.toLocaleString('ru-RU');
-            
-            let profit = stat_games_won - stat_games_lost;
-            document.getElementById('stat-profit-val').innerText = (profit >= 0 ? "+" : "") + profit.toLocaleString('ru-RU');
-            document.getElementById('stat-streak-val').innerText = `${rewardStreak} ${currentLang === 'ru' ? 'дней' : 'days'}`;
-            document.getElementById('stat-wheel-val').innerText = stat_wheel_spins;
+            const dotEl = document.getElementById('bonus-dot');
+            if (dotEl) dotEl.style.display = isRewardAvailable ? 'block' : 'none';
 
-            document.getElementById('top-streak-lbl').innerText = rewardStreak;
-
-            checkDailyBonusDot();
-        }
-
-        // Переключение основных экранов навигации
-        function show(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId + '-scr').classList.add('active');
-            
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('n-' + screenId).classList.add('active');
-
-            if(screenId === 'profile') loadLeaderboard();
-        }
-
-        // РАБОТА С КЛИКАМИ ПО МОНЕТЕ
-        function handleTap(e) {
-            if (energy <= 0) {
-                if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                return;
+            // Обновление таймера внутри модалки, если она открыта
+            const timerEl = document.getElementById('bonus-timer');
+            if (timerEl) {
+                if (isRewardAvailable) {
+                    timerEl.innerText = currentLang === 'ru' ? "Награда доступна!" : "Reward available!";
+                    timerEl.style.color = "#19c37d";
+                    document.getElementById('bonus-claim-clicker').disabled = false;
+                } else {
+                    const timeLeft = 86400000 - timePassed;
+                    const h = Math.floor(timeLeft / 3600000).toString().padStart(2, '0');
+                    const m = Math.floor((timeLeft % 3600000) / 600000).toString().padStart(2, '0'); // Очепятка исправлена на правильные минуты
+                    const realM = Math.floor((timeLeft % 3600000) / 60000).toString().padStart(2, '0');
+                    const s = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
+                    
+                    timerEl.innerText = (currentLang === 'ru' ? "До следующей награды: " : "Next reward in: ") + `${h}:${realM}:${s}`;
+                    timerEl.style.color = "#ffb020";
+                    document.getElementById('bonus-claim-clicker').disabled = true;
+                }
             }
-            coins += 1;
-            energy -= 1;
-            totalTaps += 1;
+        }
 
-            if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        // Запускаем постоянное обновление таймера каждую секунду
+        setInterval(updateUI, 1000);
 
-            const clicker = document.getElementById('coin-clicker');
-            const p = document.createElement('div');
-            p.className = 'plus-one';
-            p.innerText = '+1';
+        function handleCoinTap(e) {
+            if (energy <= 0) return;
+            energy--;
+            coins += 1; // 1 клик = 1 монета
+            stat_total_clicks++;
+
+            const maxE = getEnergyMax(lvlE);
+            document.getElementById('energy-fill').style.width = (energy / maxE * 100) + "%";
             
-            const rect = clicker.getBoundingClientRect();
-            let x = rect.left + rect.width/2 + (Math.random() - 0.5)*40;
-            let y = rect.top + rect.height/2 + (Math.random() - 0.5)*40;
-            if(e.clientX && e.clientY) { x = e.clientX; y = e.clientY; }
-
-            p.style.left = x + 'px';
-            p.style.top = y + 'px';
-            document.body.appendChild(p);
-            setTimeout(() => p.remove(), 800);
+            // Анимация вылетающих цифр
+            const tapX = e.clientX || (e.touches && e.touches[0].clientX);
+            const tapY = e.clientY || (e.touches && e.touches[0].clientY);
+            if(tapX && tapY) {
+                const floater = document.createElement('div');
+                floater.innerText = "+1";
+                floater.style.position = 'fixed';
+                floater.style.left = tapX + 'px';
+                floater.style.top = tapY + 'px';
+                floater.style.color = '#2563eb';
+                floater.style.fontWeight = 'bold';
+                floater.style.fontSize = '24px';
+                floater.style.pointerEvents = 'none';
+                floater.style.zIndex = '1000';
+                floater.style.transition = 'all 0.6s ease-out';
+                document.body.appendChild(floater);
+                setTimeout(() => {
+                    floater.style.transform = 'translateY(-60px)';
+                    floater.style.opacity = '0';
+                }, 10);
+                setTimeout(() => floater.remove(), 600);
+            }
 
             updateUI();
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_energy', energy);
-            localStorage.setItem('cc_taps', totalTaps);
-        }
-
-        // КЛИЕНТСКАЯ ОБРАБОТКА ДИАЛОГОВЫХ ОКОН
-        function showCustomResultDialog(htmlMsg) {
-            document.getElementById('result-dialog-msg').innerHTML = htmlMsg;
-            document.getElementById('result-dialog').classList.add('open');
-        }
-        function closeCustomResultDialog() {
-            document.getElementById('result-dialog').classList.remove('open');
-        }
-
-        // СИСТЕМА ЕЖЕДНЕВНЫХ НАГРАД (7 ДНЕЙ)
-        function todayStr() {
-            const d = new Date();
-            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-        }
-        function checkDailyBonusDot() {
-            const dot = document.getElementById('bonus-dot');
-            if(lastClaimDate === todayStr()) {
-                dot.style.display = 'none';
-            } else {
-                dot.style.display = 'block';
-            }
-        }
-        function openBonusModal() {
-            document.getElementById('bonus-modal').classList.add('open');
-            renderDaysGrid();
-        }
-        function closeBonusModal() {
-            document.getElementById('bonus-modal').classList.remove('open');
-        }
-        function renderDaysGrid() {
-            const container = document.getElementById('days-container');
-            container.innerHTML = "";
-            const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
-            
-            let currentDayIndex = rewardStreak % 7;
-
-            for(let i=0; i<7; i++) {
-                let imgFile = "stopka1.jpg";
-                if(i === 3 || i === 4) imgFile = "stopka2.jpg";
-                if(i === 5 || i === 6) imgFile = "stopka3.jpg";
-
-                let boxClass = "day-box";
-                if(i < currentDayIndex) boxClass += " completed";
-                else if(i === currentDayIndex && lastClaimDate !== todayStr()) boxClass += " active";
-
-                container.innerHTML += `
-                    <div class="${boxClass}">
-                        <div class="day-num">${langData[currentLang].day} ${i+1}</div>
-                        <img src="${imgFile}" class="day-img" onerror="this.src='stopka1.jpg'">
-                        <div class="day-reward-lbl">${rewards[i].toLocaleString()}<img src="coin.png" class="coin-mini-icon"></div>
-                    </div>
-                `;
-            }
-
-            const claimBtn = document.getElementById('bonus-claim-btn');
-            if(lastClaimDate === todayStr()) {
-                claimBtn.disabled = true;
-                claimBtn.innerText = langData[currentLang].claimed_today;
-                claimBtn.style.background = "#161f30";
-            } else {
-                claimBtn.disabled = false;
-                claimBtn.innerText = langData[currentLang].claim_now;
-                claimBtn.style.background = "#2563eb";
-            }
-        }
-
-        document.getElementById('bonus-claim-btn').onclick = () => {
-            if(lastClaimDate === todayStr()) return;
-            const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
-            
-            const d = new Date();
-            d.setDate(d.getDate() - 1);
-            const yesterday = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-            if(lastClaimDate !== "" && lastClaimDate !== yesterday && lastClaimDate !== todayStr()) {
-                rewardStreak = 0;
-            }
-
-            let currentDayIndex = rewardStreak % 7;
-            let amt = rewards[currentDayIndex];
-            coins += amt;
-            rewardStreak++;
-            lastClaimDate = todayStr();
-
-            if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             saveAll();
-            updateUI();
-            renderDaysGrid();
-            showCustomResultDialog(currentLang === 'ru' ? `Вы успешно забрали ежедневную награду: +${amt.toLocaleString()} монет!` : `Successfully claimed daily reward: +${amt.toLocaleString()} coins!`);
-        };
-
-
-        // УПРАВЛЕНИЕ МИНИ-ИГРАМИ
-        function openEmbeddedGame(gameKey) {
-            document.getElementById('games-selection-grid').style.display = 'none';
-            document.getElementById('view-game-' + gameKey).style.display = 'flex';
-            if(gameKey === 'crypto') initCryptoChart();
-            if(gameKey === 'plinko') initPlinkoPhysics();
         }
 
-        function closeEmbeddedGame(gameKey) {
-            document.getElementById('view-game-' + gameKey).style.display = 'none';
-            document.getElementById('games-selection-grid').style.display = 'grid';
-            if(gameKey === 'crypto' && cryptoInterval) clearInterval(cryptoInterval);
-            if(gameKey === 'plinko') plinkoActive = false;
+        function openBonusSheet() {
+            renderBonusDays();
+            document.getElementById('bonus-modal').style.display = 'flex';
+        }
+        function closeBonusSheet() {
+            document.getElementById('bonus-modal').style.display = 'none';
         }
 
+        function renderBonusDays() {
+            const container = document.getElementById('bonus-days-container');
+            container.innerHTML = "";
 
-        // 3.1 САПЁР (MINES)
-        let minesArray = [];
-        let minesPlaying = false;
-        let minesBet = 10;
-        let minesCount = 3;
-        let minesOpened = 0;
-        let minesCurrentK = 1.0;
-
-        function startMinesGame() {
-            const betInput = document.getElementById('mines-bet');
-            minesBet = Math.max(1, parseInt(betInput.value || 1));
-            if(coins < minesBet) return alert(currentLang === 'ru' ? 'Недостаточно средств!' : 'Insufficient funds!');
-
-            coins -= minesBet;
-            minesCount = parseInt(document.getElementById('mines-count').value);
-            minesPlaying = true;
-            minesOpened = 0;
-            minesCurrentK = 1.0;
-
-            document.getElementById('mines-multiplier').innerText = '1.00';
-            document.getElementById('mines-btn-start').disabled = true;
-            document.getElementById('mines-btn-cashout').disabled = false;
+            const timePassed = Date.now() - lastClaim;
+            let currentRewardIndex = stat_streak % 7;
             
-            updateUI();
-
-            const grid = document.getElementById('mines-grid-board');
-            grid.innerHTML = "";
-            minesArray = Array.from({length: 25}, () => ({ hasMine: false, opened: false }));
-            
-            let placed = 0;
-            while(placed < minesCount) {
-                let idx = Math.floor(Math.random() * 25);
-                if(!minesArray[idx].hasMine) {
-                    minesArray[idx].hasMine = true;
-                    placed++;
-                }
+            // Если прошло больше 48 часов, стрик сбросился
+            if (lastClaim > 0 && timePassed > 172800000) {
+                stat_streak = 0;
+                currentRewardIndex = 0;
             }
 
-            for(let i=0; i<25; i++) {
-                const tile = document.createElement('div');
-                tile.className = "mines-tile";
-                tile.innerText = "⭐";
-                tile.onclick = () => revealMinesTile(i, tile);
-                grid.appendChild(tile);
-            }
-        }
+            bonusRewards.forEach((r, idx) => {
+                const card = document.createElement('div');
+                card.className = "bonus-day-card";
+                if(idx === currentRewardIndex) card.classList.add('current');
+                if(idx < currentRewardIndex) card.classList.add('claimed');
 
-        function revealMinesTile(idx, tileElement) {
-            if(!minesPlaying || minesArray[idx].opened) return;
-            minesArray[idx].opened = true;
-
-            if(minesArray[idx].hasMine) {
-                tileElement.className = "mines-tile mine";
-                tileElement.innerText = "💣";
-                minesPlaying = false;
-                stat_games_lost += minesBet;
-                if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                showCustomResultDialog(currentLang === 'ru' ? `БАБАХ! Вы подорвались на мине. Проигрыш: -${minesBet}` : `BOOM! You hit a mine. Lost: -${minesBet}`);
-                
-                setTimeout(() => {
-                    document.getElementById('mines-btn-start').disabled = false;
-                    document.getElementById('mines-btn-cashout').disabled = true;
-                }, 1500);
-                saveAll(); updateUI();
-            } else {
-                tileElement.className = "mines-tile opened";
-                tileElement.innerText = "💎";
-                minesOpened++;
-                
-                minesCurrentK *= (1.15 + (minesCount * 0.05));
-                document.getElementById('mines-multiplier').innerText = minesCurrentK.toFixed(2);
-                if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-
-                if(minesOpened + minesCount === 25) {
-                    cashoutMinesGame();
-                }
-            }
-        }
-
-        function cashoutMinesGame() {
-            if(!minesPlaying || minesOpened === 0) return;
-            minesPlaying = false;
-            let payout = Math.floor(minesBet * minesCurrentK);
-            coins += payout;
-            stat_games_won += (payout - minesBet);
-
-            if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            showCustomResultDialog(currentLang === 'ru' ? `Отличная интуиция! Вы забрали: +${payout} монет` : `Great cashout! You won: +${payout} coins`);
-            
-            document.getElementById('mines-btn-start').disabled = false;
-            document.getElementById('mines-btn-cashout').disabled = true;
-            saveAll(); updateUI();
-        }
-
-
-        // 3.2 КРИПТО-ИНТУИТ (CRYPTO)
-        let cryptoPoints = [];
-        let cryptoInterval = null;
-        let cryptoCtx = null;
-        let cryptoCanvas = null;
-
-        function initCryptoChart() {
-            cryptoCanvas = document.getElementById('crypto-canvas-el');
-            cryptoCtx = cryptoCanvas.getContext('2d');
-            cryptoCanvas.width = cryptoCanvas.parentElement.clientWidth;
-            cryptoCanvas.height = cryptoCanvas.parentElement.clientHeight;
-            
-            cryptoPoints = Array.from({length: 30}, (_, i) => 0.5 + 0.15*Math.sin(i / 3.5));
-            drawCryptoChart();
-
-            if(cryptoInterval) clearInterval(cryptoInterval);
-            cryptoInterval = setInterval(() => {
-                let last = cryptoPoints[cryptoPoints.length - 1];
-                let next = Math.max(0.15, Math.min(0.85, last + (Math.random() - 0.5) * 0.1));
-                cryptoPoints.push(next);
-                cryptoPoints.shift();
-                drawCryptoChart();
-            }, 600);
-        }
-
-        function drawCryptoChart() {
-            if(!cryptoCtx) return;
-            cryptoCtx.clearRect(0, 0, cryptoCanvas.width, cryptoCanvas.height);
-            cryptoCtx.strokeStyle = '#3b82f6';
-            cryptoCtx.lineWidth = 3;
-            cryptoCtx.beginPath();
-            
-            cryptoPoints.forEach((v, i) => {
-                let x = (i / (cryptoPoints.length - 1)) * cryptoCanvas.width;
-                let y = (1 - v) * cryptoCanvas.height;
-                if(i === 0) cryptoCtx.moveTo(x, y);
-                else cryptoCtx.lineTo(x, y);
+                card.innerHTML = `
+                    <div class="bonus-day-title">${currentLang==='ru'?'День':'Day'} ${r.day}</div>
+                    <img class="bonus-day-img" src="${r.img}">
+                    <div class="bonus-day-reward-amount">${r.amt.toLocaleString()} <img src="coin.jpg"></div>
+                    <div class="bonus-claimed-badge">✓</div>
+                `;
+                container.appendChild(card);
             });
-            cryptoCtx.stroke();
-        }
-
-        function playCrypto(direction) {
-            const betInp = document.getElementById('crypto-bet');
-            let bet = Math.max(1, parseInt(betInp.value || 1));
-            if(coins < bet) return alert(currentLang==='ru'?'Недостаточно монет!':'Insufficient funds!');
-
-            coins -= bet;
             updateUI();
-            document.getElementById('crypto-actions-row').style.pointerEvents = 'none';
-            
-            let statusLbl = document.getElementById('lbl-crypto-status');
-            statusLbl.innerText = currentLang === 'ru' ? "Анализ рынка (3с)..." : "Analyzing (3s)...";
-            statusLbl.style.color = "#ffb020";
-
-            let startValue = cryptoPoints[cryptoPoints.length - 1];
-
-            setTimeout(() => {
-                let endValue = cryptoPoints[cryptoPoints.length - 1];
-                let isUp = endValue > startValue;
-                let win = (direction === 'up' && isUp) || (direction === 'down' && !isUp);
-
-                if(win) {
-                    let prize = Math.floor(bet * 1.9);
-                    coins += prize;
-                    stat_games_won += (prize - bet);
-                    statusLbl.innerText = `Победа! +${prize}`;
-                    statusLbl.style.color = "#22c55e";
-                    if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                } else {
-                    stat_games_lost += bet;
-                    statusLbl.innerText = `Проигрыш!`;
-                    statusLbl.style.color = "#ef4444";
-                    if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                }
-
-                document.getElementById('crypto-actions-row').style.pointerEvents = 'auto';
-                saveAll(); updateUI();
-            }, 3000);
         }
 
+        function handleClaimBonusClick() {
+            const timePassed = Date.now() - lastClaim;
+            if (lastClaim !== 0 && timePassed < 86400000) return;
 
-        // 3.3 DICE КОСТИ
-        let diceMode = 'gt'; 
-        let diceSelectedNum = 1;
-
-        function setDiceMode(mode) {
-            diceMode = mode;
-            document.querySelectorAll('.dice-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('dice-tab-' + mode).classList.add('active');
-
-            const optionsWrap = document.getElementById('dice-options-wrapper');
-            const kLbl = document.getElementById('dice-current-k');
-
-            if(mode === 'eq') {
-                optionsWrap.style.display = 'block';
-                kLbl.innerText = '5.00';
-            } else {
-                optionsWrap.style.display = 'none';
-                kLbl.innerText = '1.90';
+            if (timePassed > 172800000) {
+                stat_streak = 0;
             }
+
+            let currentRewardIndex = stat_streak % 7;
+            const reward = bonusRewards[currentRewardIndex];
+
+            coins += reward.amt;
+            stat_streak++;
+            lastClaim = Date.now();
+
+            tg.HapticFeedback.notificationOccurred('success');
+            showCustomResultDialog(currentLang === 'ru' ? `Вы забрали бонус: ${reward.amt.toLocaleString()} монет!` : `Claimed reward: ${reward.amt.toLocaleString()} coins!`);
+            
+            renderBonusDays();
+            saveAll();
         }
 
-        function selectDiceNum(num) {
-            diceSelectedNum = num;
-            document.querySelectorAll('.dice-num-btn').forEach(b => {
-                b.classList.toggle('active', parseInt(b.innerText) === num);
+        // Переключение экранов
+        function showScreen(scrId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(scrId + '-scr').classList.add('active');
+            document.getElementById('btn-nv-' + scrId).classList.add('active');
+
+            if(scrId === 'shop') renderShop();
+            if(scrId === 'profile') renderProfileData();
+        }
+
+        function renderShop() {
+            const container = document.getElementById('shop-cards-container');
+            container.innerHTML = "";
+
+            defaultCards.forEach(c => {
+                const count = userCards[c.id] || 0;
+                const cost = Math.floor(c.basePrice * Math.pow(1.5, count));
+                
+                const item = document.createElement('div');
+                item.className = "card-item";
+                item.innerHTML = `
+                    <h3>${currentLang==='ru'?c.name_ru:c.name_en}</h3>
+                    <div class="card-profit-lbl">+${c.income} ${langData[currentLang].profit_sec}</div>
+                    <div style="font-size:12px; margin-bottom:8px; color:#94a3b8;">${langData[currentLang].lvl} ${count}</div>
+                    <button class="action-btn buy" onclick="buyCard(${c.id}, ${cost})">${cost.toLocaleString()} 🪙</button>
+                `;
+                container.appendChild(item);
             });
         }
 
-        function rollDiceGame() {
-            const betInp = document.getElementById('dice-bet');
-            let bet = Math.max(1, parseInt(betInp.value || 1));
-            if(coins < bet) return alert('Недостаточно монет!');
-
-            coins -= bet;
+        function buyCard(id, cost) {
+            if(coins < cost) {
+                return showCustomResultDialog(currentLang==='ru'?'Недостаточно коинов!':'Not enough coins!');
+            }
+            coins -= cost;
+            userCards[id] = (userCards[id] || 0) + 1;
+            tg.HapticFeedback.impactOccurred('medium');
+            renderShop();
             updateUI();
-
-            const btn = document.getElementById('dice-roll-btn');
-            const visual = document.getElementById('dice-visual-box');
-
-            btn.disabled = true;
-            visual.innerText = "⏳";
-
-            setTimeout(() => {
-                let rolled = Math.floor(Math.random() * 6) + 1;
-                visual.innerText = rolled;
-
-                let win = false;
-                let k = 1.9;
-
-                if(diceMode === 'gt') win = rolled > 3;
-                if(diceMode === 'lt') win = rolled < 4;
-                if(diceMode === 'eq') { win = rolled === diceSelectedNum; k = 5.0; }
-
-                if(win) {
-                    let winAmt = Math.floor(bet * k);
-                    coins += winAmt;
-                    stat_games_won += (winAmt - bet);
-                    if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                } else {
-                    stat_games_lost += bet;
-                    if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                }
-
-                btn.disabled = false;
-                saveAll(); updateUI();
-            }, 800);
+            saveAll();
         }
 
-
-        // 3.4 PLINKO
-        let plinkoCanvas, plinkoCtx;
-        let plinkoBall = null;
-        let plinkoActive = false;
-        const plinkoRows = 7, plinkoCols = 8;
-        const plinkoMults = [0.4, 0.8, 1.2, 2.0, 1.2, 0.8, 0.4];
-
-        function initPlinkoPhysics() {
-            plinkoCanvas = document.getElementById('plinko-canvas-el');
-            plinkoCtx = plinkoCanvas.getContext('2d');
-            plinkoCanvas.width = plinkoCanvas.parentElement.clientWidth;
-            plinkoCanvas.height = plinkoCanvas.parentElement.clientHeight;
-            plinkoActive = true;
-            animatePlinko();
+        function renderProfileData() {
+            document.getElementById('st-streak').innerText = stat_streak;
+            document.getElementById('st-total-clicks').innerText = stat_total_clicks.toLocaleString();
+            document.getElementById('st-games-won').innerText = stat_games_won.toLocaleString();
+            document.getElementById('st-games-lost').innerText = stat_games_lost.toLocaleString();
+            document.getElementById('st-wheel-spins').innerText = stat_wheel_spins.toLocaleString();
         }
 
-        function startPlinkoBall() {
-            if(plinkoBall) return;
-            const betInp = document.getElementById('plinko-bet');
-            let bet = Math.max(1, parseInt(betInp.value || 1));
-            if(coins < bet) return alert('Недостаточно средств!');
-
-            coins -= bet;
-            updateUI();
-
-            plinkoBall = {
-                x: plinkoCanvas.width / 2 + (Math.random() - 0.5) * 10,
-                y: 15,
-                vx: (Math.random() - 0.5) * 1.5,
-                vy: 0.5,
-                bet: bet
-            };
-        }
-
-        function animatePlinko() {
-            if(!plinkoActive) return;
-            plinkoCtx.clearRect(0, 0, plinkoCanvas.width, plinkoCanvas.height);
-
-            let gapX = plinkoCanvas.width / (plinkoCols + 1);
-            let gapY = (plinkoCanvas.height - 40) / (plinkoRows + 1);
-
-            plinkoCtx.fillStyle = '#475569';
-            for (let r = 0; r < plinkoRows; r++) {
-                let colsInRow = r + 3; 
-                let startX = (plinkoCanvas.width - (colsInRow - 1) * gapX) / 2;
-                for (let c = 0; c < colsInRow; c++) {
-                    let px = startX + c * gapX;
-                    let py = 35 + r * gapY;
-                    plinkoCtx.beginPath();
-                    plinkoCtx.arc(px, py, 3.5, 0, Math.PI * 2);
-                    plinkoCtx.fill();
-
-                    if(plinkoBall) {
-                        let dist = Math.hypot(plinkoBall.x - px, plinkoBall.y - py);
-                        if(dist < 8.5) {
-                            let nx = (plinkoBall.x - px) / dist;
-                            let ny = (plinkoBall.y - py) / dist;
-                            let dot = plinkoBall.vx * nx + plinkoBall.vy * ny;
-                            plinkoBall.vx -= 1.6 * dot * nx + (Math.random()-0.5)*0.2;
-                            plinkoBall.vy -= 1.6 * dot * ny;
-                            plinkoBall.y += ny * 2; 
-                        }
-                    }
-                }
-            }
-
-            let bWidth = plinkoCanvas.width / plinkoMults.length;
-            for(let i=0; i<plinkoMults.length; i++) {
-                plinkoCtx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a';
-                plinkoCtx.strokeStyle = '#2563eb';
-                plinkoCtx.fillRect(i * bWidth + 2, plinkoCanvas.height - 25, bWidth - 4, 22);
-                plinkoCtx.strokeRect(i * bWidth + 2, plinkoCanvas.height - 25, bWidth - 4, 22);
-                
-                plinkoCtx.fillStyle = '#ffffff';
-                plinkoCtx.font = 'bold 10px sans-serif';
-                plinkoCtx.textAlign = 'center';
-                plinkoCtx.fillText(`x${plinkoMults[i]}`, i * bWidth + bWidth/2, plinkoCanvas.height - 10);
-            }
-
-            if(plinkoBall) {
-                plinkoBall.vy += 0.12; 
-                plinkoBall.x += plinkoBall.vx;
-                plinkoBall.y += plinkoBall.vy;
-
-                if(plinkoBall.x < 10) { plinkoBall.x = 10; plinkoBall.vx *= -0.5; }
-                if(plinkoBall.x > plinkoCanvas.width - 10) { plinkoBall.x = plinkoCanvas.width - 10; plinkoBall.vx *= -0.5; }
-
-                plinkoCtx.fillStyle = '#60a5fa';
-                plinkoCtx.beginPath();
-                plinkoCtx.arc(plinkoBall.x, plinkoBall.y, 6, 0, Math.PI * 2);
-                plinkoCtx.fill();
-
-                if(plinkoBall.y >= plinkoCanvas.height - 25) {
-                    let slot = Math.floor(plinkoBall.x / bWidth);
-                    slot = Math.max(0, Math.min(plinkoMults.length - 1, slot));
-                    let k = plinkoMults[slot];
-                    let prize = Math.floor(plinkoBall.bet * k);
-                    
-                    coins += prize;
-                    if(k >= 1) stat_games_won += (prize - plinkoBall.bet);
-                    else stat_games_lost += (plinkoBall.bet - prize);
-
-                    if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred(k >= 1 ? 'success' : 'warning');
-                    showCustomResultDialog(`Plinko: x${k}! Получено: +${prize} монет`);
-                    
-                    plinkoBall = null;
-                    saveAll(); updateUI();
-                }
-            }
-
-            requestAnimationFrame(animatePlinko);
-        }
-
-
-        // 3.5 ДВЕРИ (DOORS)
-        let doorsPlaying = false;
-        let doorsBet = 10;
-        let doorsCurrentK = 1.0;
-        let doorsRoomIndex = 0;
-        let doorsWinIndex = 0;
-
-        function startDoorsGame() {
-            const betInp = document.getElementById('doors-bet');
-            doorsBet = Math.max(1, parseInt(betInp.value || 1));
-            if(coins < doorsBet) return alert('Недостаточно средств!');
-
-            coins -= doorsBet;
-            doorsPlaying = true;
-            doorsCurrentK = 1.0;
-            doorsRoomIndex = 1;
-
-            document.getElementById('doors-multiplier').innerText = '1.00';
-            document.getElementById('doors-btn-start').disabled = true;
-            document.getElementById('doors-btn-take').disabled = false;
-
-            updateUI();
-            generateDoorsRoom();
-        }
-
-        function generateDoorsRoom() {
-            document.getElementById('lbl-doors-room').innerText = `${currentLang==='ru'?'Комната':'Room'}: ${doorsRoomIndex}`;
-            const wrapper = document.getElementById('doors-tiles-wrapper');
-            wrapper.innerHTML = "";
-
-            let count = Math.random() < 0.5 ? 2 : 3;
-            wrapper.style.gridTemplateColumns = `repeat(${count}, 1fr)`;
-
-            doorsWinIndex = Math.floor(Math.random() * count);
-
-            for(let i=0; i<count; i++) {
-                const door = document.createElement('div');
-                door.className = "door-element";
-                door.innerText = currentLang==='ru'?'Дверь':'Door';
-                door.onclick = () => chooseDoor(i, door);
-                wrapper.appendChild(door);
-            }
-        }
-
-        function chooseDoor(chosenIdx, doorEl) {
-            if(!doorsPlaying) return;
-
-            if(chosenIdx === doorsWinIndex) {
-                doorEl.classList.add('win');
-                doorEl.innerText = "💎";
-                doorsCurrentK *= (1.4 + Math.random()*0.3);
-                document.getElementById('doors-multiplier').innerText = doorsCurrentK.toFixed(2);
-                doorsRoomIndex++;
-
-                if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-                setTimeout(() => {
-                    if(doorsPlaying) generateDoorsRoom();
-                }, 800);
-            } else {
-                doorEl.classList.add('lose');
-                doorEl.innerText = "👾";
-                doorsPlaying = false;
-                stat_games_lost += doorsBet;
-
-                if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                showCustomResultDialog(currentLang==='ru'?`Увы! За дверью оказалась ловушка. Вы потеряли ставку.`:`Failed! You hit a trap behind the door.`);
-                
-                document.getElementById('doors-btn-start').disabled = false;
-                document.getElementById('doors-btn-take').disabled = true;
-                saveAll(); updateUI();
-            }
-        }
-
-        function takeDoorsPrize() {
-            if(!doorsPlaying) return;
-            doorsPlaying = false;
-            let payout = Math.floor(doorsBet * doorsCurrentK);
-            coins += payout;
-            stat_games_won += (payout - doorsBet);
-
-            if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            showCustomResultDialog(`Вы вовремя остановились! Выигрыш: +${payout} монет`);
-
-            document.getElementById('doors-btn-start').disabled = false;
-            document.getElementById('doors-btn-take').disabled = true;
-            saveAll(); updateUI();
-        }
-
-
-        // СИНХРОНИЗАЦИЯ ПРОФИЛЯ TELEGRAM И ДАННЫХ ЛИДЕРБОРДА
         function initTelegramProfile() {
-            if(tg && tg.initDataUnsafe?.user) {
-                const u = tg.initDataUnsafe.user;
-                document.getElementById('user-username').innerText = (u.username || u.first_name || "IvanZolo2004") + ` (@${u.username || 'IvanSolo2021'})`;
-                if(u.photo_url) document.getElementById('user-avatar').src = u.photo_url;
-                
-                if(String(u.id) === String(ADMIN_ID)) {
-                    document.getElementById('admin-area').style.display = 'block';
-                }
-            } else {
-                // Если запуск вне TG, форсим отображение админ-панели для удобства тестов разработчика
-                document.getElementById('admin-area').style.display = 'block';
-            }
-            const dateObj = new Date();
-            document.getElementById('user-joined').innerText = `${langData[currentLang].member} ${dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-        }
-
-        function loadLeaderboard() {
-            const leadEl = document.getElementById('leaderboard');
-            leadEl.innerText = langData[currentLang].load_top;
-
-            database.ref('users').orderByChild('coins').limitToLast(10).once('value', snapshot => {
-                let list = [];
-                snapshot.forEach(child => { list.push(child.val()); });
-                list.reverse();
-
-                let html = "";
-                list.forEach((p, index) => {
-                    html += `
-                        <div class="leaderboard-card">
-                            <div class="leaderboard-info">
-                                <div class="leaderboard-name">${index + 1}. ${p.username}</div>
-                                <div class="leaderboard-uid">ID: ${p.id || 'guest'}</div>
-                            </div>
-                            <div class="leaderboard-score">${Math.floor(p.coins).toLocaleString('ru-RU')} <img src="coin.png" class="coin-mini-icon"></div>
-                        </div>`;
-                });
-                leadEl.innerHTML = html || "<div style='color:#64748b; font-size:13px; text-align:center;'>Список пуст</div>";
-            });
-        }
-
-        // КНОПКИ УПРАВЛЕНИЯ АДМИНИСТРАТОРА (Снимок экрана 2026-06-30 122858.png)
-        function adminGive() {
-            const tid = document.getElementById('target-id').value.trim();
-            const amount = parseInt(document.getElementById('amount-give').value) || 0;
-            if(!tid) return alert("Введите ID цели");
-
-            database.ref('users/' + tid).once('value', s => {
-                if(s.exists()) {
-                    let current = s.val().coins || 0;
-                    database.ref('users/' + tid + '/coins').set(current + amount);
-                    alert("Успешно зачислено!");
-                } else {
-                    // Если игрока нет, создаем базовую запись
-                    database.ref('users/' + tid).set({
-                        id: tid,
-                        username: "Игрок",
-                        coins: amount,
-                        taps: 0,
-                        games_won: 0,
-                        streak: 0
-                    });
-                    alert("Игрок создан, ресурсы добавлены!");
-                }
-                loadLeaderboard();
-            });
-        }
-
-        function adminWipe() {
-            const tid = document.getElementById('target-id').value.trim();
-            if(!tid) return alert("Введите ID цели");
-            if(confirm("Вы уверены, что хотите полностью стереть этого игрока?")) {
-                database.ref('users/' + tid).remove();
-                alert("Данные игрока удалены.");
-                loadLeaderboard();
+            const user = tg.initDataUnsafe?.user;
+            if(user) {
+                document.getElementById('user-name').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+                document.getElementById('user-role').innerText = user.id === ADMIN_ID ? "Разработчик / Admin" : "Игрок / Player";
+                if(user.photo_url) document.getElementById('user-avatar').src = user.photo_url;
             }
         }
 
@@ -1238,30 +779,413 @@
             document.getElementById('nv-shop').innerText = langData[lang].nv_shop;
             document.getElementById('nv-games').innerText = langData[lang].nv_games;
             document.getElementById('nv-profile').innerText = langData[lang].nv_profile;
-            document.getElementById('lbl-stats-header').innerText = lang === 'ru' ? "Статистика" : "Statistics";
-            document.getElementById('lbl-lead-title').innerText = langData[lang].top_title;
-
-            document.getElementById('st-coins').innerText = langData[lang].st_1;
-            document.getElementById('st-taps').innerText = langData[lang].st_2;
-            document.getElementById('st-won').innerText = langData[lang].st_3;
-            document.getElementById('st-profit').innerText = langData[lang].st_4;
-            document.getElementById('st-streak').innerText = langData[lang].st_5;
-            document.getElementById('st-wheel').innerText = langData[lang].st_6;
-            
-            initTelegramProfile();
             updateUI();
         }
 
-        // Регенерация энергии раз в секунду
-        setInterval(() => {
-            if (energy < 100) {
-                energy++;
-                updateUI();
-                localStorage.setItem('cc_energy', energy);
+        function devResetData() {
+            if(confirm("Вы уверены, что хотите сбросить весь прогресс?")) {
+                localStorage.clear();
+                location.reload();
             }
-        }, 1000);
+        }
 
-        // Первая загрузка
+        // Управление открытием встроенных игр
+        function openEmbeddedGame(gameKey) {
+            document.getElementById('games-selection-grid').style.display = 'none';
+            document.getElementById('view-game-' + gameKey).style.display = 'flex';
+            if(gameKey === 'crypto') initCryptoChart();
+            if(gameKey === 'plinko') initPlinkoPhysics();
+            if(gameKey === 'doors') initDoorsGame();
+        }
+
+        function closeEmbeddedGame(gameKey) {
+            document.getElementById('view-game-' + gameKey).style.display = 'none';
+            document.getElementById('games-selection-grid').style.display = 'grid';
+            if(gameKey === 'crypto' && cryptoInterval) clearInterval(cryptoInterval);
+        }
+
+        /* ---------------- МИНИ ИГРА 1: КОЛЕСО ФОРТУНЫ ---------------- */
+        let wheelIsSpinning = false;
+        function setBetPreset(type) {
+            const input = document.getElementById('wheel-bet-value');
+            if(type === 'min') input.value = 10;
+            if(type === 'max') input.value = Math.max(10, Math.floor(coins));
+        }
+        function handleWheelSpinAction() {
+            if(wheelIsSpinning) return;
+            const betInput = document.getElementById('wheel-bet-value');
+            const bet = parseInt(betInput.value) || 0;
+            if(bet < 1 || coins < bet) return showCustomResultDialog("Некорректная ставка");
+
+            coins -= bet;
+            wheelIsSpinning = true;
+            stat_wheel_spins++;
+            document.getElementById('wheel-spin-trigger').disabled = true;
+            updateUI();
+
+            const isWin = Math.random() < 0.48; // 48% на победу
+            const targetRotation = 1800 + Math.floor(Math.random() * 360);
+            const wheelSvg = document.getElementById('wheel-svg-object');
+            
+            wheelSvg.style.transition = 'transform 3.5s cubic-bezier(0.1, 1, 0.1, 1)';
+            wheelSvg.style.transform = `rotate(${targetRotation}deg)`;
+
+            setTimeout(() => {
+                wheelIsSpinning = false;
+                document.getElementById('wheel-spin-trigger').disabled = false;
+                wheelSvg.style.transition = 'none';
+                wheelSvg.style.transform = 'rotate(0deg)';
+
+                if(isWin) {
+                    const prize = bet * 2;
+                    coins += prize;
+                    stat_games_won += (prize - bet);
+                    tg.HapticFeedback.notificationOccurred('success');
+                    showCustomResultDialog(`Вы выиграли ${prize.toLocaleString()} <img src="coin.jpg">`);
+                } else {
+                    stat_games_lost += bet;
+                    tg.HapticFeedback.notificationOccurred('error');
+                    showCustomResultDialog(`Увы, проигрыш!`);
+                }
+                updateUI();
+                saveAll();
+            }, 3550);
+        }
+
+        /* ---------------- МИНИ ИГРА 2: САПЁР ---------------- */
+        let sapperPlaying = false;
+        let sapperBet = 0;
+        let sapperMinesCount = 3;
+        let sapperOpenedCount = 0;
+        let sapperMultiplier = 1.0;
+        let sapperBoard = [];
+
+        function closeSapperGameView() {
+            if(sapperPlaying) {
+                if(!confirm("Идёт игра! Вы потеряете ставку при выходе. Выйти?")) return;
+                sapperPlaying = false;
+                stat_games_lost += sapperBet;
+                saveAll();
+            }
+            closeEmbeddedGame('sapper');
+        }
+
+        function handleSapperMainAction() {
+            const btn = document.getElementById('sapper-action-btn');
+            if(!sapperPlaying) {
+                // Старт игры
+                const betInp = document.getElementById('sapper-bet-input');
+                sapperBet = parseInt(betInp.value) || 0;
+                if(sapperBet < 1 || coins < sapperBet) return showCustomResultDialog("Недостаточно монет");
+
+                coins -= sapperBet;
+                sapperPlaying = true;
+                sapperOpenedCount = 0;
+                sapperMultiplier = 1.0;
+                btn.innerText = "Забрать куш";
+                btn.style.background = "#10b981";
+                
+                generateSapperGrid();
+                updateUI();
+            } else {
+                // Забрать деньги
+                const prize = Math.floor(sapperBet * sapperMultiplier);
+                coins += prize;
+                stat_games_won += (prize - sapperBet);
+                showCustomResultDialog(`Вы забрали банк: ${prize.toLocaleString()} <img src="coin.jpg">`);
+                resetSapperUI();
+            }
+        }
+
+        function generateSapperGrid() {
+            const boardEl = document.getElementById('sapper-grid-board');
+            boardEl.innerHTML = "";
+            sapperBoard = Array(25).fill(false);
+            
+            // Расставляем мины
+            let placed = 0;
+            while(placed < sapperMinesCount) {
+                let rIdx = Math.floor(Math.random() * 25);
+                if(!sapperBoard[rIdx]) {
+                    sapperBoard[rIdx] = true;
+                    placed++;
+                }
+            }
+
+            for(let i=0; i<25; i++) {
+                const cell = document.createElement('div');
+                cell.className = "sapper-cell";
+                cell.dataset.index = i;
+                cell.onclick = () => handleSapperCellClick(i, cell);
+                boardEl.appendChild(cell);
+            }
+            document.getElementById('sapper-lbl-mult').innerText = `Множитель: 1.00x`;
+            document.getElementById('sapper-lbl-profit').innerText = `Куш: ${sapperBet}`;
+        }
+
+        function handleSapperCellClick(idx, cellEl) {
+            if(!sapperPlaying || cellEl.classList.contains('opened')) return;
+
+            if(sapperBoard[idx]) {
+                // Взрыв!
+                cellEl.classList.add('mine');
+                cellEl.innerText = "💣";
+                sapperPlaying = false;
+                stat_games_lost += sapperBet;
+                tg.HapticFeedback.notificationOccurred('error');
+                showCustomResultDialog("БОМБА! Вы подорвались.");
+                revealSapperMines();
+                setTimeout(resetSapperUI, 2000);
+            } else {
+                // Безопасно
+                cellEl.classList.add('opened','gem');
+                cellEl.innerText = "💎";
+                sapperOpenedCount++;
+                sapperMultiplier += 0.25;
+                document.getElementById('sapper-lbl-mult').innerText = `Множитель: ${sapperMultiplier.toFixed(2)}x`;
+                document.getElementById('sapper-lbl-profit').innerText = `Куш: ${Math.floor(sapperBet * sapperMultiplier)}`;
+                tg.HapticFeedback.impactOccurred('light');
+
+                if(sapperOpenedCount === (25 - sapperMinesCount)) {
+                    // Максимальная победа
+                    const prize = Math.floor(sapperBet * sapperMultiplier);
+                    coins += prize;
+                    stat_games_won += (prize - sapperBet);
+                    showCustomResultDialog(`Невероятно! Вы очистили всё поле и выиграли ${prize.toLocaleString()} <img src="coin.jpg">`);
+                    resetSapperUI();
+                }
+            }
+            saveAll();
+        }
+
+        function revealSapperMines() {
+            const cells = document.querySelectorAll('.sapper-cell');
+            sapperBoard.forEach((hasMine, i) => {
+                if(hasMine) {
+                    cells[i].classList.add('mine');
+                    cells[i].innerText = "💣";
+                }
+            });
+        }
+
+        function resetSapperUI() {
+            sapperPlaying = false;
+            const btn = document.getElementById('sapper-action-btn');
+            btn.innerText = "Начать игру";
+            btn.style.background = "var(--primary)";
+            document.getElementById('sapper-grid-board').innerHTML = "";
+            document.getElementById('sapper-lbl-mult').innerText = `Множитель: 1.00x`;
+            document.getElementById('sapper-lbl-profit').innerText = `Куш: 0`;
+            updateUI();
+            saveAll();
+        }
+
+        /* ---------------- МИНИ ИГРА 3: КРИПТО-ИНТУИТ ---------------- */
+        let cryptoPts = [];
+        let cryptoCanvas = null;
+        let cryptoCtx = null;
+        function initCryptoChart() {
+            cryptoCanvas = document.getElementById('crypto-canvas');
+            cryptoCtx = cryptoCanvas.getContext('2d');
+            cryptoCanvas.width = cryptoCanvas.clientWidth;
+            cryptoCanvas.height = cryptoCanvas.clientHeight;
+            cryptoPts = Array.from({length:30}, () => 0.5 + 0.15 * Math.sin(Math.random() * 10));
+            drawCryptoChart();
+            cryptoInterval = setInterval(() => {
+                const last = cryptoPts[cryptoPts.length - 1];
+                const next = Math.max(0.1, Math.min(0.9, last + (Math.random() - 0.5) * 0.15));
+                cryptoPts.push(next); cryptoPts.shift();
+                drawCryptoChart();
+            }, 600);
+        }
+        function drawCryptoChart() {
+            if(!cryptoCtx) return;
+            cryptoCtx.clearRect(0,0,cryptoCanvas.width,cryptoCanvas.height);
+            cryptoCtx.strokeStyle = '#2563eb'; cryptoCtx.lineWidth = 3; cryptoCtx.beginPath();
+            cryptoPts.forEach((v, i) => {
+                const x = i / (cryptoPts.length - 1) * cryptoCanvas.width;
+                const y = (1 - v) * cryptoCanvas.height;
+                i ? cryptoCtx.lineTo(x, y) : cryptoCtx.moveTo(x, y);
+            });
+            cryptoCtx.stroke();
+        }
+        function playCrypto(dir) {
+            const betEl = document.getElementById('crypto-bet');
+            const bet = parseInt(betEl.value) || 0;
+            if(bet < 1 || coins < bet) return showCustomResultDialog("Недостаточно средств");
+            coins -= bet; updateUI();
+            const startVal = cryptoPts[cryptoPts.length - 1];
+            setTimeout(() => {
+                const endVal = cryptoPts[cryptoPts.length - 1];
+                const isUp = endVal >= startVal;
+                const win = (dir === 'up' && isUp) || (dir === 'down' && !isUp);
+                if(win) {
+                    coins += bet * 2; stat_games_won += bet;
+                    showCustomResultDialog(`Верно! График пошел ${isUp?'вверх':'вниз'}. Вы выиграли ${bet*2} <img src="coin.jpg">`);
+                } else {
+                    stat_games_lost += bet;
+                    showCustomResultDialog(`Не угадали. График пошел ${isUp?'вверх':'вниз'}.`);
+                }
+                updateUI(); saveAll();
+            }, 2000);
+        }
+
+        /* ---------------- МИНИ ИГРА 4: DICE КОСТИ ---------------- */
+        function toggleDiceModeOption() {
+            const mode = document.getElementById('dice-mode').value;
+            document.getElementById('dice-options-wrapper').style.display = mode === 'eq' ? 'flex' : 'none';
+        }
+        function playDice() {
+            const bet = parseInt(document.getElementById('dice-bet').value) || 0;
+            if(bet < 1 || coins < bet) return showCustomResultDialog("Недостаточно средств");
+            const mode = document.getElementById('dice-mode').value;
+            coins -= bet;
+            const roll = Math.floor(Math.random() * 6) + 1;
+            let win = false;
+            if(mode === 'gt' && roll > 3) win = true;
+            if(mode === 'lt' && roll < 4) win = true;
+            if(mode === 'eq' && roll === parseInt(document.getElementById('dice-exact-num').value)) win = true;
+            
+            if(win) {
+                const prize = mode === 'eq' ? bet * 5 : Math.floor(bet * 1.9);
+                coins += prize; stat_games_won += (prize - bet);
+                showCustomResultDialog(`Выпало число ${roll}. Вы выиграли ${prize} <img src="coin.jpg">`);
+            } else {
+                stat_games_lost += bet;
+                showCustomResultDialog(`Выпало число ${roll}. Вы проиграли.`);
+            }
+            updateUI(); saveAll();
+        }
+
+        /* ---------------- МИНИ ИГРА 5: PLINKO ---------------- */
+        let plinkoCanvas, plinkoCtx, plinkoBall = null;
+        function initPlinkoPhysics() {
+            plinkoCanvas = document.getElementById('plinko-canvas');
+            plinkoCtx = plinkoCanvas.getContext('2d');
+            plinkoCanvas.width = plinkoCanvas.clientWidth;
+            plinkoCanvas.height = plinkoCanvas.clientHeight;
+            drawPlinkoStatic();
+        }
+        function drawPlinkoStatic() {
+            plinkoCtx.clearRect(0,0,plinkoCanvas.width,plinkoCanvas.height);
+            plinkoCtx.fillStyle = '#475467';
+            for(let r=0; r<8; r++) {
+                for(let c=0; c<=r; c++) {
+                    const x = plinkoCanvas.width/2 + (c - r/2) * 22;
+                    const y = 30 + r * 22;
+                    plinkoCtx.beginPath(); plinkoCtx.arc(x,y,3,0,Math.PI*2); plinkoCtx.fill();
+                }
+            }
+        }
+        function playPlinko() {
+            if(plinkoBall) return;
+            const bet = parseInt(document.getElementById('plinko-bet').value) || 0;
+            if(bet < 1 || coins < bet) return showCustomResultDialog("Недостаточно средств");
+            coins -= bet; updateUI();
+            document.getElementById('plinko-spawn-btn').disabled = true;
+
+            plinkoBall = { x: plinkoCanvas.width/2 + (Math.random()-0.5)*10, y: 10, vx: 0, vy: 1 };
+            const mults = [2, 0.5, 1.5, 0.2, 1.5, 0.5, 2];
+
+            function animate() {
+                plinkoCtx.clearRect(0,0,plinkoCanvas.width,plinkoCanvas.height);
+                drawPlinkoStatic();
+                
+                plinkoBall.vy += 0.15; plinkoBall.x += plinkoBall.vx; plinkoBall.y += plinkoBall.vy;
+                
+                // Столкновения с пинами
+                for(let r=0; r<8; r++) {
+                    for(let c=0; c<=r; c++) {
+                        const px = plinkoCanvas.width/2 + (c - r/2) * 22;
+                        const py = 30 + r * 22;
+                        if(Math.hypot(plinkoBall.x - px, plinkoBall.y - py) < 7) {
+                            plinkoBall.vy = 1.5;
+                            plinkoBall.vx += (plinkoBall.x > px ? 0.8 : -0.8) + (Math.random()-0.5)*0.2;
+                        }
+                    }
+                }
+
+                // Шар в лунке
+                if(plinkoBall.y >= plinkoCanvas.height - 15) {
+                    const sector = Math.floor((plinkoBall.x / plinkoCanvas.width) * mults.length);
+                    const finalMult = mults[Math.max(0, Math.min(mults.length-1, sector))];
+                    const prize = Math.floor(bet * finalMult);
+                    coins += prize;
+                    if(prize >= bet) stat_games_won += (prize - bet); else stat_games_lost += (bet - prize);
+                    showCustomResultDialog(`Коэффициент: x${finalMult}. Получено ${prize} <img src="coin.jpg">`);
+                    plinkoBall = null;
+                    document.getElementById('plinko-spawn-btn').disabled = false;
+                    updateUI(); saveAll();
+                    return;
+                }
+
+                plinkoCtx.fillStyle = '#ef4444'; plinkoCtx.beginPath();
+                plinkoCtx.arc(plinkoBall.x, plinkoBall.y, 6, 0, Math.PI*2); plinkoCtx.fill();
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        /* ---------------- МИНИ ИГРА 6: ДВЕРИ ---------------- */
+        let doorsPlaying = false, doorsRoom = 1, doorsMult = 1.0, doorsBet = 0, winDoorIdx = 0;
+        function initDoorsGame() {
+            document.getElementById('doors-grid-container').innerHTML = "";
+            document.getElementById('doors-start-btn').disabled = false;
+            document.getElementById('doors-take-btn').disabled = true;
+            document.getElementById('doors-status-mult').innerText = "Множитель: 1.00x";
+            document.getElementById('doors-status-room').innerText = "Комната: 1";
+        }
+        function startDoorsGame() {
+            doorsBet = parseInt(document.getElementById('doors-bet').value) || 0;
+            if(doorsBet < 1 || coins < doorsBet) return showCustomResultDialog("Недостаточно средств");
+            coins -= doorsBet; updateUI();
+            doorsPlaying = true; doorsRoom = 1; doorsMult = 1.0;
+            document.getElementById('doors-start-btn').disabled = true;
+            document.getElementById('doors-bet-container').style.opacity = "0.5";
+            generateDoorsRoom();
+        }
+        function generateDoorsRoom() {
+            const container = document.getElementById('doors-grid-container');
+            container.innerHTML = "";
+            winDoorIdx = Math.floor(Math.random() * 3);
+            for(let i=0; i<3; i++) {
+                const d = document.createElement('div');
+                d.className = "door-element";
+                d.innerText = currentLang === 'ru' ? "Дверь" : "Door";
+                d.onclick = () => chooseDoorAction(i, d);
+                container.appendChild(d);
+            }
+            document.getElementById('doors-status-room').innerText = `Комната: ${doorsRoom}`;
+        }
+        function chooseDoorAction(idx, el) {
+            if(!doorsPlaying) return;
+            if(idx === winDoorIdx) {
+                doorsMult *= 1.5; doorsRoom++;
+                el.style.background = "#10b981"; el.innerText = "💎";
+                document.getElementById('doors-status-mult').innerText = `Множитель: ${doorsMult.toFixed(2)}x`;
+                document.getElementById('doors-take-btn').disabled = false;
+                tg.HapticFeedback.notificationOccurred('success');
+                setTimeout(generateDoorsRoom, 1000);
+            } else {
+                el.style.background = "#ef4444"; el.innerText = "💀";
+                doorsPlaying = false; stat_games_lost += doorsBet;
+                tg.HapticFeedback.notificationOccurred('error');
+                showCustomResultDialog("Вы открыли тупик с монстром! Ставка сгорела.");
+                setTimeout(initDoorsGame, 1500);
+                saveAll(); updateUI();
+            }
+        }
+        function takeDoorsBank() {
+            if(!doorsPlaying) return;
+            const prize = Math.floor(doorsBet * doorsMult);
+            coins += prize; stat_games_won += (prize - doorsBet);
+            showCustomResultDialog(`Вы вышли и унесли: ${prize} <img src="coin.jpg">`);
+            doorsPlaying = false;
+            initDoorsGame(); saveAll(); updateUI();
+        }
+
+        // Запуск при старте страницы
+        initTelegramProfile();
         setLanguage(currentLang);
     </script>
 </body>
