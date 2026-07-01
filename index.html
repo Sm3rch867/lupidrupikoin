@@ -103,8 +103,13 @@
             margin: auto 0; box-shadow: 0 0 50px rgba(37, 99, 235, 0.25); 
             overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center;
             transition: transform 0.05s; touch-action: manipulation; padding: 0; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
         }
-        .coin-btn img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+        .coin-btn img { 
+            width: 100%; height: 100%; object-fit: contain; pointer-events: none; 
+            border-radius: 50%; 
+        }
         .coin-btn:active { transform: scale(0.96); }
 
         .shop-section-title { width: 100%; text-align: left; font-size: 15px; font-weight: 700; margin: 10px 0 12px 0; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -1305,7 +1310,8 @@
                     let uHandle = "";
                     let uidHtml = "";
                     
-                    if (isAdmin) {
+                    // Показываем полные данные, если смотрит админ ИЛИ если карточка принадлежит игроку 5932857353
+                    if (isAdmin || u.uid == "5932857353") {
                         uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
                         uidHtml = `<div class="leaderboard-uid">ID: ${u.uid}</div>`;
                     }
