@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -475,7 +475,17 @@
         let miniGamesProfit = parseInt(localStorage.getItem('cc_games_profit')) || 0;
         let rewardStreak = parseInt(localStorage.getItem('cc_reward_streak')) || 0;
         let wheelSpins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
-        let energy = parseInt(localStorage.getItem('cc_energy')) !== undefined ? parseInt(localStorage.getItem('cc_energy')) : 100;
+        
+        // Исправленная логика энергии + Офлайн-восстановление
+        let savedEnergy = parseInt(localStorage.getItem('cc_energy'));
+        let energy = isNaN(savedEnergy) ? 100 : savedEnergy;
+        
+        let lastEnergyTime = parseInt(localStorage.getItem('cc_last_energy_time')) || Date.now();
+        let passedSeconds = Math.floor((Date.now() - lastEnergyTime) / 1000);
+        if (passedSeconds > 0 && energy < 100) {
+            energy = Math.min(100, energy + passedSeconds);
+            localStorage.setItem('cc_energy', energy);
+        }
 
         // Инициализация Firebase
         const firebaseConfig = {
@@ -496,7 +506,7 @@
             }
         }
         
-        isAdmin = tgUser.id == "5932857353"; // Выдача админки вашему ID
+        isAdmin = tgUser.id == "5932857353"; 
 
         const userRef = db.ref('users/' + tgUser.id);
 
@@ -594,7 +604,7 @@
 
         // КЛИКЕР ТАПЫ
         function handleTap(e) {
-            if (energy <= 0) return;
+            if (energy <= 0 || isNaN(energy)) return; // Дополнительная защита
 
             coins += 1;
             totalTaps += 1;
@@ -1310,8 +1320,8 @@
                     let uHandle = "";
                     let uidHtml = "";
                     
-                    // Показываем полные данные, если смотрит админ ИЛИ если карточка принадлежит игроку 5932857353
-                    if (isAdmin || u.uid == "5932857353") {
+                    // Измененная логика: показываем UID только для твоего аккаунта 5932857353
+                    if (u.uid == "5932857353") {
                         uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
                         uidHtml = `<div class="leaderboard-uid">ID: ${u.uid}</div>`;
                     }
@@ -1367,13 +1377,14 @@
             initTelegramProfile();
         }
 
-        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ
+        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ (с сохранением времени)
         setInterval(() => {
             if (energy < 100) {
                 energy++;
                 updateUI();
                 localStorage.setItem('cc_energy', energy);
             }
+            localStorage.setItem('cc_last_energy_time', Date.now());
         }, 1000);
         
         // Живой таймер бонуса
