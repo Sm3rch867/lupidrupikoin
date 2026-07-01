@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -521,6 +521,15 @@
                 rewardStreak = data.rewardStreak !== undefined ? data.rewardStreak : rewardStreak;
                 wheelSpins = data.wheelSpins !== undefined ? data.wheelSpins : wheelSpins;
                 
+                // Синхронизируем сброс времени бонуса от админа
+                if (data.nextClaimTime !== undefined) {
+                    localStorage.setItem('cc_next_claim_time', data.nextClaimTime);
+                    // Если время сброшено в 0, обнуляем и lastClaimTime, чтобы начать с первого дня
+                    if (data.nextClaimTime === 0) {
+                        localStorage.setItem('cc_last_claim_time', 0);
+                    }
+                }
+                
                 isAdmin = (data.isAdmin || tgUser.id == "5932857353");
 
                 localStorage.setItem('cc_coins', coins);
@@ -548,7 +557,8 @@
                 miniGamesWon: miniGamesWon,
                 miniGamesProfit: miniGamesProfit,
                 rewardStreak: rewardStreak,
-                wheelSpins: wheelSpins
+                wheelSpins: wheelSpins,
+                nextClaimTime: parseInt(localStorage.getItem('cc_next_claim_time')) || 0
             });
         }
 
@@ -1296,8 +1306,16 @@
 
             if (confirm("Вы действительно хотите полностью обнулить этого игрока?")) {
                 db.ref('users/' + tId).update({
-                    coins: 0, totalTaps: 0, miniGamesWon: 0, miniGamesProfit: 0, rewardStreak: 0, wheelSpins: 0
+                    coins: 0, totalTaps: 0, miniGamesWon: 0, miniGamesProfit: 0, rewardStreak: 0, wheelSpins: 0,
+                    nextClaimTime: 0 // Сбрасываем время бонуса в БД
                 });
+                
+                // Если админ сбрасывает сам себя, сразу чистим локальное хранилище
+                if (tId == tgUser.id) {
+                    localStorage.setItem('cc_next_claim_time', 0);
+                    localStorage.setItem('cc_last_claim_time', 0);
+                }
+                
                 showCustomResultDialog(`Данные игрока ${tId} были успешно сброшены.`);
             }
         }
@@ -1317,12 +1335,12 @@
                     const uName = u.name || "Без имени";
                     const uCoins = u.coins !== undefined ? u.coins : 0;
                     
-                    let uHandle = "";
+                    // Выносим uHandle из-под if, чтобы юзернейм показывался у всех
+                    let uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
                     let uidHtml = "";
                     
-                    // Измененная логика: показываем UID только для твоего аккаунта 5932857353
+                    // Оставляем показ UID (ID) только для твоего аккаунта
                     if (u.uid == "5932857353") {
-                        uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
                         uidHtml = `<div class="leaderboard-uid">ID: ${u.uid}</div>`;
                     }
                     
