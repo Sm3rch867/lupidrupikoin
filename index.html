@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mini App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1e1e2f; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        #app-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #2a2a3c;
+        }
+        /* HUD (нижняя панель) */
+        .hud {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #161625;
+            padding: 10px 5px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+            border-top: 1px solid #3b3b52;
+        }
+        .hud-btn {
+            background: none;
+            border: none;
+            color: #b0b0cc;
+            font-size: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: 0.2s;
+            min-width: 70px;
+        }
+        .hud-btn.active {
+            background: #3e3e5c;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+        .hud-btn span:first-child { font-size: 22px; }
+    </style>
+</head>
+<body>
+    <!-- Контент разделов будет загружаться в iframe -->
+    <iframe id="content-frame" src="home.html" style="flex:1; width:100%; border:none;"></iframe>
+
+    <!-- HUD - нижнее меню -->
+    <div class="hud" id="hud">
+        <button class="hud-btn active" data-page="home.html">
+            <span>🏠</span> <span>Главная</span>
+        </button>
+        <button class="hud-btn" data-page="shop.html">
+            <span>🛒</span> <span>Магазин</span>
+        </button>
+        <button class="hud-btn" data-page="minigames.html">
+            <span>🎮</span> <span>Мини-игры</span>
+        </button>
+        <button class="hud-btn" data-page="profile.html">
+            <span>👤</span> <span>Профиль</span>
+        </button>
+    </div>
+
+    <script>
+        const frame = document.getElementById('content-frame');
+        const buttons = document.querySelectorAll('.hud-btn');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                frame.src = btn.dataset.page;
+            });
+        });
+    </script>
+</body>
+</html>

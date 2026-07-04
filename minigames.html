@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини-игры</title>
+    <style>
+        body {
+            margin: 0;
+            background: #1e1e2f;
+            font-family: 'Segoe UI', sans-serif;
+            color: #eee;
+            padding: 20px;
+        }
+        h2 { text-align: center; margin-bottom: 20px; }
+        .game-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        .game-card {
+            background: #2e2e42;
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-decoration: none;
+            color: #fff;
+        }
+        .game-card:hover { background: #3d3d58; }
+    </style>
+</head>
+<body>
+    <h2>🎮 Мини-игры</h2>
+    <div class="game-list">
+        <a class="game-card" href="#">
+            <span style="font-size:32px;">🎯</span> Дартс (скоро)
+        </a>
+        <a class="game-card" href="#">
+            <span style="font-size:32px;">🧩</span> Пятнашки (скоро)
+        </a>
+        <a class="game-card" href="#">
+            <span style="font-size:32px;">🕹️</span> Змейка (скоро)
+        </a>
+    </div>
+    <p style="text-align:center; margin-top:30px; color:#888;">Подключи свои игры, заменив ссылки</p>
+</body>
+</html>
