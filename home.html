@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Главная</title>
+    <title>LUPI DRUPI COIN</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Копируем все стили из вашего index.html (полностью) */
+        /* ВСЕ ВАШИ СТИЛИ (от :root до .plus-one) – копируем целиком из вашего index.html */
         :root { 
             --primary: #2563eb;
             --primary-glow: rgba(37, 99, 235, 0.6);
@@ -27,14 +27,25 @@
             height: 100vh; 
             overflow: hidden; 
             position: relative;
-            display: flex;
-            flex-direction: column;
         }
+        .screen { 
+            display: none;
+            flex-direction: column; 
+            align-items: center; 
+            height: 100vh; 
+            padding: 20px 20px 90px 20px; 
+            overflow-y: auto;
+        }
+        #game-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; justify-content: center; }
+        .active { display: flex; }
         .header { 
+            position: fixed;
+            top: 0; left: 0; right: 0;
             padding: 15px 15px 10px 15px; 
             text-align: center; 
             background: linear-gradient(180deg, rgba(2,6,23,0.95) 80%, rgba(2,6,23,0) 100%);
-            flex-shrink: 0;
+            z-index: 10;
+            pointer-events: none;
         }
         .top-bonus-row {
             display: flex;
@@ -55,6 +66,7 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
             transition: transform 0.2s;
+            pointer-events: auto;
         }
         .bonus-trigger-btn:active { transform: scale(0.95); }
         .bonus-trigger-btn .streak-num { font-size: 13px; font-weight: 700; color: #ffffff; }
@@ -84,10 +96,12 @@
             -webkit-tap-highlight-color: transparent; 
             outline: none; 
         }
-        .coin-btn img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; border-radius: 50%; }
+        .coin-btn img { 
+            width: 100%; height: 100%; object-fit: contain; pointer-events: none; 
+            border-radius: 50%; 
+        }
         .coin-btn:active { transform: scale(0.96); }
-        .plus-one { position: absolute; color: white; font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 10px var(--primary); z-index: 1000; }
-        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .custom-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.85); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; backdrop-filter: blur(4px); }
         .custom-dialog-overlay.open { display: flex; }
         .custom-dialog-box { background: #0d1527; border: 1px solid rgba(255, 255, 255, 0.08); width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: zoomIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -110,16 +124,8 @@
         .day-box .day-img { width: 32px; height: 32px; object-fit: contain; margin: 4px 0; }
         .day-box .day-reward-lbl { font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 2px; }
         .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
-        #game-scr {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 20px 20px 20px;
-            overflow-y: auto;
-        }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .plus-one { position: absolute; color: white; font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 10px var(--primary); z-index: 1000; }
+        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -137,7 +143,7 @@
             <div class="bonus-desc" id="lbl-bonus-desc">Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится.</div>
             <div class="days-grid" id="days-container"></div>
             <button class="btn" style="width: 100%; padding: 14px;" id="bonus-claim-btn">ЗАБРАТЬ НАГРАДУ</button>
-            <button style="margin-top: 16px; background:none; border:none; color:#64748b; font-size:14px; cursor:pointer;" onclick="closeBonusModal()">Закрыть</button>
+            <button class="back-to-menu-btn" style="margin-top: 16px; background: none; border: none; color: #64748b; font-size: 14px; cursor: pointer;" onclick="closeBonusModal()">Закрыть</button>
         </div>
     </div>
 
@@ -159,17 +165,14 @@
         </div>
     </div>
 
-    <div id="game-scr">
+    <div class="screen active" id="game-scr">
         <button class="coin-btn" id="coin-clicker" onclick="handleTap(event)">
-            <img src="assets/coin.png" onerror="this.src='coin.png'">
+            <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">
         </button>
     </div>
 
     <script>
-        // ============================================================
-        // ВЕСЬ ВАШ JS КОД (скопирован из index.html) 
-        // ============================================================
-        // ЛОКАЛИЗАЦИЯ
+        // ВЕСЬ ВАШ JS КОД (скопирован из index.html без изменений, кроме удаления функции show и связанных с ней вызовов)
         const langData = {
             ru: {
                 nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
@@ -186,18 +189,14 @@
         };
 
         let currentLang = localStorage.getItem('cc_lang') || 'ru';
-
-        // ИГРОВЫЕ ПЕРЕМЕННЫЕ
         let coins = parseInt(localStorage.getItem('cc_coins')) || 0;
         let totalTaps = parseInt(localStorage.getItem('cc_total_taps')) || 0;
         let miniGamesWon = parseInt(localStorage.getItem('cc_games_won')) || 0;
         let miniGamesProfit = parseInt(localStorage.getItem('cc_games_profit')) || 0;
         let rewardStreak = parseInt(localStorage.getItem('cc_reward_streak')) || 0;
         let wheelSpins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
-        
         let savedEnergy = parseInt(localStorage.getItem('cc_energy'));
         let energy = isNaN(savedEnergy) ? 100 : savedEnergy;
-        
         let lastEnergyTime = parseInt(localStorage.getItem('cc_last_energy_time')) || Date.now();
         let passedSeconds = Math.floor((Date.now() - lastEnergyTime) / 1000);
         if (passedSeconds > 0 && energy < 100) {
@@ -205,7 +204,6 @@
             localStorage.setItem('cc_energy', energy);
         }
 
-        // Firebase
         const firebaseConfig = {
             databaseURL: "https://lupidrupikoin-default-rtdb.firebaseio.com/"
         };
@@ -214,7 +212,6 @@
 
         let tgUser = { id: "local_dev", first_name: "Игрок", username: "player" };
         let isAdmin = false;
-
         if (window.Telegram && window.Telegram.WebApp) {
             const webapp = window.Telegram.WebApp;
             webapp.ready();
@@ -223,9 +220,7 @@
                 tgUser = webapp.initDataUnsafe.user;
             }
         }
-        
         isAdmin = tgUser.id == "5932857353"; 
-
         const userRef = db.ref('users/' + tgUser.id);
 
         userRef.on('value', (snapshot) => {
@@ -237,16 +232,13 @@
                 miniGamesProfit = data.miniGamesProfit !== undefined ? data.miniGamesProfit : miniGamesProfit;
                 rewardStreak = data.rewardStreak !== undefined ? data.rewardStreak : rewardStreak;
                 wheelSpins = data.wheelSpins !== undefined ? data.wheelSpins : wheelSpins;
-                
                 isAdmin = (data.isAdmin || tgUser.id == "5932857353");
-
                 localStorage.setItem('cc_coins', coins);
                 localStorage.setItem('cc_total_taps', totalTaps);
                 localStorage.setItem('cc_games_won', miniGamesWon);
                 localStorage.setItem('cc_games_profit', miniGamesProfit);
                 localStorage.setItem('cc_reward_streak', rewardStreak);
                 localStorage.setItem('cc_wheel_spins', wheelSpins);
-
                 updateUI();
                 initTelegramProfile();
             } else {
@@ -269,7 +261,7 @@
         }
 
         function initTelegramProfile() {
-            // не используется на главной, но оставляем для совместимости
+            // не используется на главной
         }
 
         function updateUI() {
@@ -294,7 +286,8 @@
             const p = document.createElement('div');
             p.className = 'plus-one';
             p.innerText = '+1';
-            let clientX = e.clientX, clientY = e.clientY;
+            let clientX = e.clientX;
+            let clientY = e.clientY;
             if (e.changedTouches && e.changedTouches.length > 0) {
                 clientX = e.changedTouches[0].clientX;
                 clientY = e.changedTouches[0].clientY;
@@ -313,7 +306,6 @@
             document.getElementById('result-dialog').classList.remove('open');
         }
 
-        // ----- БОНУСЫ (ваша механика) -----
         function openBonusModal() {
             renderDaysGrid();
             document.getElementById('bonus-modal').classList.add('open');
@@ -336,25 +328,21 @@
             const container = document.getElementById('days-container');
             container.innerHTML = "";
             const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
-            
             const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
             const isLocked = Date.now() < nextClaimTime;
             let currentDayIndex = rewardStreak % 7;
-
             for(let i=0; i<7; i++) {
                 let imgFile = "assets/stopka1.jpg";
                 if(i === 3 || i === 4) imgFile = "assets/stopka2.jpg";
                 if(i === 5 || i === 6) imgFile = "assets/stopka3.jpg";
-
                 let boxClass = "day-box";
                 if(i < currentDayIndex) boxClass += " completed";
                 else if(i === currentDayIndex && !isLocked) boxClass += " active";
-
                 container.innerHTML += `
                     <div class="${boxClass}">
                         <div class="day-num">${langData[currentLang].day} ${i+1}</div>
                         <img src="${imgFile}" class="day-img" onerror="this.src='stopka1.jpg'">
-                        <div class="day-reward-lbl">${rewards[i].toLocaleString()}<img src="assets/coin.png" class="coin-mini-icon" onerror="this.src='coin.png'"></div>
+                        <div class="day-reward-lbl">${rewards[i].toLocaleString()}<img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></div>
                     </div>
                 `;
             }
@@ -365,13 +353,11 @@
             const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
             const btn = document.getElementById('bonus-claim-btn');
             if(!btn) return;
-            
             if (Date.now() < nextClaimTime) {
                 const diff = nextClaimTime - Date.now();
                 const hours = Math.floor(diff / 3600000).toString().padStart(2, '0');
                 const minutes = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
                 const seconds = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                
                 btn.innerText = `ДОСТУПНО ЧЕРЕЗ ${hours}:${minutes}:${seconds}`;
                 btn.disabled = true;
                 btn.style.background = "#1e293b";
@@ -387,35 +373,27 @@
         function claimDailyBonus() {
             const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
             if (Date.now() < nextClaimTime) return;
-
             const lastClaimTime = parseInt(localStorage.getItem('cc_last_claim_time')) || 0;
             const oneDay = 24 * 60 * 60 * 1000;
-            
             if (lastClaimTime && (Date.now() - lastClaimTime > 2 * oneDay)) {
                 rewardStreak = 0;
             }
-
             const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
             let currentDayIndex = rewardStreak % 7;
             let rewardAmt = rewards[currentDayIndex];
-
             coins += rewardAmt;
             rewardStreak += 1;
-
             const newNextTime = Date.now() + oneDay;
             localStorage.setItem('cc_coins', coins);
             localStorage.setItem('cc_reward_streak', rewardStreak);
             localStorage.setItem('cc_last_claim_time', Date.now());
             localStorage.setItem('cc_next_claim_time', newNextTime);
-
             updateUI();
             saveToFirebase();
             renderDaysGrid();
-
-            showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${rewardAmt.toLocaleString()}</span> <img src="assets/coin.png" onerror="this.src='coin.png'">!`);
+            showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${rewardAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
-        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ
         setInterval(() => {
             if (energy < 100) {
                 energy++;
@@ -424,14 +402,11 @@
             }
             localStorage.setItem('cc_last_energy_time', Date.now());
         }, 1000);
-        
         setInterval(updateBonusButtonState, 1000);
 
-        // Инициализация
         updateUI();
         setLanguage(currentLang);
 
-        // Функция смены языка (локально для бонусов)
         function setLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('cc_lang', lang);
@@ -439,7 +414,6 @@
             document.getElementById('lbl-bonus-desc').innerText = lang === 'ru' ? 
                 "Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится." : 
                 "Claim rewards every single day! Don't skip a day, otherwise your streak will be reset.";
-            // другие элементы локализации не нужны на главной
         }
     </script>
 </body>

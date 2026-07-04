@@ -21,17 +21,22 @@
             .then(res => res.text())
             .then(html => {
                 document.getElementById('hud-container').innerHTML = html;
-                document.querySelectorAll('.hud-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const page = this.dataset.page;
-                        document.querySelectorAll('.hud-btn').forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        document.getElementById('app-frame').src = page;
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        const id = this.id;
+                        let page = '';
+                        if (id === 'n-game') page = 'home.html';
+                        else if (id === 'n-shop') page = 'shop.html';
+                        else if (id === 'n-games') page = 'minigames.html';
+                        else if (id === 'n-profile') page = 'profile.html';
+                        if (page) {
+                            document.getElementById('app-frame').src = page;
+                            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                            this.classList.add('active');
+                        }
                     });
                 });
-                // активируем главную по умолчанию
-                const defaultBtn = document.querySelector('.hud-btn[data-page="home.html"]');
-                if (defaultBtn) defaultBtn.classList.add('active');
+                document.getElementById('n-game').classList.add('active');
             })
             .catch(err => console.error('Ошибка загрузки HUD:', err));
     </script>
