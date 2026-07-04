@@ -2,75 +2,64 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Профиль</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        body {
-            margin: 0;
-            background: #1e1e2f;
-            font-family: 'Segoe UI', sans-serif;
-            color: #eee;
-            padding: 20px;
-        }
-        .profile-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #f0c45a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            margin: 0 auto 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-        .stat-box {
-            background: #2e2e42;
-            border-radius: 18px;
-            padding: 15px 20px;
-            margin: 12px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .logout-btn {
-            display: block;
-            margin: 25px auto 0;
-            background: #c44b4b;
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+        /* Скопируйте все стили для профиля из вашего index.html */
+        body { margin: 0; background: #020617; color: white; font-family: -apple-system, sans-serif; padding: 20px; }
+        .profile-header { display: flex; align-items: center; gap: 15px; padding: 14px 18px; background: rgba(13,19,32,0.4); border-radius: 16px; margin-bottom: 20px; }
+        .profile-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #131f37; border: 1px solid rgba(255,255,255,0.1); }
+        .profile-meta h3 { font-size: 16px; font-weight: 700; color: white; }
+        .profile-meta p { font-size: 11px; color: #475467; }
+        .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(13,19,32,0.4); padding: 5px; border-radius: 12px; margin-bottom: 20px; }
+        .lang-btn { background: transparent; border: none; color: #4f5b70; padding: 11px; font-weight: 700; border-radius: 10px; cursor: pointer; }
+        .lang-btn.active { background: #1e3a8a; color: white; }
+        .stats-container-card { background: #070d19; border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .stats-list { display: flex; flex-direction: column; }
+        .stats-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 13px; color: #64748b; }
+        .stats-row span:last-child { color: white; font-weight: 600; }
+        .win-color { color: #22c55e !important; }
+        .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
+        .admin-panel { display: none; background: #070d19; border: 1px solid #ef4444; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
+        .admin-title { color: #ef4444; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+        .admin-input-field { width: 100%; background: #0d1626; border: 1px solid rgba(255,255,255,0.05); color: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; outline: none; }
+        .admin-btn-action { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; color: white; cursor: pointer; }
+        .admin-btn-action.give { background: #22c55e; margin-bottom: 10px; }
+        .admin-btn-action.wipe { background: #ef4444; }
+        .leaderboard-card { background: #0d1626; border-radius: 14px; padding: 14px 18px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .leaderboard-name { font-weight: 700; color: white; }
+        .leaderboard-score { color: #2563eb; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .shop-section-title { font-size: 15px; font-weight: 700; margin: 10px 0 12px 0; text-transform: uppercase; }
+        .custom-dialog-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(2,6,23,0.85); display:none; justify-content:center; align-items:center; z-index:100; }
+        .custom-dialog-overlay.open { display:flex; }
+        .custom-dialog-box { background: #0d1527; border: 1px solid rgba(255,255,255,0.08); width: 100%; max-width:320px; border-radius:24px; padding:24px; text-align:center; }
+        .result-dialog-text { font-size:16px; font-weight:bold; color:white; margin-bottom:20px; }
+        .result-dialog-btn { background:#2563eb; color:white; border:none; width:100%; padding:12px; border-radius:14px; font-size:15px; font-weight:700; cursor:pointer; }
     </style>
 </head>
 <body>
-    <div class="profile-header">
-        <div class="avatar">👤</div>
-        <h2 style="margin:5px 0;">Игрок 123</h2>
-        <p style="color:#aaa;">Уровень 12</p>
+
+    <!-- Диалог результатов -->
+    <div class="custom-dialog-overlay" id="result-dialog">
+        <div class="custom-dialog-box">
+            <div class="result-dialog-text" id="result-dialog-msg">---</div>
+            <button class="result-dialog-btn" onclick="closeCustomResultDialog()">OK</button>
+        </div>
     </div>
 
-    <div class="stat-box">
-        <span>🪙 Монеты</span> <strong>1 500</strong>
-    </div>
-    <div class="stat-box">
-        <span>⚡ Энергия</span> <strong>72 / 100</strong>
-    </div>
-    <div class="stat-box">
-        <span>🏆 Рейтинг</span> <strong>2 340</strong>
-    </div>
+    <!-- Блок профиля (скопируйте из вашего index.html) -->
+    <div class="profile-header"> ... </div>
+    <div class="lang-switch"> ... </div>
+    <div class="stats-container-card"> ... </div>
+    <div class="admin-panel" id="admin-area"> ... </div>
+    <div class="shop-section-title" id="lbl-lead-title">ТОП ИГРОКОВ 🏆</div>
+    <div id="leaderboard">Загрузка топа...</div>
 
-    <button class="logout-btn" onclick="alert('Выход из профиля')">🚪 Выйти</button>
-    <p style="text-align:center; margin-top:15px; color:#666; font-size:14px;">
-        ⚠️ Замени этот файл на свой код профиля, если нужно.
-    </p>
+    <script>
+        // СКОПИРУЙТЕ ВЕСЬ JS ДЛЯ ПРОФИЛЯ: setLanguage, loadLeaderboard, adminGive, adminWipe, инициализация Firebase и т.д.
+        console.log("Вставьте JS для профиля из вашего index.html");
+    </script>
 </body>
 </html>

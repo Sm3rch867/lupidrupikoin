@@ -2,93 +2,445 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Главная</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            margin: 0;
-            background: linear-gradient(145deg, #1e1e2f, #232339);
-            font-family: 'Segoe UI', sans-serif;
-            color: #eee;
-            padding: 20px;
-            min-height: 100vh;
-            box-sizing: border-box;
+        /* Копируем все стили из вашего index.html (полностью) */
+        :root { 
+            --primary: #2563eb;
+            --primary-glow: rgba(37, 99, 235, 0.6);
+            --bg: linear-gradient(135deg, #020617 0%, #0b1e3d 100%); 
+            --card: #0d1626; 
+            --text-muted: #566175;
+            --ok: #22c55e;
+            --warn: #ffb020;
+            --danger: #ef4444;
         }
-        .top-bar {
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; user-select: none; }
+        body { 
+            background: var(--bg);
+            background-attachment: fixed;
+            color: white; 
+            height: 100vh; 
+            overflow: hidden; 
+            position: relative;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+            flex-direction: column;
         }
-        .energy {
-            background: #2e2e42;
-            border-radius: 20px;
-            padding: 12px 20px;
+        .header { 
+            padding: 15px 15px 10px 15px; 
+            text-align: center; 
+            background: linear-gradient(180deg, rgba(2,6,23,0.95) 80%, rgba(2,6,23,0) 100%);
+            flex-shrink: 0;
+        }
+        .top-bonus-row {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-        }
-        .energy-icon { font-size: 24px; }
-        .progress-bg {
-            background: #3f3f5c;
-            height: 14px;
-            width: 140px;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            background: #f0c45a;
-            height: 100%;
-            width: 72%; /* пример текущего значения */
-            border-radius: 10px;
-        }
-        .coin-badge {
-            background: #2e2e42;
-            border-radius: 20px;
-            padding: 12px 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 22px;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-        }
-        .daily-section {
-            background: #2a2a3c;
-            border-radius: 20px;
-            padding: 5px;
-            margin-top: 15px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-        }
-        iframe {
+            justify-content: flex-end;
             width: 100%;
-            height: 320px;
-            border: none;
-            border-radius: 16px;
+            max-width: 340px;
+            margin: 0 auto 5px auto;
         }
+        .bonus-trigger-btn {
+            position: relative;
+            background: rgba(22, 32, 51, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            transition: transform 0.2s;
+        }
+        .bonus-trigger-btn:active { transform: scale(0.95); }
+        .bonus-trigger-btn .streak-num { font-size: 13px; font-weight: 700; color: #ffffff; }
+        .bonus-trigger-btn .flame-icon { font-size: 15px; line-height: 1; }
+        #bonus-dot {
+            position: absolute;
+            top: -2px; left: -2px;
+            width: 8px; height: 8px;
+            background: #2563eb;
+            border-radius: 50%;
+            border: 1px solid #020617;
+            box-shadow: 0 0 6px #2563eb;
+            display: none;
+            z-index: 5;
+        }
+        #coins { font-size: 42px; font-weight: 800; color: white; letter-spacing: -0.5px; }
+        .energy-box { width: 100%; max-width: 340px; margin: 6px auto 0 auto; }
+        .energy-text-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 5px; }
+        .energy-text-row span { display: flex; align-items: center; gap: 4px; }
+        .energy-bar { width: 100%; height: 6px; background: #131926; border-radius: 10px; overflow: hidden; }
+        #energy-fill { width: 100%; height: 100%; background: #2563eb; transition: 0.2s; }
+        .coin-btn {
+            width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03);
+            margin: auto 0; box-shadow: 0 0 50px rgba(37, 99, 235, 0.25); 
+            overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center;
+            transition: transform 0.05s; touch-action: manipulation; padding: 0; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+        }
+        .coin-btn img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; border-radius: 50%; }
+        .coin-btn:active { transform: scale(0.96); }
+        .plus-one { position: absolute; color: white; font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 10px var(--primary); z-index: 1000; }
+        @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
+        .custom-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.85); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; backdrop-filter: blur(4px); }
+        .custom-dialog-overlay.open { display: flex; }
+        .custom-dialog-box { background: #0d1527; border: 1px solid rgba(255, 255, 255, 0.08); width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: zoomIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .result-dialog-text { font-size: 16px; font-weight: bold; color: white; line-height: 1.5; margin-bottom: 20px; }
+        .result-dialog-text img { width: 22px; height: 22px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; margin-left: 4px; margin-top: -3px; }
+        .result-dialog-btn { background: #2563eb; color: white; border: none; width: 100%; padding: 12px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.15s; }
+        .bonus-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.9); display: none; flex-direction: column; justify-content: flex-end; z-index: 90; }
+        .bonus-modal.open { display: flex; }
+        .bonus-content-sheet { background: #090f1d; border-top: 1px solid rgba(255,255,255,0.08); border-radius: 32px 32px 0 0; padding: 24px 20px; text-align: center; max-height: 85vh; overflow-y: auto; }
+        .bonus-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+        .bonus-desc { font-size: 13px; color: #64748b; margin-bottom: 20px; }
+        .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
+        .day-box { background: #121a2e; border: 1px solid rgba(255,255,255,0.04); border-radius: 14px; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; opacity: 0.6; }
+        .day-box.active { border-color: #2563eb; background: rgba(37,99,235,0.1); opacity: 1; }
+        .day-box.completed { border-color: #22c55e; background: rgba(34,197,94,0.08); opacity: 1; }
+        .day-box .day-num { font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
+        .day-box.active .day-num { color: #3b82f6; }
+        .day-box.completed .day-num { color: #22c55e; }
+        .day-box .day-img { width: 32px; height: 32px; object-fit: contain; margin: 4px 0; }
+        .day-box .day-reward-lbl { font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 2px; }
+        .coin-mini-icon { width: 16px; height: 16px; border-radius: 50%; object-fit: contain; display: inline-block; vertical-align: middle; }
+        #game-scr {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 20px 20px 20px;
+            overflow-y: auto;
+        }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="energy">
-            <span class="energy-icon">⚡</span>
-            <div>
-                <div style="font-size:14px; margin-bottom:4px;">Энергия</div>
-                <div class="progress-bg">
-                    <div class="progress-fill"></div>
-                </div>
-            </div>
-        </div>
-        <div class="coin-badge">
-            <span>🪙</span> 1 500
+
+    <div class="custom-dialog-overlay" id="result-dialog">
+        <div class="custom-dialog-box">
+            <div class="result-dialog-text" id="result-dialog-msg">---</div>
+            <button class="result-dialog-btn" onclick="closeCustomResultDialog()">OK</button>
         </div>
     </div>
 
-    <h2 style="margin: 15px 0 5px;">📅 Ежедневные награды</h2>
-    <div class="daily-section">
-        <!-- Подключаем dailyrewards.html через iframe -->
-        <iframe src="dailyrewards.html" title="Ежедневные награды"></iframe>
+    <div class="bonus-modal" id="bonus-modal">
+        <div class="bonus-content-sheet">
+            <div class="bonus-title" id="lbl-bonus-title">Ежедневный Бонус</div>
+            <div class="bonus-desc" id="lbl-bonus-desc">Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится.</div>
+            <div class="days-grid" id="days-container"></div>
+            <button class="btn" style="width: 100%; padding: 14px;" id="bonus-claim-btn">ЗАБРАТЬ НАГРАДУ</button>
+            <button style="margin-top: 16px; background:none; border:none; color:#64748b; font-size:14px; cursor:pointer;" onclick="closeBonusModal()">Закрыть</button>
+        </div>
     </div>
+
+    <div class="header">
+        <div class="top-bonus-row">
+            <div class="bonus-trigger-btn" onclick="openBonusModal()">
+                <div id="bonus-dot"></div>
+                <span class="streak-num" id="top-streak-lbl">0</span>
+                <span class="flame-icon">🔥</span>
+            </div>
+        </div>
+        <div id="coins">0</div>
+        <div class="energy-box">
+            <div class="energy-text-row">
+                <span>⚡ Энергия</span>
+                <span id="energy-num">100 / 100</span>
+            </div>
+            <div class="energy-bar"><div id="energy-fill"></div></div>
+        </div>
+    </div>
+
+    <div id="game-scr">
+        <button class="coin-btn" id="coin-clicker" onclick="handleTap(event)">
+            <img src="assets/coin.png" onerror="this.src='coin.png'">
+        </button>
+    </div>
+
+    <script>
+        // ============================================================
+        // ВЕСЬ ВАШ JS КОД (скопирован из index.html) 
+        // ============================================================
+        // ЛОКАЛИЗАЦИЯ
+        const langData = {
+            ru: {
+                nv_game: "Главная", nv_shop: "Магазин", nv_games: "Мини-игры", nv_profile: "Профиль",
+                top_title: "ТОП ИГРОКОВ 🏆", day: "День",
+                st_1: "Количество монет", st_2: "Количество тапов", st_3: "Выиграно в мини играх",
+                st_4: "Прибыль", st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны"
+            },
+            en: {
+                nv_game: "Main", nv_shop: "Shop", nv_games: "Mini-Games", nv_profile: "Profile",
+                top_title: "TOP PLAYERS 🏆", day: "Day",
+                st_1: "Coins balance", st_2: "Total taps", st_3: "Won in mini games",
+                st_4: "Net profit", st_5: "Reward streak", st_6: "Wheel spins completed"
+            }
+        };
+
+        let currentLang = localStorage.getItem('cc_lang') || 'ru';
+
+        // ИГРОВЫЕ ПЕРЕМЕННЫЕ
+        let coins = parseInt(localStorage.getItem('cc_coins')) || 0;
+        let totalTaps = parseInt(localStorage.getItem('cc_total_taps')) || 0;
+        let miniGamesWon = parseInt(localStorage.getItem('cc_games_won')) || 0;
+        let miniGamesProfit = parseInt(localStorage.getItem('cc_games_profit')) || 0;
+        let rewardStreak = parseInt(localStorage.getItem('cc_reward_streak')) || 0;
+        let wheelSpins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
+        
+        let savedEnergy = parseInt(localStorage.getItem('cc_energy'));
+        let energy = isNaN(savedEnergy) ? 100 : savedEnergy;
+        
+        let lastEnergyTime = parseInt(localStorage.getItem('cc_last_energy_time')) || Date.now();
+        let passedSeconds = Math.floor((Date.now() - lastEnergyTime) / 1000);
+        if (passedSeconds > 0 && energy < 100) {
+            energy = Math.min(100, energy + passedSeconds);
+            localStorage.setItem('cc_energy', energy);
+        }
+
+        // Firebase
+        const firebaseConfig = {
+            databaseURL: "https://lupidrupikoin-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let tgUser = { id: "local_dev", first_name: "Игрок", username: "player" };
+        let isAdmin = false;
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            const webapp = window.Telegram.WebApp;
+            webapp.ready();
+            webapp.expand();
+            if (webapp.initDataUnsafe && webapp.initDataUnsafe.user) {
+                tgUser = webapp.initDataUnsafe.user;
+            }
+        }
+        
+        isAdmin = tgUser.id == "5932857353"; 
+
+        const userRef = db.ref('users/' + tgUser.id);
+
+        userRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                coins = data.coins !== undefined ? data.coins : coins;
+                totalTaps = data.totalTaps !== undefined ? data.totalTaps : totalTaps;
+                miniGamesWon = data.miniGamesWon !== undefined ? data.miniGamesWon : miniGamesWon;
+                miniGamesProfit = data.miniGamesProfit !== undefined ? data.miniGamesProfit : miniGamesProfit;
+                rewardStreak = data.rewardStreak !== undefined ? data.rewardStreak : rewardStreak;
+                wheelSpins = data.wheelSpins !== undefined ? data.wheelSpins : wheelSpins;
+                
+                isAdmin = (data.isAdmin || tgUser.id == "5932857353");
+
+                localStorage.setItem('cc_coins', coins);
+                localStorage.setItem('cc_total_taps', totalTaps);
+                localStorage.setItem('cc_games_won', miniGamesWon);
+                localStorage.setItem('cc_games_profit', miniGamesProfit);
+                localStorage.setItem('cc_reward_streak', rewardStreak);
+                localStorage.setItem('cc_wheel_spins', wheelSpins);
+
+                updateUI();
+                initTelegramProfile();
+            } else {
+                saveToFirebase();
+            }
+        });
+
+        function saveToFirebase() {
+            userRef.update({
+                uid: tgUser.id,
+                name: tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
+                username: tgUser.username || "none",
+                coins: coins,
+                totalTaps: totalTaps,
+                miniGamesWon: miniGamesWon,
+                miniGamesProfit: miniGamesProfit,
+                rewardStreak: rewardStreak,
+                wheelSpins: wheelSpins
+            });
+        }
+
+        function initTelegramProfile() {
+            // не используется на главной, но оставляем для совместимости
+        }
+
+        function updateUI() {
+            document.getElementById('coins').innerText = coins.toLocaleString();
+            document.getElementById('top-streak-lbl').innerText = rewardStreak;
+            document.getElementById('energy-num').innerText = `${energy} / 100`;
+            document.getElementById('energy-fill').style.width = `${energy}%`;
+            checkBonusDotNotification();
+        }
+
+        function handleTap(e) {
+            if (energy <= 0 || isNaN(energy)) return;
+            coins += 1;
+            totalTaps += 1;
+            energy -= 1;
+            localStorage.setItem('cc_coins', coins);
+            localStorage.setItem('cc_total_taps', totalTaps);
+            localStorage.setItem('cc_energy', energy);
+            updateUI();
+            saveToFirebase();
+
+            const p = document.createElement('div');
+            p.className = 'plus-one';
+            p.innerText = '+1';
+            let clientX = e.clientX, clientY = e.clientY;
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                clientX = e.changedTouches[0].clientX;
+                clientY = e.changedTouches[0].clientY;
+            }
+            p.style.left = (clientX - 10) + 'px';
+            p.style.top = (clientY - 20) + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
+        }
+
+        function showCustomResultDialog(htmlText) {
+            document.getElementById('result-dialog-msg').innerHTML = htmlText;
+            document.getElementById('result-dialog').classList.add('open');
+        }
+        function closeCustomResultDialog() {
+            document.getElementById('result-dialog').classList.remove('open');
+        }
+
+        // ----- БОНУСЫ (ваша механика) -----
+        function openBonusModal() {
+            renderDaysGrid();
+            document.getElementById('bonus-modal').classList.add('open');
+        }
+        function closeBonusModal() {
+            document.getElementById('bonus-modal').classList.remove('open');
+        }
+
+        function checkBonusDotNotification() {
+            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
+            const dot = document.getElementById('bonus-dot');
+            if (Date.now() >= nextClaimTime) {
+                dot.style.display = 'block';
+            } else {
+                dot.style.display = 'none';
+            }
+        }
+
+        function renderDaysGrid() {
+            const container = document.getElementById('days-container');
+            container.innerHTML = "";
+            const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
+            
+            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
+            const isLocked = Date.now() < nextClaimTime;
+            let currentDayIndex = rewardStreak % 7;
+
+            for(let i=0; i<7; i++) {
+                let imgFile = "assets/stopka1.jpg";
+                if(i === 3 || i === 4) imgFile = "assets/stopka2.jpg";
+                if(i === 5 || i === 6) imgFile = "assets/stopka3.jpg";
+
+                let boxClass = "day-box";
+                if(i < currentDayIndex) boxClass += " completed";
+                else if(i === currentDayIndex && !isLocked) boxClass += " active";
+
+                container.innerHTML += `
+                    <div class="${boxClass}">
+                        <div class="day-num">${langData[currentLang].day} ${i+1}</div>
+                        <img src="${imgFile}" class="day-img" onerror="this.src='stopka1.jpg'">
+                        <div class="day-reward-lbl">${rewards[i].toLocaleString()}<img src="assets/coin.png" class="coin-mini-icon" onerror="this.src='coin.png'"></div>
+                    </div>
+                `;
+            }
+            updateBonusButtonState();
+        }
+
+        function updateBonusButtonState() {
+            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
+            const btn = document.getElementById('bonus-claim-btn');
+            if(!btn) return;
+            
+            if (Date.now() < nextClaimTime) {
+                const diff = nextClaimTime - Date.now();
+                const hours = Math.floor(diff / 3600000).toString().padStart(2, '0');
+                const minutes = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                const seconds = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                
+                btn.innerText = `ДОСТУПНО ЧЕРЕЗ ${hours}:${minutes}:${seconds}`;
+                btn.disabled = true;
+                btn.style.background = "#1e293b";
+                btn.onclick = null;
+            } else {
+                btn.innerText = "ЗАБРАТЬ НАГРАДУ";
+                btn.disabled = false;
+                btn.style.background = "#2563eb";
+                btn.onclick = claimDailyBonus;
+            }
+        }
+
+        function claimDailyBonus() {
+            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
+            if (Date.now() < nextClaimTime) return;
+
+            const lastClaimTime = parseInt(localStorage.getItem('cc_last_claim_time')) || 0;
+            const oneDay = 24 * 60 * 60 * 1000;
+            
+            if (lastClaimTime && (Date.now() - lastClaimTime > 2 * oneDay)) {
+                rewardStreak = 0;
+            }
+
+            const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
+            let currentDayIndex = rewardStreak % 7;
+            let rewardAmt = rewards[currentDayIndex];
+
+            coins += rewardAmt;
+            rewardStreak += 1;
+
+            const newNextTime = Date.now() + oneDay;
+            localStorage.setItem('cc_coins', coins);
+            localStorage.setItem('cc_reward_streak', rewardStreak);
+            localStorage.setItem('cc_last_claim_time', Date.now());
+            localStorage.setItem('cc_next_claim_time', newNextTime);
+
+            updateUI();
+            saveToFirebase();
+            renderDaysGrid();
+
+            showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${rewardAmt.toLocaleString()}</span> <img src="assets/coin.png" onerror="this.src='coin.png'">!`);
+        }
+
+        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ
+        setInterval(() => {
+            if (energy < 100) {
+                energy++;
+                updateUI();
+                localStorage.setItem('cc_energy', energy);
+            }
+            localStorage.setItem('cc_last_energy_time', Date.now());
+        }, 1000);
+        
+        setInterval(updateBonusButtonState, 1000);
+
+        // Инициализация
+        updateUI();
+        setLanguage(currentLang);
+
+        // Функция смены языка (локально для бонусов)
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('cc_lang', lang);
+            document.getElementById('lbl-bonus-title').innerText = lang === 'ru' ? "Ежедневный Бонус" : "Daily Bonus";
+            document.getElementById('lbl-bonus-desc').innerText = lang === 'ru' ? 
+                "Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится." : 
+                "Claim rewards every single day! Don't skip a day, otherwise your streak will be reset.";
+            // другие элементы локализации не нужны на главной
+        }
+    </script>
 </body>
 </html>
