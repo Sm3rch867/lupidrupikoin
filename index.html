@@ -11,7 +11,7 @@
         :root { 
             --primary: #2563eb;
             --primary-glow: rgba(37, 99, 235, 0.6);
-            --bg: linear-gradient(135deg, #020617 0%, #0b1e3d 100%);
+            --bg: linear-gradient(135deg, #020617 0%, #0b1e3d 100%); 
             --card: #0d1626; 
             --text-muted: #566175;
             --ok: #22c55e;
@@ -37,7 +37,6 @@
             padding: 20px 20px 90px 20px; 
             overflow-y: auto;
         }
-        
         #game-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; justify-content: center; }
         #games-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
         #profile-scr { height: calc(100vh - 165px); margin-top: 165px; padding-top: 0; }
@@ -99,18 +98,19 @@
         .energy-bar { width: 100%; height: 6px; background: #131926; border-radius: 10px; overflow: hidden; }
         #energy-fill { width: 100%; height: 100%; background: #2563eb; transition: 0.2s; }
 
-        /* СТИЛИ КНОПКИ МОНЕТЫ */
-        .coin-btn { width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03); margin: auto; box-shadow: 0 0 50px rgba(37, 99, 235, 0.25); overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center; transition: transform 0.05s; touch-action: manipulation; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; pointer-events: auto; }
-        .coin-btn img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%; }
+        .coin-btn {
+            width: 240px; height: 240px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.03);
+            margin: auto 0; box-shadow: 0 0 50px rgba(37, 99, 235, 0.25); 
+            overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center;
+            transition: transform 0.05s; touch-action: manipulation; padding: 0; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+        }
+        .coin-btn img { 
+            width: 100%; height: 100%; object-fit: contain; pointer-events: none; 
+            border-radius: 50%; 
+        }
         .coin-btn:active { transform: scale(0.96); }
-
-        /* СТИЛИ НИЖНЕЙ НАВИГАЦИИ */
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(2, 6, 23, 0.9); border-top: 1px solid rgba(255, 255, 255, 0.04); display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; z-index: 20; backdrop-filter: blur(10px); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #475467; cursor: pointer; font-size: 11px; font-weight: bold; height: 100%; position: relative; transition: color 0.2s; }
-        .nav-item.active { color: #2563eb; }
-        .nav-svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 4px; }
-        .nav-glow { position: absolute; top: -1px; width: 80px; height: 45px; background: radial-gradient(circle, rgba(37, 99, 235, 0.45) 0%, rgba(37, 99, 235, 0) 70%); filter: blur(5px); pointer-events: none; opacity: 0; transition: all 0.3s ease; transform: translateY(-50%); }
-        .nav-item.active .nav-glow { opacity: 1; }
 
         .shop-section-title { width: 100%; text-align: left; font-size: 15px; font-weight: 700; margin: 10px 0 12px 0; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -192,6 +192,13 @@
         .door-element.win { border-color: #22c55e; background: rgba(34,197,94,0.15); color: #22c55e; }
         .door-element.lose { border-color: #ef4444; background: rgba(239,68,68,0.15); color: #ef4444; }
 
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(2, 6, 23, 0.9); border-top: 1px solid rgba(255, 255, 255, 0.04); display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; z-index: 20; backdrop-filter: blur(10px); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #475467; cursor: pointer; font-size: 11px; font-weight: bold; height: 100%; position: relative; transition: color 0.2s; }
+        .nav-item.active { color: #2563eb; }
+        .nav-svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 4px; }
+        .nav-glow { position: absolute; top: -1px; width: 80px; height: 45px; background: radial-gradient(circle, rgba(37, 99, 235, 0.45) 0%, rgba(37, 99, 235, 0) 70%); filter: blur(5px); pointer-events: none; opacity: 0; transition: all 0.3s ease; transform: translateY(-50%); }
+        .nav-item.active .nav-glow { opacity: 1; }
+
         .custom-dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.85); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; backdrop-filter: blur(4px); }
         .custom-dialog-overlay.open { display: flex; }
         .custom-dialog-box { background: #0d1527; border: 1px solid rgba(255, 255, 255, 0.08); width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: zoomIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -259,7 +266,7 @@
 
     <div class="screen active" id="game-scr">
         <button class="coin-btn" id="coin-clicker" onclick="handleTap(event)">
-            <img src="assets/coin.jpg" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Lupi&background=eab308&color=fff&rounded=true&size=240&font-size=0.4';">
+            <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">
         </button>
     </div>
 
@@ -469,6 +476,7 @@
         let rewardStreak = parseInt(localStorage.getItem('cc_reward_streak')) || 0;
         let wheelSpins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
         
+        // Исправленная логика энергии + Офлайн-восстановление
         let savedEnergy = parseInt(localStorage.getItem('cc_energy'));
         let energy = isNaN(savedEnergy) ? 100 : savedEnergy;
         
@@ -499,56 +507,36 @@
         }
         
         isAdmin = tgUser.id == "5932857353"; 
+
         const userRef = db.ref('users/' + tgUser.id);
 
-        document.addEventListener("DOMContentLoaded", () => {
-            startGameSystems();
+        // Синхронизация данных с Firebase
+        userRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                coins = data.coins !== undefined ? data.coins : coins;
+                totalTaps = data.totalTaps !== undefined ? data.totalTaps : totalTaps;
+                miniGamesWon = data.miniGamesWon !== undefined ? data.miniGamesWon : miniGamesWon;
+                miniGamesProfit = data.miniGamesProfit !== undefined ? data.miniGamesProfit : miniGamesProfit;
+                rewardStreak = data.rewardStreak !== undefined ? data.rewardStreak : rewardStreak;
+                wheelSpins = data.wheelSpins !== undefined ? data.wheelSpins : wheelSpins;
+                
+                isAdmin = (data.isAdmin || tgUser.id == "5932857353");
+
+                localStorage.setItem('cc_coins', coins);
+                localStorage.setItem('cc_total_taps', totalTaps);
+                localStorage.setItem('cc_games_won', miniGamesWon);
+                localStorage.setItem('cc_games_profit', miniGamesProfit);
+                localStorage.setItem('cc_reward_streak', rewardStreak);
+                localStorage.setItem('cc_wheel_spins', wheelSpins);
+
+                document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
+                updateUI();
+                initTelegramProfile();
+            } else {
+                saveToFirebase();
+            }
         });
-
-        function startGameSystems() {
-            // Синхронизация данных с Firebase
-            userRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    coins = data.coins !== undefined ? data.coins : coins;
-                    totalTaps = data.totalTaps !== undefined ? data.totalTaps : totalTaps;
-                    miniGamesWon = data.miniGamesWon !== undefined ? data.miniGamesWon : miniGamesWon;
-                    miniGamesProfit = data.miniGamesProfit !== undefined ? data.miniGamesProfit : miniGamesProfit;
-                    rewardStreak = data.rewardStreak !== undefined ? data.rewardStreak : rewardStreak;
-                    wheelSpins = data.wheelSpins !== undefined ? data.wheelSpins : wheelSpins;
-                    
-                    isAdmin = (data.isAdmin || tgUser.id == "5932857353");
-
-                    localStorage.setItem('cc_coins', coins);
-                    localStorage.setItem('cc_total_taps', totalTaps);
-                    localStorage.setItem('cc_games_won', miniGamesWon);
-                    localStorage.setItem('cc_games_profit', miniGamesProfit);
-                    localStorage.setItem('cc_reward_streak', rewardStreak);
-                    localStorage.setItem('cc_wheel_spins', wheelSpins);
-
-                    document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
-                    updateUI();
-                    initTelegramProfile();
-                } else {
-                    saveToFirebase();
-                }
-            });
-
-            // Таймеры регенерации и кнопок
-            setInterval(() => {
-                if (energy < 100) {
-                    energy++;
-                    updateUI();
-                    localStorage.setItem('cc_energy', energy);
-                }
-                localStorage.setItem('cc_last_energy_time', Date.now());
-            }, 1000);
-            
-            setInterval(updateBonusButtonState, 1000);
-
-            // Устанавливаем язык
-            setLanguage(currentLang);
-        }
 
         function saveToFirebase() {
             userRef.update({
@@ -572,17 +560,17 @@
             const fullName = tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "");
             const handle = tgUser.username ? ` (@${tgUser.username})` : "";
             
-            if(nameEl) nameEl.innerText = fullName + handle;
-            if(joinedEl) joinedEl.innerText = `ID: ${tgUser.id}`;
+            nameEl.innerText = fullName + handle;
+            joinedEl.innerText = `ID: ${tgUser.id}`;
 
-            if(tgUser.photo_url && avatarEl) {
+            if(tgUser.photo_url) {
                 avatarEl.src = tgUser.photo_url;
             }
         }
 
+        // Обновление интерфейса
         function updateUI() {
-            const coinsEl = document.getElementById('coins');
-            if(coinsEl) coinsEl.innerText = coins.toLocaleString();
+            document.getElementById('coins').innerText = coins.toLocaleString();
             
             const statsCoins = document.getElementById('stat-coins-val');
             if(statsCoins) statsCoins.innerText = coins.toLocaleString();
@@ -603,24 +591,20 @@
             const statsStreak = document.getElementById('stat-streak-val');
             if(statsStreak) statsStreak.innerText = rewardStreak;
             
-            const streakLbl = document.getElementById('top-streak-lbl');
-            if(streakLbl) streakLbl.innerText = rewardStreak;
+            document.getElementById('top-streak-lbl').innerText = rewardStreak;
             
             const statsWheel = document.getElementById('stat-wheel-val');
             if(statsWheel) statsWheel.innerText = wheelSpins;
 
-            const energyNum = document.getElementById('energy-num');
-            if(energyNum) energyNum.innerText = `${energy} / 100`;
-            
-            const energyFill = document.getElementById('energy-fill');
-            if(energyFill) energyFill.style.width = `${energy}%`;
+            document.getElementById('energy-num').innerText = `${energy} / 100`;
+            document.getElementById('energy-fill').style.width = `${energy}%`;
 
             checkBonusDotNotification();
         }
 
         // КЛИКЕР ТАПЫ
         function handleTap(e) {
-            if (energy <= 0 || isNaN(energy)) return; 
+            if (energy <= 0 || isNaN(energy)) return; // Дополнительная защита
 
             coins += 1;
             totalTaps += 1;
@@ -633,6 +617,7 @@
             updateUI();
             saveToFirebase();
 
+            // Анимация +1 цифры
             const p = document.createElement('div');
             p.className = 'plus-one';
             p.innerText = '+1';
@@ -656,14 +641,15 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            document.getElementById(screenId + '-scr')?.classList.add('active');
-            document.getElementById('n-' + screenId)?.classList.add('active');
+            document.getElementById(screenId + '-scr').classList.add('active');
+            document.getElementById('n-' + screenId).classList.add('active');
 
             if(screenId === 'profile') {
                 loadLeaderboard();
             }
         }
 
+        // КАСТОМНЫЕ ОКНА РЕЗУЛЬТАТОВ
         function showCustomResultDialog(htmlText) {
             document.getElementById('result-dialog-msg').innerHTML = htmlText;
             document.getElementById('result-dialog').classList.add('open');
@@ -672,6 +658,7 @@
             document.getElementById('result-dialog').classList.remove('open');
         }
 
+        // МОДАЛКА ЕЖЕДНЕВНЫХ БОНУСОВ
         function openBonusModal() {
             renderDaysGrid();
             document.getElementById('bonus-modal').classList.add('open');
@@ -683,7 +670,6 @@
         function checkBonusDotNotification() {
             const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
             const dot = document.getElementById('bonus-dot');
-            if(!dot) return;
             if (Date.now() >= nextClaimTime) {
                 dot.style.display = 'block';
             } else {
@@ -693,7 +679,6 @@
 
         function renderDaysGrid() {
             const container = document.getElementById('days-container');
-            if(!container) return;
             container.innerHTML = "";
             const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
             
@@ -776,6 +761,7 @@
             showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${rewardAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
+        // ВХОД В МИНИ-ИГРЫ
         function openEmbeddedGame(gameKey) {
             document.getElementById('games-selection-grid').style.display = 'none';
             document.getElementById('view-game-' + gameKey).style.display = 'flex';
@@ -786,10 +772,14 @@
         function closeEmbeddedGame(gameKey) {
             document.getElementById('view-game-' + gameKey).style.display = 'none';
             document.getElementById('games-selection-grid').style.display = 'grid';
-            if(gameKey === 'crypto' && typeof cryptoInterval !== 'undefined') clearInterval(cryptoInterval);
+            if(gameKey === 'crypto' && cryptoInterval) clearInterval(cryptoInterval);
         }
 
-        let minesBoard = [], minesOpened = 0, minesActive = false, currentMinesBet = 0;
+        // САПЁР МЕХАНИКА
+        let minesBoard = [];
+        let minesOpened = 0;
+        let minesActive = false;
+        let currentMinesBet = 0;
 
         function startMinesGame() {
             const bInput = document.getElementById('mines-bet');
@@ -798,9 +788,14 @@
                 showCustomResultDialog("Недостаточно монет или неверная ставка!");
                 return;
             }
-            coins -= bet; currentMinesBet = bet; miniGamesProfit -= bet;
-            localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_games_profit', miniGamesProfit);
-            updateUI(); saveToFirebase();
+
+            coins -= bet;
+            currentMinesBet = bet;
+            miniGamesProfit -= bet;
+            localStorage.setItem('cc_coins', coins);
+            localStorage.setItem('cc_games_profit', miniGamesProfit);
+            updateUI();
+            saveToFirebase();
 
             const countSelect = document.getElementById('mines-count');
             const mCount = parseInt(countSelect.value);
@@ -809,10 +804,14 @@
             let placed = 0;
             while(placed < mCount) {
                 let r = Math.floor(Math.random() * 25);
-                if(!minesBoard[r]) { minesBoard[r] = true; placed++; }
+                if(!minesBoard[r]) {
+                    minesBoard[r] = true;
+                    placed++;
+                }
             }
 
-            minesOpened = 0; minesActive = true;
+            minesOpened = 0;
+            minesActive = true;
             document.getElementById('mines-multiplier').innerText = "1.00";
             document.getElementById('mines-btn-start').disabled = true;
             document.getElementById('mines-btn-cashout').disabled = false;
@@ -832,18 +831,22 @@
             const mCount = parseInt(document.getElementById('mines-count').value);
 
             if(minesBoard[idx]) {
-                tile.classList.add('mine'); tile.innerText = "💣";
+                tile.classList.add('mine');
+                tile.innerText = "💣";
                 minesActive = false;
                 document.getElementById('mines-btn-start').disabled = false;
                 document.getElementById('mines-btn-cashout').disabled = true;
                 revealMinesBoard();
                 showCustomResultDialog("Бум! Вы попали на мину. Ставка проиграна.");
             } else {
-                tile.classList.add('opened'); tile.innerText = "💎";
+                tile.classList.add('opened');
+                tile.innerText = "💎";
                 minesOpened++;
                 
                 let curX = 1;
-                for(let i=0; i<minesOpened; i++) curX *= (25 - i) / (25 - mCount - i);
+                for(let i=0; i<minesOpened; i++) {
+                    curX *= (25 - i) / (25 - mCount - i);
+                }
                 document.getElementById('mines-multiplier').innerText = curX.toFixed(2);
             }
         }
@@ -851,7 +854,10 @@
         function revealMinesBoard() {
             for(let i=0; i<25; i++) {
                 const tile = document.getElementById('tile-' + i);
-                if(minesBoard[i]) { tile.classList.add('mine'); tile.innerText = "💣"; }
+                if(minesBoard[i]) {
+                    tile.classList.add('mine');
+                    tile.innerText = "💣";
+                }
             }
         }
 
@@ -864,14 +870,25 @@
             const multi = parseFloat(document.getElementById('mines-multiplier').innerText);
             const winAmt = Math.floor(currentMinesBet * multi);
 
-            coins += winAmt; miniGamesWon += winAmt; miniGamesProfit += winAmt;
-            localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_games_won', miniGamesWon); localStorage.setItem('cc_games_profit', miniGamesProfit);
+            coins += winAmt;
+            miniGamesWon += winAmt;
+            miniGamesProfit += winAmt;
 
-            updateUI(); saveToFirebase(); revealMinesBoard();
+            localStorage.setItem('cc_coins', coins);
+            localStorage.setItem('cc_games_won', miniGamesWon);
+            localStorage.setItem('cc_games_profit', miniGamesProfit);
+
+            updateUI();
+            saveToFirebase();
+            revealMinesBoard();
+
             showCustomResultDialog(`Отлично! Вы забрали куш: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
-        let cryptoCanvas, cryptoCtx, cryptoInterval, cryptoPoints = [], cryptoCurrentVal = 100;
+        // КРИПТО-ИНТУИТ МЕХАНИКА
+        let cryptoCanvas, cryptoCtx, cryptoInterval;
+        let cryptoPoints = [];
+        let cryptoCurrentVal = 100;
 
         function initCryptoGame() {
             cryptoCanvas = document.getElementById('crypto-canvas-el');
@@ -892,11 +909,20 @@
             const w = cryptoCanvas.width = cryptoCanvas.parentElement.clientWidth;
             const h = cryptoCanvas.height = 150;
             cryptoCtx.clearRect(0,0,w,h);
-            cryptoCtx.strokeStyle = "#2563eb"; cryptoCtx.lineWidth = 3; cryptoCtx.beginPath();
-            const step = w / 25; const min = Math.min(...cryptoPoints) - 5; const max = Math.max(...cryptoPoints) + 5;
+
+            cryptoCtx.strokeStyle = "#2563eb";
+            cryptoCtx.lineWidth = 3;
+            cryptoCtx.beginPath();
+
+            const step = w / 25;
+            const min = Math.min(...cryptoPoints) - 5;
+            const max = Math.max(...cryptoPoints) + 5;
+
             cryptoPoints.forEach((p, i) => {
-                const x = i * step; const y = h - ((p - min) / (max - min)) * h;
-                if(i === 0) cryptoCtx.moveTo(x,y); else cryptoCtx.lineTo(x,y);
+                const x = i * step;
+                const y = h - ((p - min) / (max - min)) * h;
+                if(i === 0) cryptoCtx.moveTo(x,y);
+                else cryptoCtx.lineTo(x,y);
             });
             cryptoCtx.stroke();
         }
@@ -904,93 +930,154 @@
         function playCrypto(direction) {
             const betInput = document.getElementById('crypto-bet');
             const bet = parseInt(betInput.value) || 0;
-            if (bet <= 0 || bet > coins) { showCustomResultDialog("Недостаточно монет или неверная ставка!"); return; }
+            if (bet <= 0 || bet > coins) {
+                showCustomResultDialog("Недостаточно монет или неверная ставка!");
+                return;
+            }
 
-            coins -= bet; miniGamesProfit -= bet;
-            updateUI(); saveToFirebase();
+            coins -= bet;
+            miniGamesProfit -= bet;
+            updateUI();
+            saveToFirebase();
+
             document.getElementById('lbl-crypto-status').innerText = "Анализ рынка (3с)...";
             document.getElementById('crypto-actions-row').style.pointerEvents = 'none';
+
             const initialPrice = cryptoCurrentVal;
 
             setTimeout(() => {
-                const finalPrice = cryptoCurrentVal; let won = false;
+                const finalPrice = cryptoCurrentVal;
+                let won = false;
                 if(direction === 'up' && finalPrice > initialPrice) won = true;
                 if(direction === 'down' && finalPrice < initialPrice) won = true;
 
                 if(won) {
                     const winAmt = Math.floor(bet * 1.9);
-                    coins += winAmt; miniGamesWon += winAmt; miniGamesProfit += winAmt;
+                    coins += winAmt;
+                    miniGamesWon += winAmt;
+                    miniGamesProfit += winAmt;
                     showCustomResultDialog(`График пошёл ${direction === 'up'?'вверх':'вниз'}. Вы угадали! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">`);
                 } else {
                     showCustomResultDialog(`Увы, график пошёл в противоположную сторону. Ставка проиграна.`);
                 }
 
-                localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_games_won', miniGamesWon); localStorage.setItem('cc_games_profit', miniGamesProfit);
-                updateUI(); saveToFirebase();
+                localStorage.setItem('cc_coins', coins);
+                localStorage.setItem('cc_games_won', miniGamesWon);
+                localStorage.setItem('cc_games_profit', miniGamesProfit);
+                updateUI();
+                saveToFirebase();
+
                 document.getElementById('lbl-crypto-status').innerText = "Ожидание...";
                 document.getElementById('crypto-actions-row').style.pointerEvents = 'auto';
             }, 3000);
         }
 
-        let currentDiceMode = 'gt', selectedDiceExact = 1;
+        // DICE МЕХАНИКА
+        let currentDiceMode = 'gt'; 
+        let selectedDiceExact = 1;
 
         function setDiceMode(mode) {
             currentDiceMode = mode;
             document.querySelectorAll('.dice-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('dice-tab-' + mode).classList.add('active');
+
             const wrapper = document.getElementById('dice-options-wrapper');
             const kLbl = document.getElementById('dice-current-k');
-            if(mode === 'eq') { wrapper.style.display = 'block'; kLbl.innerText = "5.50"; } 
-            else { wrapper.style.display = 'none'; kLbl.innerText = "1.90"; }
+
+            if(mode === 'eq') {
+                wrapper.style.display = 'block';
+                kLbl.innerText = "5.50";
+            } else {
+                wrapper.style.display = 'none';
+                kLbl.innerText = "1.90";
+            }
         }
 
         function selectDiceNum(num) {
             selectedDiceExact = num;
-            document.querySelectorAll('.dice-num-btn').forEach((b, i) => { b.classList.toggle('active', (i+1) === num); });
+            document.querySelectorAll('.dice-num-btn').forEach((b, i) => {
+                b.classList.toggle('active', (i+1) === num);
+            });
         }
 
         function rollDiceGame() {
             const betInput = document.getElementById('dice-bet');
             const bet = parseInt(betInput.value) || 0;
-            if (bet <= 0 || bet > coins) { showCustomResultDialog("Недостаточно монет или неверная ставка!"); return; }
+            if (bet <= 0 || bet > coins) {
+                showCustomResultDialog("Недостаточно монет или неверная ставка!");
+                return;
+            }
 
-            coins -= bet; miniGamesProfit -= bet; updateUI(); saveToFirebase();
-            const rollBtn = document.getElementById('dice-roll-btn'); rollBtn.disabled = true;
+            coins -= bet;
+            miniGamesProfit -= bet;
+            updateUI();
+            saveToFirebase();
 
-            let ticks = 0; const visual = document.getElementById('dice-visual-box');
+            const rollBtn = document.getElementById('dice-roll-btn');
+            rollBtn.disabled = true;
+
+            let ticks = 0;
+            const visual = document.getElementById('dice-visual-box');
+            
             const timer = setInterval(() => {
-                visual.innerText = Math.floor(Math.random() * 6) + 1; ticks++;
+                visual.innerText = Math.floor(Math.random() * 6) + 1;
+                ticks++;
                 if(ticks > 8) {
                     clearInterval(timer);
-                    const finalRoll = Math.floor(Math.random() * 6) + 1; visual.innerText = finalRoll;
-                    let isWin = false; let payoutK = 1.90;
+                    const finalRoll = Math.floor(Math.random() * 6) + 1;
+                    visual.innerText = finalRoll;
+
+                    let isWin = false;
+                    let payoutK = 1.90;
 
                     if(currentDiceMode === 'gt' && finalRoll > 3) isWin = true;
                     if(currentDiceMode === 'lt' && finalRoll < 4) isWin = true;
-                    if(currentDiceMode === 'eq' && finalRoll === selectedDiceExact) { isWin = true; payoutK = 5.50; }
+                    if(currentDiceMode === 'eq' && finalRoll === selectedDiceExact) {
+                        isWin = true;
+                        payoutK = 5.50;
+                    }
 
                     if(isWin) {
                         const winAmt = Math.floor(bet * payoutK);
-                        coins += winAmt; miniGamesWon += winAmt; miniGamesProfit += winAmt;
+                        coins += winAmt;
+                        miniGamesWon += winAmt;
+                        miniGamesProfit += winAmt;
                         showCustomResultDialog(`Выпало число ${finalRoll}. Победа! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">`);
                     } else {
                         showCustomResultDialog(`Выпало число ${finalRoll}. Повезёт в следующий раз!`);
                     }
-                    localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_games_won', miniGamesWon); localStorage.setItem('cc_games_profit', miniGamesProfit);
-                    updateUI(); saveToFirebase(); rollBtn.disabled = false;
+
+                    localStorage.setItem('cc_coins', coins);
+                    localStorage.setItem('cc_games_won', miniGamesWon);
+                    localStorage.setItem('cc_games_profit', miniGamesProfit);
+                    updateUI();
+                    saveToFirebase();
+                    rollBtn.disabled = false;
                 }
             }, 100);
         }
 
+        // PLINKO МЕХАНИКА
         let plinkoCanvas, plinkoCtx, plinkoBalls = [];
-        const plinkoPins = [], plinkoRows = 7, plinkoBuckets = [5, 2, 0.5, 0.2, 0.5, 2, 5];
+        const plinkoPins = [];
+        const plinkoRows = 7;
+        const plinkoBuckets = [5, 2, 0.5, 0.2, 0.5, 2, 5];
 
         function initPlinkoGame() {
-            plinkoCanvas = document.getElementById('plinko-canvas-el'); plinkoCtx = plinkoCanvas.getContext('2d');
+            plinkoCanvas = document.getElementById('plinko-canvas-el');
+            plinkoCtx = plinkoCanvas.getContext('2d');
+            
             plinkoPins.length = 0;
+            const h = 260;
+            const startY = 40;
+            const rowSpacing = 22;
+
             for (let r = 0; r < plinkoRows; r++) {
-                const count = r + 3; const rowY = 40 + r * 22;
-                for (let i = 0; i < count; i++) plinkoPins.push({ r: r, i: i, count: count, y: rowY });
+                const count = r + 3;
+                const rowY = startY + r * rowSpacing;
+                for (let i = 0; i < count; i++) {
+                    plinkoPins.push({ r: r, i: i, count: count, y: rowY });
+                }
             }
             requestAnimationFrame(updatePlinkoFrame);
         }
@@ -1002,82 +1089,160 @@
 
             plinkoCtx.fillStyle = "#475467";
             plinkoPins.forEach(p => {
-                const rowW = (p.count - 1) * 24; p.x = ((w - rowW) / 2) + p.i * 24;
-                plinkoCtx.beginPath(); plinkoCtx.arc(p.x, p.y, 3, 0, Math.PI * 2); plinkoCtx.fill();
+                const rowW = (p.count - 1) * 24;
+                const startX = (w - rowW) / 2;
+                p.x = startX + p.i * 24;
+                plinkoCtx.beginPath();
+                plinkoCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                plinkoCtx.fill();
             });
 
-            const bY = h - 20; const bW = w / plinkoBuckets.length;
-            plinkoCtx.font = "bold 10px Arial"; plinkoCtx.textAlign = "center";
+            const bY = h - 20;
+            const bW = w / plinkoBuckets.length;
+            plinkoCtx.font = "bold 10px Arial";
+            plinkoCtx.textAlign = "center";
+
             plinkoBuckets.forEach((b, idx) => {
                 const bx = idx * bW;
                 plinkoCtx.fillStyle = b >= 2 ? "#7f1d1d" : (b < 1 ? "#1e293b" : "#14532d");
                 plinkoCtx.fillRect(bx + 2, bY, bW - 4, 16);
-                plinkoCtx.fillStyle = "white"; plinkoCtx.fillText(b + "x", bx + bW/2, bY + 12);
+                plinkoCtx.fillStyle = "white";
+                plinkoCtx.fillText(b + "x", bx + bW/2, bY + 12);
             });
 
             plinkoCtx.fillStyle = "#ffb020";
             for (let i = plinkoBalls.length - 1; i >= 0; i--) {
-                let ball = plinkoBalls[i]; ball.y += ball.vy; ball.x += ball.vx; ball.vy += 0.18;
+                let ball = plinkoBalls[i];
+                ball.y += ball.vy;
+                ball.x += ball.vx;
+                ball.vy += 0.18;
+
                 plinkoPins.forEach(p => {
-                    const dx = ball.x - p.x; const dy = ball.y - p.y;
-                    if (Math.sqrt(dx*dx + dy*dy) < 8) { ball.y = p.y - 4; ball.vy = -ball.vy * 0.3; ball.vx = (Math.random() - 0.5) * 2 + (dx * 0.2); }
+                    const dx = ball.x - p.x;
+                    const dy = ball.y - p.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 8) {
+                        ball.y = p.y - 4;
+                        ball.vy = -ball.vy * 0.3;
+                        ball.vx = (Math.random() - 0.5) * 2 + (dx * 0.2);
+                    }
                 });
-                plinkoCtx.beginPath(); plinkoCtx.arc(ball.x, ball.y, 5, 0, Math.PI * 2); plinkoCtx.fill();
+
+                plinkoCtx.beginPath();
+                plinkoCtx.arc(ball.x, ball.y, 5, 0, Math.PI * 2);
+                plinkoCtx.fill();
 
                 if (ball.y >= bY) {
-                    const safeIdx = Math.max(0, Math.min(plinkoBuckets.length - 1, Math.floor(ball.x / bW)));
-                    const wonAmt = Math.floor(ball.bet * plinkoBuckets[safeIdx]);
-                    coins += wonAmt; miniGamesWon += wonAmt; miniGamesProfit += wonAmt;
-                    localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_games_won', miniGamesWon); localStorage.setItem('cc_games_profit', miniGamesProfit);
-                    updateUI(); saveToFirebase();
-                    showCustomResultDialog(`Шар упал в ячейку ${plinkoBuckets[safeIdx]}x. Вы выиграли: <span style="color:#22c55e;">+${wonAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
+                    const bucketIdx = Math.floor(ball.x / bW);
+                    const safeIdx = Math.max(0, Math.min(plinkoBuckets.length - 1, bucketIdx));
+                    const finalX = plinkoBuckets[safeIdx];
+                    
+                    const wonAmt = Math.floor(ball.bet * finalX);
+                    coins += wonAmt;
+                    miniGamesWon += wonAmt;
+                    miniGamesProfit += wonAmt;
+
+                    localStorage.setItem('cc_coins', coins);
+                    localStorage.setItem('cc_games_won', miniGamesWon);
+                    localStorage.setItem('cc_games_profit', miniGamesProfit);
+                    updateUI();
+                    saveToFirebase();
+
+                    showCustomResultDialog(`Шар упал в ячейку ${finalX}x. Вы выиграли: <span style="color:#22c55e;">+${wonAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
                     plinkoBalls.splice(i, 1);
                 }
             }
+
             requestAnimationFrame(updatePlinkoFrame);
         }
 
         function startPlinkoBall() {
-            const betInput = document.getElementById('plinko-bet'); const bet = parseInt(betInput.value) || 0;
-            if (bet <= 0 || bet > coins) { showCustomResultDialog("Недостаточно монет или неверная ставка!"); return; }
-            coins -= bet; miniGamesProfit -= bet; updateUI(); saveToFirebase();
-            plinkoBalls.push({ x: plinkoCanvas.width / 2 + (Math.random() - 0.5) * 8, y: 10, vx: 0, vy: 1.5, bet: bet });
+            const betInput = document.getElementById('plinko-bet');
+            const bet = parseInt(betInput.value) || 0;
+            if (bet <= 0 || bet > coins) {
+                showCustomResultDialog("Недостаточно монет или неверная ставка!");
+                return;
+            }
+
+            coins -= bet;
+            miniGamesProfit -= bet;
+            updateUI();
+            saveToFirebase();
+
+            plinkoBalls.push({
+                x: plinkoCanvas.width / 2 + (Math.random() - 0.5) * 8,
+                y: 10,
+                vx: 0,
+                vy: 1.5,
+                bet: bet
+            });
         }
 
-        let doorsActive = false, doorsRoom = 0, currentDoorsBet = 0, doorsWinningIndex = 0;
+        // ДВЕРИ МЕХАНИКА
+        let doorsActive = false;
+        let doorsRoom = 0;
+        let currentDoorsBet = 0;
+        let doorsWinningIndex = 0;
 
         function startDoorsGame() {
-            const bInput = document.getElementById('doors-bet'); const bet = parseInt(bInput.value) || 0;
-            if (bet <= 0 || bet > coins) { showCustomResultDialog("Недостаточно монет или неверная ставка!"); return; }
-            coins -= bet; currentDoorsBet = bet; miniGamesProfit -= bet;
-            localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_games_profit', miniGamesProfit);
-            updateUI(); saveToFirebase();
+            const bInput = document.getElementById('doors-bet');
+            const bet = parseInt(bInput.value) || 0;
+            if (bet <= 0 || bet > coins) {
+                showCustomResultDialog("Недостаточно монет или неверная ставка!");
+                return;
+            }
 
-            doorsActive = true; doorsRoom = 1;
-            document.getElementById('doors-multiplier').innerText = "1.00"; document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
-            document.getElementById('doors-btn-start').disabled = true; document.getElementById('doors-btn-take').disabled = false;
+            coins -= bet;
+            currentDoorsBet = bet;
+            miniGamesProfit -= bet;
+            localStorage.setItem('cc_coins', coins);
+            localStorage.setItem('cc_games_profit', miniGamesProfit);
+            updateUI();
+            saveToFirebase();
+
+            doorsActive = true;
+            doorsRoom = 1;
+            
+            document.getElementById('doors-multiplier').innerText = "1.00";
+            document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
+            document.getElementById('doors-btn-start').disabled = true;
+            document.getElementById('doors-btn-take').disabled = false;
+
             generateDoorsLayout();
         }
 
         function generateDoorsLayout() {
             doorsWinningIndex = Math.floor(Math.random() * 3);
-            const container = document.getElementById('doors-tiles-wrapper'); container.innerHTML = "";
-            for (let i = 0; i < 3; i++) container.innerHTML += `<div class="door-element" id="door-${i}" onclick="chooseDoorElement(${i})">🚪 Дверь ${i+1}</div>`;
+            const container = document.getElementById('doors-tiles-wrapper');
+            container.innerHTML = "";
+            for (let i = 0; i < 3; i++) {
+                container.innerHTML += `<div class="door-element" id="door-${i}" onclick="chooseDoorElement(${i})">🚪 Дверь ${i+1}</div>`;
+            }
         }
 
         function chooseDoorElement(idx) {
-            if (!doorsActive) return; doorsActive = false;
+            if (!doorsActive) return;
+            doorsActive = false;
+
             const dEl = document.getElementById('door-' + idx);
             if (idx === doorsWinningIndex) {
-                dEl.classList.add('win'); dEl.innerText = "💎 Сокровища!";
-                document.getElementById('doors-multiplier').innerText = (1.4 * doorsRoom).toFixed(2);
+                dEl.classList.add('win');
+                dEl.innerText = "💎 Сокровища!";
+                
+                let curX = 1.4 * doorsRoom;
+                document.getElementById('doors-multiplier').innerText = curX.toFixed(2);
+
                 setTimeout(() => {
-                    doorsRoom++; document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
-                    doorsActive = true; generateDoorsLayout();
+                    doorsRoom++;
+                    document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
+                    doorsActive = true;
+                    generateDoorsLayout();
                 }, 1200);
             } else {
-                dEl.classList.add('lose'); dEl.innerText = "👾 Монстр!";
-                document.getElementById('doors-btn-start').disabled = false; document.getElementById('doors-btn-take').disabled = true;
+                dEl.classList.add('lose');
+                dEl.innerText = "👾 Монстр!";
+                document.getElementById('doors-btn-start').disabled = false;
+                document.getElementById('doors-btn-take').disabled = true;
                 showCustomResultDialog("О нет! За дверью оказался монстр. Комната проиграна.");
             }
         }
@@ -1085,52 +1250,99 @@
         function takeDoorsPrize() {
             if (doorsRoom <= 1) return;
             doorsActive = false;
-            document.getElementById('doors-btn-start').disabled = false; document.getElementById('doors-btn-take').disabled = true;
+            document.getElementById('doors-btn-start').disabled = false;
+            document.getElementById('doors-btn-take').disabled = true;
 
-            const winAmt = Math.floor(currentDoorsBet * parseFloat(document.getElementById('doors-multiplier').innerText));
-            coins += winAmt; miniGamesWon += winAmt; miniGamesProfit += winAmt;
-            localStorage.setItem('cc_coins', coins); localStorage.setItem('cc_games_won', miniGamesWon); localStorage.setItem('cc_games_profit', miniGamesProfit);
+            const multi = parseFloat(document.getElementById('doors-multiplier').innerText);
+            const winAmt = Math.floor(currentDoorsBet * multi);
 
-            updateUI(); saveToFirebase(); document.getElementById('doors-tiles-wrapper').innerHTML = "";
+            coins += winAmt;
+            miniGamesWon += winAmt;
+            miniGamesProfit += winAmt;
+
+            localStorage.setItem('cc_coins', coins);
+            localStorage.setItem('cc_games_won', miniGamesWon);
+            localStorage.setItem('cc_games_profit', miniGamesProfit);
+
+            updateUI();
+            saveToFirebase();
+            document.getElementById('doors-tiles-wrapper').innerHTML = "";
+
             showCustomResultDialog(`Вы благополучно покинули замок! Награда: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
+        // АДМИН ОПЕРАЦИИ
         function adminGive() {
             if (!isAdmin) return;
-            const tId = document.getElementById('target-id').value; const amt = parseInt(document.getElementById('amount-give').value) || 0;
+            const tId = document.getElementById('target-id').value;
+            const amt = parseInt(document.getElementById('amount-give').value) || 0;
             if(!tId) return;
+
             db.ref('users/' + tId).once('value', (s) => {
                 if (s.exists()) {
-                    db.ref('users/' + tId).update({ coins: (s.val().coins || 0) + amt });
+                    const oldC = s.val().coins || 0;
+                    db.ref('users/' + tId).update({ coins: oldC + amt });
                     showCustomResultDialog(`Ресурсы успешно отправлены пользователю ${tId}!`);
-                } else { showCustomResultDialog("Игрок с таким ID не обнаружен."); }
+                } else {
+                    showCustomResultDialog("Игрок с таким ID не обнаружен.");
+                }
             });
         }
 
         function adminWipe() {
             if (!isAdmin) return;
-            const tId = document.getElementById('target-id').value; if(!tId) return;
+            const tId = document.getElementById('target-id').value;
+            if(!tId) return;
+
             if (confirm("Вы действительно хотите полностью обнулить этого игрока?")) {
-                db.ref('users/' + tId).update({ coins: 0, totalTaps: 0, miniGamesWon: 0, miniGamesProfit: 0, rewardStreak: 0, wheelSpins: 0 });
+                db.ref('users/' + tId).update({
+                    coins: 0, totalTaps: 0, miniGamesWon: 0, miniGamesProfit: 0, rewardStreak: 0, wheelSpins: 0
+                });
                 showCustomResultDialog(`Данные игрока ${tId} были успешно сброшены.`);
             }
         }
 
+        // ЛИДЕРБОРД ТОП 10
         function loadLeaderboard() {
-            const lContainer = document.getElementById('leaderboard'); if(!lContainer) return;
+            const lContainer = document.getElementById('leaderboard');
+            
             db.ref('users').orderByChild('coins').limitToLast(50).once('value', (snapshot) => {
                 let list = [];
-                snapshot.forEach(child => { const userData = child.val(); if (userData.totalTaps && userData.totalTaps > 0) list.push(userData); });
-                list.reverse(); list = list.slice(0, 10); 
+                snapshot.forEach(child => {
+                    const userData = child.val();
+                    // Добавляем только тех, кто сделал хотя бы 1 тап
+                    if (userData.totalTaps && userData.totalTaps > 0) {
+                        list.push(userData);
+                    }
+                });
+                
+                list.reverse();
+                list = list.slice(0, 10); // Оставляем только топ-10
+
                 lContainer.innerHTML = "";
-                if (list.length === 0) { lContainer.innerHTML = "<div style='color:#64748b; font-size:13px; text-align:center;'>В топе пока нет активных игроков</div>"; return; }
+                
+                if (list.length === 0) {
+                    lContainer.innerHTML = "<div style='color:#64748b; font-size:13px; text-align:center;'>В топе пока нет активных игроков</div>";
+                    return;
+                }
+
                 list.forEach((u, i) => {
-                    const uName = u.name || "Без имени"; const uCoins = u.coins !== undefined ? u.coins : 0;
+                    const uName = u.name || "Без имени";
+                    const uCoins = u.coins !== undefined ? u.coins : 0;
+                    
+                    let uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
+                    let uidHtml = "";
+                    
+                    // Показываем ID только если тот, кто смотрит топ — это админ (ты)
+                    if (isAdmin && u.uid) {
+                        uidHtml = `<div class="leaderboard-uid">ID: ${u.uid}</div>`;
+                    }
+                    
                     lContainer.innerHTML += `
                         <div class="leaderboard-card">
                             <div class="leaderboard-info">
-                                <div class="leaderboard-name">${i+1}. ${uName}${u.username && u.username !== "none" ? ` (@${u.username})` : ""}</div>
-                                ${isAdmin && u.uid ? `<div class="leaderboard-uid">ID: ${u.uid}</div>` : ""}
+                                <div class="leaderboard-name">${i+1}. ${uName}${uHandle}</div>
+                                ${uidHtml}
                             </div>
                             <div class="leaderboard-score">${uCoins.toLocaleString()} <img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></div>
                         </div>
@@ -1139,39 +1351,58 @@
             });
         }
 
+        // СМЕНА ЯЗЫКА
         function setLanguage(lang) {
-            currentLang = lang; localStorage.setItem('cc_lang', lang);
-            document.getElementById('lang-ru')?.classList.toggle('active', lang === 'ru');
-            document.getElementById('lang-en')?.classList.toggle('active', lang === 'en');
-            
-            const e1 = document.getElementById('nv-game'); if(e1) e1.innerText = langData[lang].nv_game;
-            const e2 = document.getElementById('nv-shop'); if(e2) e2.innerText = langData[lang].nv_shop;
-            const e3 = document.getElementById('nv-games'); if(e3) e3.innerText = langData[lang].nv_games;
-            const e4 = document.getElementById('nv-profile'); if(e4) e4.innerText = langData[lang].nv_profile;
-            
-            const e5 = document.getElementById('lbl-stats-header'); if(e5) e5.innerText = lang === 'ru' ? "Статистика" : "Statistics";
-            const e6 = document.getElementById('lbl-lead-title'); if(e6) e6.innerText = langData[lang].top_title;
+            currentLang = lang;
+            localStorage.setItem('cc_lang', lang);
 
-            const st1 = document.getElementById('st-coins'); if(st1) st1.innerText = langData[lang].st_1;
-            const st2 = document.getElementById('st-taps'); if(st2) st2.innerText = langData[lang].st_2;
-            const st3 = document.getElementById('st-won'); if(st3) st3.innerText = langData[lang].st_3;
-            const st4 = document.getElementById('st-profit'); if(st4) st4.innerText = langData[lang].st_4;
-            const st5 = document.getElementById('st-streak'); if(st5) st5.innerText = langData[lang].st_5;
-            const st6 = document.getElementById('st-wheel'); if(st6) st6.innerText = langData[lang].st_6;
+            document.getElementById('lang-ru').classList.toggle('active', lang === 'ru');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
             
-            const bT = document.getElementById('lbl-bonus-title'); if(bT) bT.innerText = lang === 'ru' ? "Ежедневный Бонус" : "Daily Bonus";
-            const bD = document.getElementById('lbl-bonus-desc'); 
-            if(bD) bD.innerText = lang === 'ru' ? "Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится." : "Claim rewards every single day! Don't skip a day, otherwise your streak will be reset.";
+            document.getElementById('nv-game').innerText = langData[lang].nv_game;
+            document.getElementById('nv-shop').innerText = langData[lang].nv_shop;
+            document.getElementById('nv-games').innerText = langData[lang].nv_games;
+            document.getElementById('nv-profile').innerText = langData[lang].nv_profile;
+            document.getElementById('lbl-stats-header').innerText = lang === 'ru' ? "Статистика" : "Statistics";
+            document.getElementById('lbl-lead-title').innerText = langData[lang].top_title;
 
-            const mb = document.getElementById('lbl-mines-b'); if(mb) mb.innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            const mm = document.getElementById('lbl-mines-m'); if(mm) mm.innerText = lang === 'ru' ? "Мины:" : "Mines:";
-            const cb = document.getElementById('lbl-crypto-b'); if(cb) cb.innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            const db_l = document.getElementById('lbl-dice-b'); if(db_l) db_l.innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            const pb = document.getElementById('lbl-plinko-b'); if(pb) pb.innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            const drb = document.getElementById('lbl-doors-b'); if(drb) drb.innerText = lang === 'ru' ? "Ставка:" : "Bet:";
+            document.getElementById('st-coins').innerText = langData[lang].st_1;
+            document.getElementById('st-taps').innerText = langData[lang].st_2;
+            document.getElementById('st-won').innerText = langData[lang].st_3;
+            document.getElementById('st-profit').innerText = langData[lang].st_4;
+            document.getElementById('st-streak').innerText = langData[lang].st_5;
+            document.getElementById('st-wheel').innerText = langData[lang].st_6;
+            
+            document.getElementById('lbl-bonus-title').innerText = lang === 'ru' ? "Ежедневный Бонус" : "Daily Bonus";
+            document.getElementById('lbl-bonus-desc').innerText = lang === 'ru' ? 
+                "Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится." : 
+                "Claim rewards every single day! Don't skip a day, otherwise your streak will be reset.";
 
-            updateUI(); initTelegramProfile();
+            document.getElementById('lbl-mines-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
+            document.getElementById('lbl-mines-m').innerText = lang === 'ru' ? "Мины:" : "Mines:";
+            document.getElementById('lbl-crypto-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
+            document.getElementById('lbl-dice-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
+            document.getElementById('lbl-plinko-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
+            document.getElementById('lbl-doors-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
+
+            updateUI();
+            initTelegramProfile();
         }
+
+        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ (с сохранением времени)
+        setInterval(() => {
+            if (energy < 100) {
+                energy++;
+                updateUI();
+                localStorage.setItem('cc_energy', energy);
+            }
+            localStorage.setItem('cc_last_energy_time', Date.now());
+        }, 1000);
+        
+        // Живой таймер бонуса
+        setInterval(updateBonusButtonState, 1000);
+
+        setLanguage(currentLang);
     </script>
 </body>
 </html>
