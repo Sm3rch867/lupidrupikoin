@@ -1,41 +1,50 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
     <style>
         body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #game-container { position: relative; width: 1024px; height: 576px; background: url('bgr_01_p1.jpg') center/cover; }
+        #stage { width: 1024px; height: 576px; background: url('bgr_01_p1.jpg') center/cover; position: relative; }
         
-        #anchor { position: absolute; top: 0; left: 50%; margin-left: -20px; width: 40px; height: 40px; background: url('obj_hook_02.png') center/contain no-repeat; z-index: 10; }
+        /* Крючок */
+        .hook { position: absolute; top: 0; left: 50%; margin-left: -20px; width: 40px; height: 40px; background: url('obj_hook_02.png') center/contain no-repeat; }
         
-        #pendulum { position: absolute; top: 20px; left: 50%; margin-left: -30px; width: 60px; transform-origin: top center; animation: swing 8s ease-in-out infinite; z-index: 5; }
-        #rope { width: 2px; height: 350px; background: #fff; margin: 0 auto; }
-        #candy { width: 60px; height: 60px; background: url('images-removebg-preview.png') center/contain no-repeat; margin-top: -5px; }
-
-        #om-nom { 
-            position: absolute; bottom: 30px; left: 50%; margin-left: -60px; width: 120px; height: 120px;
-            background: url('char_animations.jpg') 0% 0% / 700% auto no-repeat;
-            mix-blend-mode: multiply; /* Убирает черный фон JPG */
-            z-index: 2;
+        /* Маятник с конфетой */
+        .pendulum { position: absolute; top: 20px; left: 50%; transform-origin: top center; animation: swing 4s ease-in-out infinite; }
+        .candy { width: 60px; height: 60px; background: url('images-removebg-preview.png') center/contain no-repeat; margin-left: -30px; }
+        
+        /* Ам Ням - теперь мы используем конкретные кадры */
+        #omnom { 
+            position: absolute; bottom: 50px; left: 50%; margin-left: -60px; 
+            width: 120px; height: 120px; 
+            background: url('char_animations.jpg') 0% 0% no-repeat; 
+            background-size: 800% 800%;
         }
-        #om-nom.open { background-position: 50% 0%; }
 
-        @keyframes swing { 0% { transform: rotate(45deg); } 50% { transform: rotate(-45deg); } 100% { transform: rotate(45deg); } }
+        @keyframes swing { 0% { transform: rotate(30deg); } 50% { transform: rotate(-30deg); } 100% { transform: rotate(30deg); } }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="anchor"></div>
-        <div id="pendulum"><div id="rope"></div><div id="candy"></div></div>
-        <div id="om-nom"></div>
+    <div id="stage">
+        <div class="hook"></div>
+        <div class="pendulum">
+            <div style="width:2px; height:200px; background:#fff; margin:0 auto;"></div>
+            <div class="candy"></div>
+        </div>
+        <div id="omnom"></div>
     </div>
+
     <script>
-        const om = document.getElementById('om-nom');
-        function anim() { 
-            om.classList.add('open'); 
-            setTimeout(() => om.classList.remove('open'), 1000); 
+        const nom = document.getElementById('omnom');
+        // Позиции кадров для твоего файла (они подобраны под стандартную сетку игры)
+        const frames = ["0% 0%", "14% 0%", "28% 0%", "42% 0%"]; 
+        let i = 0;
+
+        function loop() {
+            // Если пора есть (центр маятника), показываем кадр 28% (открытый рот)
+            nom.style.backgroundPosition = (i % 4 === 2) ? frames[2] : frames[0];
+            i++;
         }
-        setTimeout(() => { anim(); setInterval(anim, 4000); }, 2000);
+        setInterval(loop, 1000); // Синхронно с анимацией маятника
     </script>
 </body>
 </html>
