@@ -2,143 +2,40 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ам Ням и Конфета</title>
     <style>
-        /* Базовые настройки страницы */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+        body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        #game-container { position: relative; width: 1024px; height: 576px; background: url('bgr_01_p1.jpg') center/cover; }
+        
+        #anchor { position: absolute; top: 0; left: 50%; margin-left: -20px; width: 40px; height: 40px; background: url('obj_hook_02.png') center/contain no-repeat; z-index: 10; }
+        
+        #pendulum { position: absolute; top: 20px; left: 50%; margin-left: -30px; width: 60px; transform-origin: top center; animation: swing 8s ease-in-out infinite; z-index: 5; }
+        #rope { width: 2px; height: 350px; background: #fff; margin: 0 auto; }
+        #candy { width: 60px; height: 60px; background: url('images-removebg-preview.png') center/contain no-repeat; margin-top: -5px; }
 
-        /* Игровой контейнер с задним фоном */
-        #game-container {
-            position: relative;
-            width: 1024px;
-            height: 576px;
-            /* Исправлено название файла фона */
-            background-image: url('bgr_01_p1.jpg'); 
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            overflow: hidden;
-        }
-
-        /* Держатель маятника (крючок) */
-        #anchor {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            margin-left: -20px;
-            width: 40px;
-            height: 40px;
-            background-image: url('obj_hook_02.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            z-index: 10;
-        }
-
-        /* Маятник (веревка + конфета) */
-        #pendulum {
-            position: absolute;
-            top: 35px; 
-            left: 50%;
-            margin-left: -30px; 
-            width: 60px; 
-            transform-origin: top center;
-            animation: swing 8s ease-in-out infinite;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 5;
-        }
-
-        /* Веревка */
-        #rope {
-            width: 2px;
-            height: 350px;
-            background-color: #333; 
-        }
-
-        /* Конфета */
-        #candy {
-            width: 60px;
-            height: 60px;
-            background-image: url('images-removebg-preview.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            margin-top: -5px; 
-        }
-
-        /* Ам Ням */
-        #om-nom {
-            position: absolute;
-            bottom: 30px; 
-            left: 50%;
-            margin-left: -60px; 
-            width: 120px; 
-            height: 120px; 
-            /* Исправлено название файла Ам Няма */
-            background-image: url('char_animations.jpg');
-            
-            /* На листе 7 колонок, поэтому 700% */
-            background-size: 700% auto; 
-            
-            /* По умолчанию: 1-я колонка, 1-й ряд (закрытый рот) */
-            background-position: 0% 0%; 
+        #om-nom { 
+            position: absolute; bottom: 30px; left: 50%; margin-left: -60px; width: 120px; height: 120px;
+            background: url('char_animations.jpg') 0% 0% / 700% auto no-repeat;
+            mix-blend-mode: multiply; /* Убирает черный фон JPG */
             z-index: 2;
         }
+        #om-nom.open { background-position: 50% 0%; }
 
-        /* Класс для открытого рта */
-        #om-nom.open-mouth {
-            /* Сдвигаем на 4-ю колонку (открытый рот) */
-            background-position: 50% 0%; 
-        }
-
-        /* Анимация качания */
-        @keyframes swing {
-            0% { transform: rotate(45deg); }
-            50% { transform: rotate(-45deg); }
-            100% { transform: rotate(45deg); }
-        }
+        @keyframes swing { 0% { transform: rotate(45deg); } 50% { transform: rotate(-45deg); } 100% { transform: rotate(45deg); } }
     </style>
 </head>
 <body>
-
     <div id="game-container">
         <div id="anchor"></div>
-        
-        <div id="pendulum">
-            <div id="rope"></div>
-            <div id="candy"></div>
-        </div>
-
+        <div id="pendulum"><div id="rope"></div><div id="candy"></div></div>
         <div id="om-nom"></div>
     </div>
-
     <script>
-        const omNom = document.getElementById('om-nom');
-
-        function openMouth() {
-            omNom.classList.add('open-mouth');
-            setTimeout(() => {
-                omNom.classList.remove('open-mouth');
-            }, 1000);
+        const om = document.getElementById('om-nom');
+        function anim() { 
+            om.classList.add('open'); 
+            setTimeout(() => om.classList.remove('open'), 1000); 
         }
-
-        setTimeout(() => {
-            openMouth();
-            setInterval(openMouth, 4000);
-        }, 2000);
+        setTimeout(() => { anim(); setInterval(anim, 4000); }, 2000);
     </script>
-
 </body>
 </html>
