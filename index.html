@@ -22,7 +22,8 @@
             position: relative;
             width: 1024px;
             height: 576px;
-            background-image: url('bgr_01_p1_2.jpg'); 
+            /* Исправлено название файла фона */
+            background-image: url('bgr_01_p1.jpg'); 
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
@@ -34,7 +35,7 @@
             position: absolute;
             top: 20px;
             left: 50%;
-            margin-left: -20px; /* Точное центрирование (половина от 40px) */
+            margin-left: -20px;
             width: 40px;
             height: 40px;
             background-image: url('obj_hook_02.png');
@@ -47,12 +48,11 @@
         /* Маятник (веревка + конфета) */
         #pendulum {
             position: absolute;
-            top: 35px; /* Веревка выходит прямо из центра крючка */
+            top: 35px; 
             left: 50%;
-            margin-left: -30px; /* Точное центрирование (половина от ширины конфеты 60px) */
-            width: 60px; /* Ширина контейнера равна ширине конфеты */
+            margin-left: -30px; 
+            width: 60px; 
             transform-origin: top center;
-            /* Цикл: туда-обратно за 8 секунд */
             animation: swing 8s ease-in-out infinite;
             display: flex;
             flex-direction: column;
@@ -64,10 +64,10 @@
         #rope {
             width: 2px;
             height: 350px;
-            background-color: #333; /* Темная нить как в игре */
+            background-color: #333; 
         }
 
-        /* Конфета (твоя картинка) */
+        /* Конфета */
         #candy {
             width: 60px;
             height: 60px;
@@ -75,7 +75,7 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            margin-top: -5px; /* Конфета чуть наезжает на веревку, чтобы не было зазора */
+            margin-top: -5px; 
         }
 
         /* Ам Ням */
@@ -83,21 +83,27 @@
             position: absolute;
             bottom: 30px; 
             left: 50%;
-            margin-left: -60px; /* Точное центрирование (половина от 120px) */
+            margin-left: -60px; 
             width: 120px; 
             height: 120px; 
-            background-image: url('char_animations_2.jpg');
-            background-size: 600% auto; 
+            /* Исправлено название файла Ам Няма */
+            background-image: url('char_animations.jpg');
+            
+            /* На листе 7 колонок, поэтому 700% */
+            background-size: 700% auto; 
+            
+            /* По умолчанию: 1-я колонка, 1-й ряд (закрытый рот) */
             background-position: 0% 0%; 
             z-index: 2;
         }
 
         /* Класс для открытого рта */
         #om-nom.open-mouth {
-            background-position: 40% 0%; 
+            /* Сдвигаем на 4-ю колонку (открытый рот) */
+            background-position: 50% 0%; 
         }
 
-        /* Анимация качания: от 45 градусов слева до -45 градусов справа */
+        /* Анимация качания */
         @keyframes swing {
             0% { transform: rotate(45deg); }
             50% { transform: rotate(-45deg); }
@@ -122,16 +128,12 @@
         const omNom = document.getElementById('om-nom');
 
         function openMouth() {
-            // Добавляем класс, Ам Ням открывает рот
             omNom.classList.add('open-mouth');
-
-            // Держим рот открытым 1 секунду
             setTimeout(() => {
                 omNom.classList.remove('open-mouth');
             }, 1000);
         }
 
-        // Ждем 2 секунды (пролет через центр) и запускаем цикл каждые 4 секунды
         setTimeout(() => {
             openMouth();
             setInterval(openMouth, 4000);
