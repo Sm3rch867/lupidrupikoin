@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ам Ням и Конфета</title>
+    <style>
+        /* Базовые настройки страницы */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Игровой контейнер с задним фоном */
+        #game-container {
+            position: relative;
+            width: 1024px;
+            height: 576px;
+            background-image: url('bgr_01_p1_2.jpg'); 
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+
+        /* Держатель маятника (крючок) */
+        #anchor {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            margin-left: -20px; /* Точное центрирование (половина от 40px) */
+            width: 40px;
+            height: 40px;
+            background-image: url('obj_hook_02.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 10;
+        }
+
+        /* Маятник (веревка + конфета) */
+        #pendulum {
+            position: absolute;
+            top: 35px; /* Веревка выходит прямо из центра крючка */
+            left: 50%;
+            margin-left: -30px; /* Точное центрирование (половина от ширины конфеты 60px) */
+            width: 60px; /* Ширина контейнера равна ширине конфеты */
+            transform-origin: top center;
+            /* Цикл: туда-обратно за 8 секунд */
+            animation: swing 8s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+        }
+
+        /* Веревка */
+        #rope {
+            width: 2px;
+            height: 350px;
+            background-color: #333; /* Темная нить как в игре */
+        }
+
+        /* Конфета (твоя картинка) */
+        #candy {
+            width: 60px;
+            height: 60px;
+            background-image: url('images-removebg-preview.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-top: -5px; /* Конфета чуть наезжает на веревку, чтобы не было зазора */
+        }
+
+        /* Ам Ням */
+        #om-nom {
+            position: absolute;
+            bottom: 30px; 
+            left: 50%;
+            margin-left: -60px; /* Точное центрирование (половина от 120px) */
+            width: 120px; 
+            height: 120px; 
+            background-image: url('char_animations_2.jpg');
+            background-size: 600% auto; 
+            background-position: 0% 0%; 
+            z-index: 2;
+        }
+
+        /* Класс для открытого рта */
+        #om-nom.open-mouth {
+            background-position: 40% 0%; 
+        }
+
+        /* Анимация качания: от 45 градусов слева до -45 градусов справа */
+        @keyframes swing {
+            0% { transform: rotate(45deg); }
+            50% { transform: rotate(-45deg); }
+            100% { transform: rotate(45deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="anchor"></div>
+        
+        <div id="pendulum">
+            <div id="rope"></div>
+            <div id="candy"></div>
+        </div>
+
+        <div id="om-nom"></div>
+    </div>
+
+    <script>
+        const omNom = document.getElementById('om-nom');
+
+        function openMouth() {
+            // Добавляем класс, Ам Ням открывает рот
+            omNom.classList.add('open-mouth');
+
+            // Держим рот открытым 1 секунду
+            setTimeout(() => {
+                omNom.classList.remove('open-mouth');
+            }, 1000);
+        }
+
+        // Ждем 2 секунды (пролет через центр) и запускаем цикл каждые 4 секунды
+        setTimeout(() => {
+            openMouth();
+            setInterval(openMouth, 4000);
+        }, 2000);
+    </script>
+
+</body>
+</html>
