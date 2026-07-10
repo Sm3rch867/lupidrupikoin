@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Doors</title>
+<style>
+  body{margin:0;background:#0b132a;color:#e9f0ff;font-family:Inter,system-ui}
+  .wrap{max-width:520px;margin:0 auto;padding:14px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .panel{background:#0f1b39;border:1px solid #1a2c59;border-radius:12px;padding:12px;margin-bottom:10px}
+  .room{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+  .door{height:140px;background:linear-gradient(180deg,#1b2a56,#0f1c3f);border:1px solid #20376e;border-radius:10px;display:grid;place-items:center;cursor:pointer;position:relative}
+  .door::after{content:"";position:absolute;right:10px;top:50%;width:8px;height:8px;background:#d6a64b;border-radius:50%}
+  button{background:#17306a;border:1px solid #2b55cc;color:#e9f0ff;border-radius:10px;padding:10px 14px;cursor:pointer}
+</style></head>
+<body>
+<div class="wrap">
+  <div class="panel row">
+    <div>Баланс: <span id="bal">0</span></div>
+    <div>Ставка: <input id="bet" type="number" min="1" value="10" style="width:90px;background:#0e1836;color:#fff;border:1px solid #284aa0;border-radius:8px;padding:6px"></div>
+    <div>Коэф: x<span id="k">1.00</span></div>
+  </div>
+  <div class="panel row">
+    <button id="start">Старт</button>
+    <button id="take" disabled>Забрать</button>
+  </div>
+  <div class="panel">
+    <div>Комната: <span id="roomN">0</span></div>
+    <div class="room" id="room"></div>
+  </div>
+</div>
+<script>
+  function send(m){ parent.postMessage(m,'*'); }
+  let balance=0; send({type:'getBalance'});
+  window.addEventListener('message',e=>{ if(e.data?.type==='balance'){ balance=e.data.value; bal.textContent=balance; }});
+  const bal=document.getElementById('bal');
+  const betEl=document.getElementById('bet');
+  const kEl=document.getElementById('k');
+  const roomN=document.getElementById('roomN');
+  const room=document.getElementById('room');
+  const startBtn=document.getElementById('start');
+  const takeBtn=document.getElementById('take');
+
+  let playing=false, bet=10, k=1, round=0, doors=3, winDoor=0;
+
+  function newRoom(){
+    doors = Math.random()<0.5?2:3;
+    room.style.gridTemplateColumns = `repeat(${doors},1fr)`;
+    room.innerHTML='';
+    winDoor = Math.floor(Math.random()*doors);
+    for(let i=0;i<doors;i++){
+      const d=document.createElement('div');
+      d.className='door'; d.textContent='Дверь';
+      d.addEventListener('click',()=>choose(i,d));
+      room.appendChild(d);
+    }
+    roomN.textContent=round;
+  }
+
+  function start(){
+    bet = Math.max(1,parseInt(betEl.value||1));
+    if(bet>balance) return alert('Недостаточно средств');
+    send({type:'sub',amount:bet}); balance-=bet; bal.textContent=balance;
+    playing=true; k=1; round=1;
+    kEl.textContent=k.toFixed(2);
+    startBtn.disabled=true; takeBtn.disabled=true;
+    newRoom();
+  }
+  function choose(i,el){
+    if(!playing) return;
+    const success = i===winDoor;
+    if(success){
+      k *= 1.35 + Math.random()*0.45; // растём на 1.35-1.8x
+      kEl.textContent=k.toFixed(2);
+      el.style.outline='2px solid #19c37d'; el.textContent='Сокровище!';
+      takeBtn.disabled=false;
+      round++; setTimeout(newRoom,600);
+    }else{
+      el.style.outline='2px solid #ff6b6b'; el.textContent='Ловушка';
+      playing=false; startBtn.disabled=false; takeBtn.disabled=true;
+      k=0; kEl.textContent='0.00';
+    }
+  }
+  function take(){
+    if(!playing) return;
+    const prize=Math.floor(bet*k);
+    send({type:'add',amount:prize}); balance+=prize; bal.textContent=balance;
+    playing=false; startBtn.disabled=false; takeBtn.disabled=true;
+  }
+
+  startBtn.onclick=start;
+  takeBtn.onclick=take;
+</script>
+</body></html>
