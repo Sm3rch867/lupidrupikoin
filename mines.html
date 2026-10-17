@@ -15,10 +15,12 @@
   .cell.mine{background:#5b1630}
   .controls{display:flex;gap:10px;justify-content:center}
   button{background:#17306a;color:#dce6ff;border:1px solid #2b55cc;border-radius:10px;padding:10px 12px;cursor:pointer}
+  .demo-notice{font-size:12px;color:#ffcf66}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="panel demo-notice" id="demoNotice" hidden>Демо-режим: тестовые монеты не связаны с аккаунтом и не сохраняются.</div>
   <div class="top">
     <div class="panel">Баланс: <span id="bal">0</span></div>
     <div class="panel">Ставка: <input id="bet" type="number" min="1" value="10" style="width:80px;background:#0e1836;color:#fff;border:1px solid #284aa0;border-radius:8px;padding:6px"></div>
@@ -29,9 +31,17 @@
 </div>
 <script>
   // postMessage helpers
-  function send(msg){ parent.postMessage(msg,'*'); }
-  let balance=0; send({type:'getBalance'});
-  window.addEventListener('message',e=>{ if(e.data?.type==='balance'){ balance=e.data.value; document.getElementById('bal').textContent=balance; } });
+  function send(msg){ if(parent!==window && location.origin!=='null') parent.postMessage(msg,location.origin); }
+  const standalone=parent===window;
+  let balance=standalone?1000:0;
+  if(standalone) document.getElementById('demoNotice').hidden=false;
+  else send({type:'getBalance'});
+  window.addEventListener('message',e=>{
+    if(e.source===parent && e.origin===location.origin && e.data?.type==='balance' && Number.isSafeInteger(e.data.value) && e.data.value>=0){
+      balance=e.data.value;
+      document.getElementById('bal').textContent=balance;
+    }
+  });
 
   const grid=document.getElementById('grid');
   const multEl=document.getElementById('mult');
@@ -64,7 +74,8 @@
     cashBtn.disabled=true;
   }
   function start(){
-    bet = Math.max(1, parseInt(betEl.value||1));
+    bet = Number(betEl.value);
+    if(!Number.isSafeInteger(bet) || bet<1) return alert('Неверная ставка');
     if(bet>balance) return alert('Недостаточно средств');
     send({type:'sub', amount:bet});
     balance-=bet; document.getElementById('bal').textContent=balance;

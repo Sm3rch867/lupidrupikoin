@@ -8,9 +8,11 @@
   .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
   button{background:#17306a;border:1px solid #2b55cc;color:#e9f0ff;border-radius:10px;padding:10px 14px;cursor:pointer}
   input,select{background:#0e1836;color:#fff;border:1px solid #284aa0;border-radius:8px;padding:8px}
+  .demo-notice{font-size:12px;color:#ffcf66}
 </style></head>
 <body>
 <div class="wrap">
+  <div class="panel demo-notice" id="demoNotice" hidden>Демо-режим: тестовые монеты не связаны с аккаунтом и не сохраняются.</div>
   <div class="panel row">
     <div>Баланс: <span id="bal">0</span></div>
     <div>Ставка: <input id="bet" type="number" min="1" value="10" style="width:90px"></div>
@@ -30,10 +32,18 @@
   <div class="panel" id="res">Результат: —</div>
 </div>
 <script>
-  function send(m){ parent.postMessage(m,'*'); }
-  let balance=0; send({type:'getBalance'});
-  window.addEventListener('message',e=>{ if(e.data?.type==='balance'){ balance=e.data.value; bal.textContent=balance; }});
-  const bal=bal=document.getElementById('bal');
+  function send(m){ if(parent!==window && location.origin!=='null') parent.postMessage(m,location.origin); }
+  const standalone=parent===window;
+  let balance=standalone?1000:0;
+  if(standalone) document.getElementById('demoNotice').hidden=false;
+  else send({type:'getBalance'});
+  const bal=document.getElementById('bal');
+  window.addEventListener('message',e=>{
+    if(e.source===parent && e.origin===location.origin && e.data?.type==='balance' && Number.isSafeInteger(e.data.value) && e.data.value>=0){
+      balance=e.data.value;
+      bal.textContent=balance;
+    }
+  });
   const betEl=document.getElementById('bet');
   const mode=document.getElementById('mode');
   const numEl=document.getElementById('num');
@@ -44,17 +54,27 @@
   mode.dispatchEvent(new Event('change'));
 
   document.getElementById('roll').onclick=()=>{
-    const bet=Math.max(1,parseInt(betEl.value||1));
+    const bet=Number(betEl.value);
+    if(!Number.isSafeInteger(bet) || bet<1) return alert('Неверная ставка');
     if(bet>balance) return alert('Недостаточно средств');
+    const exactNumber=Number(numEl.value);
+    if(mode.value==='eq' && (!Number.isInteger(exactNumber) || exactNumber<1 || exactNumber>6)){
+      return alert('Выбери число от 1 до 6');
+    }
+    const roll=document.getElementById('roll');
+    roll.disabled=true;
     send({type:'sub',amount:bet}); balance-=bet; bal.textContent=balance;
     const d = Math.floor(Math.random()*6)+1;
     let win=false, k=0;
     if(mode.value==='gt'){ win = d>3; k=1.9; }
     if(mode.value==='lt'){ win = d<4; k=1.9; }
-    if(mode.value==='eq'){ const n=parseInt(numEl.value||6); win=(d===n); k=5; }
+    if(mode.value==='eq'){
+      win=(d===exactNumber); k=5;
+    }
     if(win){ const prize=Math.floor(bet*k); send({type:'add',amount:prize}); balance+=prize; }
     bal.textContent=balance;
     res.textContent='Результат: ' + d + (win?' — Победа! +'+Math.floor(bet*k):' — Не повезло');
+    roll.disabled=false;
   };
 </script>
 </body></html>

@@ -10,9 +10,11 @@
   .door{height:140px;background:linear-gradient(180deg,#1b2a56,#0f1c3f);border:1px solid #20376e;border-radius:10px;display:grid;place-items:center;cursor:pointer;position:relative}
   .door::after{content:"";position:absolute;right:10px;top:50%;width:8px;height:8px;background:#d6a64b;border-radius:50%}
   button{background:#17306a;border:1px solid #2b55cc;color:#e9f0ff;border-radius:10px;padding:10px 14px;cursor:pointer}
+  .demo-notice{font-size:12px;color:#ffcf66}
 </style></head>
 <body>
 <div class="wrap">
+  <div class="panel demo-notice" id="demoNotice" hidden>Демо-режим: тестовые монеты не связаны с аккаунтом и не сохраняются.</div>
   <div class="panel row">
     <div>Баланс: <span id="bal">0</span></div>
     <div>Ставка: <input id="bet" type="number" min="1" value="10" style="width:90px;background:#0e1836;color:#fff;border:1px solid #284aa0;border-radius:8px;padding:6px"></div>
@@ -28,9 +30,17 @@
   </div>
 </div>
 <script>
-  function send(m){ parent.postMessage(m,'*'); }
-  let balance=0; send({type:'getBalance'});
-  window.addEventListener('message',e=>{ if(e.data?.type==='balance'){ balance=e.data.value; bal.textContent=balance; }});
+  function send(m){ if(parent!==window && location.origin!=='null') parent.postMessage(m,location.origin); }
+  const standalone=parent===window;
+  let balance=standalone?1000:0;
+  if(standalone) document.getElementById('demoNotice').hidden=false;
+  else send({type:'getBalance'});
+  window.addEventListener('message',e=>{
+    if(e.source===parent && e.origin===location.origin && e.data?.type==='balance' && Number.isSafeInteger(e.data.value) && e.data.value>=0){
+      balance=e.data.value;
+      bal.textContent=balance;
+    }
+  });
   const bal=document.getElementById('bal');
   const betEl=document.getElementById('bet');
   const kEl=document.getElementById('k');
@@ -56,7 +66,8 @@
   }
 
   function start(){
-    bet = Math.max(1,parseInt(betEl.value||1));
+    bet = Number(betEl.value);
+    if(!Number.isSafeInteger(bet) || bet<1) return alert('Неверная ставка');
     if(bet>balance) return alert('Недостаточно средств');
     send({type:'sub',amount:bet}); balance-=bet; bal.textContent=balance;
     playing=true; k=1; round=1;
@@ -66,13 +77,14 @@
   }
   function choose(i,el){
     if(!playing) return;
+    playing=false;
     const success = i===winDoor;
     if(success){
       k *= 1.35 + Math.random()*0.45; // растём на 1.35-1.8x
       kEl.textContent=k.toFixed(2);
       el.style.outline='2px solid #19c37d'; el.textContent='Сокровище!';
       takeBtn.disabled=false;
-      round++; setTimeout(newRoom,600);
+      round++; setTimeout(()=>{ if(playing) return; playing=true; newRoom(); },600);
     }else{
       el.style.outline='2px solid #ff6b6b'; el.textContent='Ловушка';
       playing=false; startBtn.disabled=false; takeBtn.disabled=true;

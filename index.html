@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LUPI DRUPI COIN</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
@@ -266,7 +264,7 @@
 
     <div class="screen active" id="game-scr">
         <button class="coin-btn" id="coin-clicker" onclick="handleTap(event)">
-            <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">
+            <img src="coin.png">
         </button>
     </div>
 
@@ -390,7 +388,7 @@
 
     <div class="screen" id="profile-scr">
         <div class="profile-header">
-            <img src="assets/avatar.jpg" class="profile-avatar" id="user-avatar" onerror="this.src='avatar.jpg'; this.onerror=function(){this.src='https://ui-avatars.com/api/?name=Lupi&background=2563eb&color=fff'}">
+            <img src="coin.png" class="profile-avatar" id="user-avatar" alt="">
             <div class="profile-meta">
                 <h3 id="user-username">Игрок</h3>
                 <p id="user-joined">Загрузка данных...</p>
@@ -405,10 +403,10 @@
         <div class="stats-container-card">
             <h3 id="lbl-stats-header">Статистика</h3>
             <div class="stats-list">
-                <div class="stats-row"><span id="st-coins">Количество монет</span><span><span id="stat-coins-val">0</span><img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></span></div>
+                <div class="stats-row"><span id="st-coins">Количество монет</span><span><span id="stat-coins-val">0</span><img src="coin.png" class="coin-mini-icon"></span></div>
                 <div class="stats-row"><span id="st-taps">Количество тапов</span><span id="stat-taps-val">0</span></div>
-                <div class="stats-row"><span id="st-won">Выиграно в мини играх</span><span><span id="stat-won-val" class="win-color">0</span><img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></span></div>
-                <div class="stats-row"><span id="st-profit">Прибыль</span><span><span id="stat-profit-val" class="win-color">+0</span><img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></span></div>
+                <div class="stats-row"><span id="st-won">Выиграно в мини играх</span><span><span id="stat-won-val" class="win-color">0</span><img src="coin.png" class="coin-mini-icon"></span></div>
+                <div class="stats-row"><span id="st-profit">Прибыль</span><span><span id="stat-profit-val" class="win-color">+0</span><img src="coin.png" class="coin-mini-icon"></span></div>
                 <div class="stats-row"><span id="st-streak">Стрик наград</span><span><span id="stat-streak-val">0</span> дней</span></div>
                 <div class="stats-row"><span id="st-wheel">Прокрутил колесо фортуны</span><span id="stat-wheel-val">0</span></div>
             </div>
@@ -467,105 +465,97 @@
         };
 
         let currentLang = localStorage.getItem('cc_lang') || 'ru';
-
-        // ИГРОВЫЕ ПЕРЕМЕННЫЕ
-        let coins = parseInt(localStorage.getItem('cc_coins')) || 0;
-        let totalTaps = parseInt(localStorage.getItem('cc_total_taps')) || 0;
-        let miniGamesWon = parseInt(localStorage.getItem('cc_games_won')) || 0;
-        let miniGamesProfit = parseInt(localStorage.getItem('cc_games_profit')) || 0;
-        let rewardStreak = parseInt(localStorage.getItem('cc_reward_streak')) || 0;
-        let wheelSpins = parseInt(localStorage.getItem('cc_wheel_spins')) || 0;
-        
-        // Исправленная логика энергии + Офлайн-восстановление
-        let savedEnergy = parseInt(localStorage.getItem('cc_energy'));
-        let energy = isNaN(savedEnergy) ? 100 : savedEnergy;
-        
-        let lastEnergyTime = parseInt(localStorage.getItem('cc_last_energy_time')) || Date.now();
-        let passedSeconds = Math.floor((Date.now() - lastEnergyTime) / 1000);
-        if (passedSeconds > 0 && energy < 100) {
-            energy = Math.min(100, energy + passedSeconds);
-            localStorage.setItem('cc_energy', energy);
-        }
-
-        // Инициализация Firebase
-        const firebaseConfig = {
-            databaseURL: "https://lupidrupikoin-default-rtdb.firebaseio.com/"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let tgUser = { id: "local_dev", first_name: "Игрок", username: "player" };
+        if (!langData[currentLang]) currentLang = 'ru';
+        let coins = 0;
+        let totalTaps = 0;
+        let miniGamesWon = 0;
+        let miniGamesProfit = 0;
+        let rewardStreak = 0;
+        let wheelSpins = 0;
+        let energy = 0;
+        let nextClaimAt = 0;
         let isAdmin = false;
+        let isReady = false;
+        let userRevision = -1;
+        let tapQueue = 0;
+        let tapFlushTimer = null;
+        let tapRequestInFlight = false;
+        let tgUser = null;
+        const telegram = window.Telegram && window.Telegram.WebApp;
+        const telegramInitData = telegram ? telegram.initData : '';
 
-        if (window.Telegram && window.Telegram.WebApp) {
-            const webapp = window.Telegram.WebApp;
-            webapp.ready();
-            webapp.expand();
-            if (webapp.initDataUnsafe && webapp.initDataUnsafe.user) {
-                tgUser = webapp.initDataUnsafe.user;
+        if (telegram) {
+            telegram.ready();
+            telegram.expand();
+        }
+
+        async function apiRequest(action, payload = {}) {
+            if (!telegramInitData) {
+                throw new Error('Открой приложение через Telegram, чтобы войти.');
+            }
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10_000);
+            try {
+                const response = await fetch('/api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    cache: 'no-store',
+                    signal: controller.signal,
+                    body: JSON.stringify({ action, payload, initData: telegramInitData })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Сервис временно недоступен.');
+                }
+                return data;
+            } catch (error) {
+                if (error.name === 'AbortError') throw new Error('Сервер не ответил вовремя. Проверь подключение и попробуй ещё раз.');
+                throw error;
+            } finally {
+                clearTimeout(timeout);
             }
         }
-        
-        isAdmin = tgUser.id == "5932857353"; 
 
-        const userRef = db.ref('users/' + tgUser.id);
+        function applyUser(user) {
+            if (!user || !Number.isSafeInteger(user.revision) || user.revision < userRevision) return;
+            userRevision = user.revision;
+            coins = user.coins;
+            totalTaps = user.totalTaps;
+            miniGamesWon = user.miniGamesWon;
+            miniGamesProfit = user.miniGamesProfit;
+            rewardStreak = user.rewardStreak;
+            wheelSpins = user.wheelSpins;
+            energy = user.energy;
+            nextClaimAt = user.nextClaimAt;
+            isAdmin = user.isAdmin;
+            tgUser = { id: user.uid, first_name: user.name, username: user.username };
+            document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
+            updateUI();
+            initTelegramProfile();
+            if (!isReady) restoreActiveGame(user.activeGame);
+        }
 
-        // Синхронизация данных с Firebase
-        userRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                coins = data.coins !== undefined ? data.coins : coins;
-                totalTaps = data.totalTaps !== undefined ? data.totalTaps : totalTaps;
-                miniGamesWon = data.miniGamesWon !== undefined ? data.miniGamesWon : miniGamesWon;
-                miniGamesProfit = data.miniGamesProfit !== undefined ? data.miniGamesProfit : miniGamesProfit;
-                rewardStreak = data.rewardStreak !== undefined ? data.rewardStreak : rewardStreak;
-                wheelSpins = data.wheelSpins !== undefined ? data.wheelSpins : wheelSpins;
-                
-                isAdmin = (data.isAdmin || tgUser.id == "5932857353");
-
-                localStorage.setItem('cc_coins', coins);
-                localStorage.setItem('cc_total_taps', totalTaps);
-                localStorage.setItem('cc_games_won', miniGamesWon);
-                localStorage.setItem('cc_games_profit', miniGamesProfit);
-                localStorage.setItem('cc_reward_streak', rewardStreak);
-                localStorage.setItem('cc_wheel_spins', wheelSpins);
-
-                document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
-                updateUI();
-                initTelegramProfile();
-            } else {
-                saveToFirebase();
+        async function bootstrap() {
+            try {
+                const data = await apiRequest('bootstrap');
+                applyUser(data.user);
+                isReady = true;
+                document.getElementById('coin-clicker').disabled = false;
+            } catch (error) {
+                showCustomResultDialog(error.message);
             }
-        });
-
-        function saveToFirebase() {
-            userRef.update({
-                uid: tgUser.id,
-                name: tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : ""),
-                username: tgUser.username || "none",
-                coins: coins,
-                totalTaps: totalTaps,
-                miniGamesWon: miniGamesWon,
-                miniGamesProfit: miniGamesProfit,
-                rewardStreak: rewardStreak,
-                wheelSpins: wheelSpins
-            });
         }
 
         function initTelegramProfile() {
             const nameEl = document.getElementById('user-username');
             const joinedEl = document.getElementById('user-joined');
-            const avatarEl = document.getElementById('user-avatar');
+            if (!tgUser) return;
 
-            const fullName = tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "");
+            const fullName = tgUser.first_name || "Игрок";
             const handle = tgUser.username ? ` (@${tgUser.username})` : "";
             
             nameEl.innerText = fullName + handle;
             joinedEl.innerText = `ID: ${tgUser.id}`;
-
-            if(tgUser.photo_url) {
-                avatarEl.src = tgUser.photo_url;
-            }
         }
 
         // Обновление интерфейса
@@ -604,20 +594,13 @@
 
         // КЛИКЕР ТАПЫ
         function handleTap(e) {
-            if (energy <= 0 || isNaN(energy)) return; // Дополнительная защита
-
+            if (!isReady || energy <= 0 || tapQueue >= 10) return;
             coins += 1;
             totalTaps += 1;
             energy -= 1;
-
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_total_taps', totalTaps);
-            localStorage.setItem('cc_energy', energy);
-
+            tapQueue += 1;
             updateUI();
-            saveToFirebase();
 
-            // Анимация +1 цифры
             const p = document.createElement('div');
             p.className = 'plus-one';
             p.innerText = '+1';
@@ -634,6 +617,33 @@
             document.body.appendChild(p);
 
             setTimeout(() => p.remove(), 800);
+            if (!tapFlushTimer && !tapRequestInFlight) {
+                tapFlushTimer = setTimeout(flushTapQueue, 120);
+            }
+        }
+
+        async function flushTapQueue() {
+            tapFlushTimer = null;
+            if (!isReady || tapRequestInFlight || tapQueue === 0) return;
+            const count = Math.min(10, tapQueue);
+            tapQueue -= count;
+            tapRequestInFlight = true;
+            try {
+                const data = await apiRequest('tap', { count });
+                applyUser(data.user);
+            } catch (error) {
+                tapQueue = 0;
+                showCustomResultDialog(error.message);
+                try {
+                    const data = await apiRequest('bootstrap');
+                    applyUser(data.user);
+                } catch (refreshError) {
+                    showCustomResultDialog(refreshError.message);
+                }
+            } finally {
+                tapRequestInFlight = false;
+                if (tapQueue > 0) tapFlushTimer = setTimeout(flushTapQueue, 0);
+            }
         }
 
         // НАВИГАЦИЯ СТРАНИЦ
@@ -643,6 +653,24 @@
             
             document.getElementById(screenId + '-scr').classList.add('active');
             document.getElementById('n-' + screenId).classList.add('active');
+
+            if (screenId !== 'games') {
+                if (cryptoInterval) {
+                    clearInterval(cryptoInterval);
+                    cryptoInterval = null;
+                }
+                if (plinkoFrameId) {
+                    cancelAnimationFrame(plinkoFrameId);
+                    plinkoFrameId = null;
+                }
+            } else {
+                const cryptoView = document.getElementById('view-game-crypto');
+                if (cryptoView.style.display === 'flex' && !cryptoInterval) initCryptoGame();
+                const plinkoView = document.getElementById('view-game-plinko');
+                if (plinkoView.style.display === 'flex' && plinkoCanvas) {
+                    updatePlinkoFrame();
+                }
+            }
 
             if(screenId === 'profile') {
                 loadLeaderboard();
@@ -668,9 +696,8 @@
         }
 
         function checkBonusDotNotification() {
-            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
             const dot = document.getElementById('bonus-dot');
-            if (Date.now() >= nextClaimTime) {
+            if (!nextClaimAt || Date.now() >= nextClaimAt) {
                 dot.style.display = 'block';
             } else {
                 dot.style.display = 'none';
@@ -680,16 +707,13 @@
         function renderDaysGrid() {
             const container = document.getElementById('days-container');
             container.innerHTML = "";
-            const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
-            
-            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
-            const isLocked = Date.now() < nextClaimTime;
+            const isLocked = Date.now() < nextClaimAt;
             let currentDayIndex = rewardStreak % 7;
-
+            
             for(let i=0; i<7; i++) {
-                let imgFile = "assets/stopka1.jpg";
-                if(i === 3 || i === 4) imgFile = "assets/stopka2.jpg";
-                if(i === 5 || i === 6) imgFile = "assets/stopka3.jpg";
+                let imgFile = "stopka1.jpg";
+                if(i === 3 || i === 4) imgFile = "stopka2.jpg";
+                if(i === 5 || i === 6) imgFile = "stopka3.jpg";
 
                 let boxClass = "day-box";
                 if(i < currentDayIndex) boxClass += " completed";
@@ -698,8 +722,8 @@
                 container.innerHTML += `
                     <div class="${boxClass}">
                         <div class="day-num">${langData[currentLang].day} ${i+1}</div>
-                        <img src="${imgFile}" class="day-img" onerror="this.src='stopka1.jpg'">
-                        <div class="day-reward-lbl">${rewards[i].toLocaleString()}<img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></div>
+                        <img src="${imgFile}" class="day-img">
+                        <div class="day-reward-lbl">${[1000, 2500, 5000, 10000, 25000, 50000, 100000][i].toLocaleString()}<img src="coin.png" class="coin-mini-icon"></div>
                     </div>
                 `;
             }
@@ -708,12 +732,11 @@
         }
 
         function updateBonusButtonState() {
-            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
             const btn = document.getElementById('bonus-claim-btn');
             if(!btn) return;
             
-            if (Date.now() < nextClaimTime) {
-                const diff = nextClaimTime - Date.now();
+            if (Date.now() < nextClaimAt) {
+                const diff = nextClaimAt - Date.now();
                 const hours = Math.floor(diff / 3600000).toString().padStart(2, '0');
                 const minutes = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
                 const seconds = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
@@ -730,35 +753,16 @@
             }
         }
 
-        function claimDailyBonus() {
-            const nextClaimTime = parseInt(localStorage.getItem('cc_next_claim_time')) || 0;
-            if (Date.now() < nextClaimTime) return;
-
-            const lastClaimTime = parseInt(localStorage.getItem('cc_last_claim_time')) || 0;
-            const oneDay = 24 * 60 * 60 * 1000;
-            
-            if (lastClaimTime && (Date.now() - lastClaimTime > 2 * oneDay)) {
-                rewardStreak = 0;
+        async function claimDailyBonus() {
+            if (!isReady || Date.now() < nextClaimAt) return;
+            try {
+                const data = await apiRequest('bonus');
+                applyUser(data.user);
+                renderDaysGrid();
+                showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${data.reward.toLocaleString()}</span> <img src="coin.png">!`);
+            } catch (error) {
+                showCustomResultDialog(error.message);
             }
-
-            const rewards = [1000, 2500, 5000, 10000, 25000, 50000, 100000];
-            let currentDayIndex = rewardStreak % 7;
-            let rewardAmt = rewards[currentDayIndex];
-
-            coins += rewardAmt;
-            rewardStreak += 1;
-
-            const newNextTime = Date.now() + oneDay;
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_reward_streak', rewardStreak);
-            localStorage.setItem('cc_last_claim_time', Date.now());
-            localStorage.setItem('cc_next_claim_time', newNextTime);
-
-            updateUI();
-            saveToFirebase();
-            renderDaysGrid();
-
-            showCustomResultDialog(`Вы успешно забрали ежедневную награду: <span style="color:#22c55e;">+${rewardAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
         }
 
         // ВХОД В МИНИ-ИГРЫ
@@ -772,7 +776,14 @@
         function closeEmbeddedGame(gameKey) {
             document.getElementById('view-game-' + gameKey).style.display = 'none';
             document.getElementById('games-selection-grid').style.display = 'grid';
-            if(gameKey === 'crypto' && cryptoInterval) clearInterval(cryptoInterval);
+            if(gameKey === 'crypto' && cryptoInterval) {
+                clearInterval(cryptoInterval);
+                cryptoInterval = null;
+            }
+            if(gameKey === 'plinko' && plinkoFrameId) {
+                cancelAnimationFrame(plinkoFrameId);
+                plinkoFrameId = null;
+            }
         }
 
         // САПЁР МЕХАНИКА
@@ -780,117 +791,151 @@
         let minesOpened = 0;
         let minesActive = false;
         let currentMinesBet = 0;
+        let minesRequestInFlight = false;
 
-        function startMinesGame() {
-            const bInput = document.getElementById('mines-bet');
-            const bet = parseInt(bInput.value) || 0;
-            if (bet <= 0 || bet > coins) {
-                showCustomResultDialog("Недостаточно монет или неверная ставка!");
-                return;
-            }
-
-            coins -= bet;
-            currentMinesBet = bet;
-            miniGamesProfit -= bet;
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_games_profit', miniGamesProfit);
-            updateUI();
-            saveToFirebase();
-
-            const countSelect = document.getElementById('mines-count');
-            const mCount = parseInt(countSelect.value);
-
-            minesBoard = Array(25).fill(false);
-            let placed = 0;
-            while(placed < mCount) {
-                let r = Math.floor(Math.random() * 25);
-                if(!minesBoard[r]) {
-                    minesBoard[r] = true;
-                    placed++;
-                }
-            }
-
-            minesOpened = 0;
-            minesActive = true;
-            document.getElementById('mines-multiplier').innerText = "1.00";
-            document.getElementById('mines-btn-start').disabled = true;
-            document.getElementById('mines-btn-cashout').disabled = false;
-
+        function renderMinesBoard(opened = []) {
             const grid = document.getElementById('mines-grid-board');
-            grid.innerHTML = "";
-            for(let i=0; i<25; i++) {
-                grid.innerHTML += `<div class="mines-tile" id="tile-${i}" onclick="clickMinesTile(${i})">?</div>`;
+            grid.replaceChildren();
+            for (let i = 0; i < 25; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'mines-tile';
+                tile.id = 'tile-' + i;
+                tile.textContent = '?';
+                tile.onclick = () => clickMinesTile(i);
+                if (opened.includes(i)) {
+                    tile.classList.add('opened');
+                    tile.textContent = '💎';
+                }
+                grid.appendChild(tile);
             }
         }
 
-        function clickMinesTile(idx) {
-            if(!minesActive) return;
-            const tile = document.getElementById('tile-' + idx);
-            if(tile.classList.contains('opened') || tile.classList.contains('mine')) return;
-
-            const mCount = parseInt(document.getElementById('mines-count').value);
-
-            if(minesBoard[idx]) {
-                tile.classList.add('mine');
-                tile.innerText = "💣";
+        function restoreActiveGame(activeGame) {
+            if (!activeGame) {
                 minesActive = false;
+                doorsActive = false;
                 document.getElementById('mines-btn-start').disabled = false;
                 document.getElementById('mines-btn-cashout').disabled = true;
-                revealMinesBoard();
-                showCustomResultDialog("Бум! Вы попали на мину. Ставка проиграна.");
-            } else {
-                tile.classList.add('opened');
-                tile.innerText = "💎";
-                minesOpened++;
-                
-                let curX = 1;
-                for(let i=0; i<minesOpened; i++) {
-                    curX *= (25 - i) / (25 - mCount - i);
+                document.getElementById('doors-btn-start').disabled = false;
+                document.getElementById('doors-btn-take').disabled = true;
+                return;
+            }
+            if (activeGame.type === 'mines' && !minesActive) {
+                minesActive = true;
+                currentMinesBet = activeGame.bet;
+                minesOpened = activeGame.opened.length;
+                minesBoard = Array(25).fill(false);
+                document.getElementById('mines-count').value = activeGame.mineCount;
+                document.getElementById('mines-multiplier').innerText = activeGame.multiplier.toFixed(2);
+                document.getElementById('mines-btn-start').disabled = true;
+                document.getElementById('mines-btn-cashout').disabled = minesOpened === 0;
+                renderMinesBoard(activeGame.opened);
+            } else if (activeGame.type === 'doors' && !doorsActive) {
+                doorsActive = true;
+                doorsRoom = activeGame.room;
+                currentDoorsBet = activeGame.bet;
+                document.getElementById('doors-multiplier').innerText = activeGame.multiplier.toFixed(2);
+                document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
+                document.getElementById('doors-btn-start').disabled = true;
+                document.getElementById('doors-btn-take').disabled = doorsRoom <= 1;
+                generateDoorsLayout();
+            }
+        }
+
+        async function startMinesGame() {
+            if (!isReady || minesRequestInFlight) return;
+            const bInput = document.getElementById('mines-bet');
+            const bet = Number(bInput.value);
+            const startButton = document.getElementById('mines-btn-start');
+            minesRequestInFlight = true;
+            startButton.disabled = true;
+            try {
+                const data = await apiRequest('minesStart', {
+                    bet,
+                    mineCount: Number(document.getElementById('mines-count').value)
+                });
+                applyUser(data.user);
+                restoreActiveGame(data.user.activeGame);
+            } catch (error) {
+                startButton.disabled = false;
+                showCustomResultDialog(error.message);
+            } finally {
+                minesRequestInFlight = false;
+            }
+        }
+
+        async function clickMinesTile(idx) {
+            if (!minesActive || minesRequestInFlight) return;
+            const tile = document.getElementById('tile-' + idx);
+            if (!tile || tile.classList.contains('opened') || tile.classList.contains('mine')) return;
+            minesRequestInFlight = true;
+            try {
+                const data = await apiRequest('minesOpen', { index: idx });
+                if (data.hitMine) {
+                    minesBoard = Array(25).fill(false);
+                    data.mines.forEach((mine) => { minesBoard[mine] = true; });
+                    tile.classList.add('mine');
+                    tile.textContent = '💣';
+                    applyUser(data.user);
+                    minesActive = false;
+                    document.getElementById('mines-btn-start').disabled = false;
+                    document.getElementById('mines-btn-cashout').disabled = true;
+                    revealMinesBoard();
+                    showCustomResultDialog("Бум! Вы попали на мину. Ставка проиграна.");
+                } else {
+                    applyUser(data.user);
+                    tile.classList.add('opened');
+                    tile.textContent = '💎';
+                    minesOpened += 1;
+                    const game = data.user.activeGame;
+                    document.getElementById('mines-multiplier').innerText = game.multiplier.toFixed(2);
+                    document.getElementById('mines-btn-cashout').disabled = false;
                 }
-                document.getElementById('mines-multiplier').innerText = curX.toFixed(2);
+            } catch (error) {
+                showCustomResultDialog(error.message);
+            } finally {
+                minesRequestInFlight = false;
             }
         }
 
         function revealMinesBoard() {
             for(let i=0; i<25; i++) {
                 const tile = document.getElementById('tile-' + i);
-                if(minesBoard[i]) {
+                if(tile && minesBoard[i]) {
                     tile.classList.add('mine');
                     tile.innerText = "💣";
                 }
             }
         }
 
-        function cashoutMinesGame() {
-            if(!minesActive || minesOpened === 0) return;
-            minesActive = false;
-            document.getElementById('mines-btn-start').disabled = false;
-            document.getElementById('mines-btn-cashout').disabled = true;
-
-            const multi = parseFloat(document.getElementById('mines-multiplier').innerText);
-            const winAmt = Math.floor(currentMinesBet * multi);
-
-            coins += winAmt;
-            miniGamesWon += winAmt;
-            miniGamesProfit += winAmt;
-
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_games_won', miniGamesWon);
-            localStorage.setItem('cc_games_profit', miniGamesProfit);
-
-            updateUI();
-            saveToFirebase();
-            revealMinesBoard();
-
-            showCustomResultDialog(`Отлично! Вы забрали куш: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
+        async function cashoutMinesGame() {
+            if (!minesActive || minesOpened === 0 || minesRequestInFlight) return;
+            minesRequestInFlight = true;
+            try {
+                const data = await apiRequest('minesCashout');
+                minesBoard = Array(25).fill(false);
+                data.mines.forEach((mine) => { minesBoard[mine] = true; });
+                applyUser(data.user);
+                minesActive = false;
+                document.getElementById('mines-btn-start').disabled = false;
+                document.getElementById('mines-btn-cashout').disabled = true;
+                revealMinesBoard();
+                showCustomResultDialog(`Отлично! Вы забрали куш: <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="coin.png">!`);
+            } catch (error) {
+                showCustomResultDialog(error.message);
+            } finally {
+                minesRequestInFlight = false;
+            }
         }
 
         // КРИПТО-ИНТУИТ МЕХАНИКА
         let cryptoCanvas, cryptoCtx, cryptoInterval;
         let cryptoPoints = [];
         let cryptoCurrentVal = 100;
+        let cryptoRequestInFlight = false;
 
         function initCryptoGame() {
+            if (cryptoInterval) clearInterval(cryptoInterval);
             cryptoCanvas = document.getElementById('crypto-canvas-el');
             cryptoCtx = cryptoCanvas.getContext('2d');
             cryptoPoints = [100, 102, 99, 101, 105, 103, 106];
@@ -916,7 +961,8 @@
 
             const step = w / 25;
             const min = Math.min(...cryptoPoints) - 5;
-            const max = Math.max(...cryptoPoints) + 5;
+            const maxValue = Math.max(...cryptoPoints) + 5;
+            const max = maxValue > min ? maxValue : min + 1;
 
             cryptoPoints.forEach((p, i) => {
                 const x = i * step;
@@ -928,47 +974,32 @@
         }
 
         function playCrypto(direction) {
+            if (!isReady || cryptoRequestInFlight) return;
             const betInput = document.getElementById('crypto-bet');
-            const bet = parseInt(betInput.value) || 0;
-            if (bet <= 0 || bet > coins) {
-                showCustomResultDialog("Недостаточно монет или неверная ставка!");
-                return;
-            }
-
-            coins -= bet;
-            miniGamesProfit -= bet;
-            updateUI();
-            saveToFirebase();
-
+            const bet = Number(betInput.value);
+            const initialPrice = cryptoCurrentVal;
+            cryptoRequestInFlight = true;
             document.getElementById('lbl-crypto-status').innerText = "Анализ рынка (3с)...";
             document.getElementById('crypto-actions-row').style.pointerEvents = 'none';
-
-            const initialPrice = cryptoCurrentVal;
-
-            setTimeout(() => {
-                const finalPrice = cryptoCurrentVal;
-                let won = false;
-                if(direction === 'up' && finalPrice > initialPrice) won = true;
-                if(direction === 'down' && finalPrice < initialPrice) won = true;
-
-                if(won) {
-                    const winAmt = Math.floor(bet * 1.9);
-                    coins += winAmt;
-                    miniGamesWon += winAmt;
-                    miniGamesProfit += winAmt;
-                    showCustomResultDialog(`График пошёл ${direction === 'up'?'вверх':'вниз'}. Вы угадали! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">`);
-                } else {
-                    showCustomResultDialog(`Увы, график пошёл в противоположную сторону. Ставка проиграна.`);
+            setTimeout(async () => {
+                try {
+                    const data = await apiRequest('crypto', { bet, direction });
+                    applyUser(data.user);
+                    cryptoCurrentVal = initialPrice + (data.wentUp ? 5 : -5);
+                    cryptoPoints.push(cryptoCurrentVal);
+                    if (cryptoPoints.length > 25) cryptoPoints.shift();
+                    drawCryptoChart();
+                    const trend = data.wentUp ? 'вверх' : 'вниз';
+                    showCustomResultDialog(data.won
+                        ? `График пошёл ${trend}. Вы угадали! <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="coin.png">`
+                        : `График пошёл ${trend}. Ставка проиграна.`);
+                } catch (error) {
+                    showCustomResultDialog(error.message);
+                } finally {
+                    cryptoRequestInFlight = false;
+                    document.getElementById('lbl-crypto-status').innerText = "Ожидание...";
+                    document.getElementById('crypto-actions-row').style.pointerEvents = 'auto';
                 }
-
-                localStorage.setItem('cc_coins', coins);
-                localStorage.setItem('cc_games_won', miniGamesWon);
-                localStorage.setItem('cc_games_profit', miniGamesProfit);
-                updateUI();
-                saveToFirebase();
-
-                document.getElementById('lbl-crypto-status').innerText = "Ожидание...";
-                document.getElementById('crypto-actions-row').style.pointerEvents = 'auto';
             }, 3000);
         }
 
@@ -1001,18 +1032,11 @@
         }
 
         function rollDiceGame() {
+            if (!isReady) return;
             const betInput = document.getElementById('dice-bet');
-            const bet = parseInt(betInput.value) || 0;
-            if (bet <= 0 || bet > coins) {
-                showCustomResultDialog("Недостаточно монет или неверная ставка!");
-                return;
-            }
-
-            coins -= bet;
-            miniGamesProfit -= bet;
-            updateUI();
-            saveToFirebase();
-
+            const bet = Number(betInput.value);
+            const mode = currentDiceMode;
+            const selectedNumber = selectedDiceExact;
             const rollBtn = document.getElementById('dice-roll-btn');
             rollBtn.disabled = true;
 
@@ -1024,41 +1048,24 @@
                 ticks++;
                 if(ticks > 8) {
                     clearInterval(timer);
-                    const finalRoll = Math.floor(Math.random() * 6) + 1;
-                    visual.innerText = finalRoll;
-
-                    let isWin = false;
-                    let payoutK = 1.90;
-
-                    if(currentDiceMode === 'gt' && finalRoll > 3) isWin = true;
-                    if(currentDiceMode === 'lt' && finalRoll < 4) isWin = true;
-                    if(currentDiceMode === 'eq' && finalRoll === selectedDiceExact) {
-                        isWin = true;
-                        payoutK = 5.50;
-                    }
-
-                    if(isWin) {
-                        const winAmt = Math.floor(bet * payoutK);
-                        coins += winAmt;
-                        miniGamesWon += winAmt;
-                        miniGamesProfit += winAmt;
-                        showCustomResultDialog(`Выпало число ${finalRoll}. Победа! <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">`);
-                    } else {
-                        showCustomResultDialog(`Выпало число ${finalRoll}. Повезёт в следующий раз!`);
-                    }
-
-                    localStorage.setItem('cc_coins', coins);
-                    localStorage.setItem('cc_games_won', miniGamesWon);
-                    localStorage.setItem('cc_games_profit', miniGamesProfit);
-                    updateUI();
-                    saveToFirebase();
-                    rollBtn.disabled = false;
+                    apiRequest('dice', { bet, mode, number: selectedNumber })
+                        .then((data) => {
+                            applyUser(data.user);
+                            visual.innerText = data.roll;
+                            showCustomResultDialog(data.won
+                                ? `Выпало число ${data.roll}. Победа! <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="coin.png">`
+                                : `Выпало число ${data.roll}. Повезёт в следующий раз!`);
+                        })
+                        .catch((error) => showCustomResultDialog(error.message))
+                        .finally(() => { rollBtn.disabled = false; });
                 }
             }, 100);
         }
 
         // PLINKO МЕХАНИКА
         let plinkoCanvas, plinkoCtx, plinkoBalls = [];
+        let plinkoFrameId = null;
+        let plinkoRequestInFlight = false;
         const plinkoPins = [];
         const plinkoRows = 7;
         const plinkoBuckets = [5, 2, 0.5, 0.2, 0.5, 2, 5];
@@ -1079,10 +1086,11 @@
                     plinkoPins.push({ r: r, i: i, count: count, y: rowY });
                 }
             }
-            requestAnimationFrame(updatePlinkoFrame);
+            updatePlinkoFrame();
         }
 
         function updatePlinkoFrame() {
+            if (!plinkoCanvas || !plinkoCtx) return;
             const w = plinkoCanvas.width = plinkoCanvas.parentElement.clientWidth;
             const h = plinkoCanvas.height = 260;
             plinkoCtx.clearRect(0, 0, w, h);
@@ -1112,243 +1120,225 @@
 
             plinkoCtx.fillStyle = "#ffb020";
             for (let i = plinkoBalls.length - 1; i >= 0; i--) {
-                let ball = plinkoBalls[i];
+                const ball = plinkoBalls[i];
+                ball.frames += 1;
                 ball.y += ball.vy;
-                ball.x += ball.vx;
+                ball.x += (ball.targetX - ball.x) * 0.045;
                 ball.vy += 0.18;
-
-                plinkoPins.forEach(p => {
-                    const dx = ball.x - p.x;
-                    const dy = ball.y - p.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < 8) {
-                        ball.y = p.y - 4;
-                        ball.vy = -ball.vy * 0.3;
-                        ball.vx = (Math.random() - 0.5) * 2 + (dx * 0.2);
-                    }
-                });
 
                 plinkoCtx.beginPath();
                 plinkoCtx.arc(ball.x, ball.y, 5, 0, Math.PI * 2);
                 plinkoCtx.fill();
 
-                if (ball.y >= bY) {
-                    const bucketIdx = Math.floor(ball.x / bW);
-                    const safeIdx = Math.max(0, Math.min(plinkoBuckets.length - 1, bucketIdx));
-                    const finalX = plinkoBuckets[safeIdx];
-                    
-                    const wonAmt = Math.floor(ball.bet * finalX);
-                    coins += wonAmt;
-                    miniGamesWon += wonAmt;
-                    miniGamesProfit += wonAmt;
-
-                    localStorage.setItem('cc_coins', coins);
-                    localStorage.setItem('cc_games_won', miniGamesWon);
-                    localStorage.setItem('cc_games_profit', miniGamesProfit);
-                    updateUI();
-                    saveToFirebase();
-
-                    showCustomResultDialog(`Шар упал в ячейку ${finalX}x. Вы выиграли: <span style="color:#22c55e;">+${wonAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
+                if (ball.y >= bY || ball.frames >= 180) {
+                    showCustomResultDialog(`Шар упал в ячейку ${ball.multiplier}x. Выигрыш: <span style="color:#22c55e;">+${ball.prize.toLocaleString()}</span> <img src="coin.png">!`);
                     plinkoBalls.splice(i, 1);
                 }
             }
 
-            requestAnimationFrame(updatePlinkoFrame);
+            if (plinkoBalls.length) {
+                plinkoFrameId = requestAnimationFrame(updatePlinkoFrame);
+            } else {
+                plinkoFrameId = null;
+                document.getElementById('plinko-drop-btn').disabled = false;
+            }
         }
 
-        function startPlinkoBall() {
+        async function startPlinkoBall() {
+            if (!isReady || plinkoRequestInFlight || plinkoBalls.length) return;
             const betInput = document.getElementById('plinko-bet');
-            const bet = parseInt(betInput.value) || 0;
-            if (bet <= 0 || bet > coins) {
-                showCustomResultDialog("Недостаточно монет или неверная ставка!");
-                return;
+            const bet = Number(betInput.value);
+            plinkoRequestInFlight = true;
+            document.getElementById('plinko-drop-btn').disabled = true;
+            try {
+                const data = await apiRequest('plinko', { bet });
+                applyUser(data.user);
+                const bucketWidth = plinkoCanvas.width / plinkoBuckets.length;
+                plinkoBalls.push({
+                    x: plinkoCanvas.width / 2,
+                    targetX: (data.slot + 0.5) * bucketWidth,
+                    y: 10,
+                    vy: 1.5,
+                    frames: 0,
+                    multiplier: data.multiplier,
+                    prize: data.prize
+                });
+                if (!plinkoFrameId) plinkoFrameId = requestAnimationFrame(updatePlinkoFrame);
+            } catch (error) {
+                document.getElementById('plinko-drop-btn').disabled = false;
+                showCustomResultDialog(error.message);
+            } finally {
+                plinkoRequestInFlight = false;
             }
-
-            coins -= bet;
-            miniGamesProfit -= bet;
-            updateUI();
-            saveToFirebase();
-
-            plinkoBalls.push({
-                x: plinkoCanvas.width / 2 + (Math.random() - 0.5) * 8,
-                y: 10,
-                vx: 0,
-                vy: 1.5,
-                bet: bet
-            });
         }
 
         // ДВЕРИ МЕХАНИКА
         let doorsActive = false;
         let doorsRoom = 0;
         let currentDoorsBet = 0;
-        let doorsWinningIndex = 0;
+        let doorsRequestInFlight = false;
+        let doorsRoomTimer = null;
 
-        function startDoorsGame() {
+        async function startDoorsGame() {
+            if (!isReady || doorsRequestInFlight) return;
             const bInput = document.getElementById('doors-bet');
-            const bet = parseInt(bInput.value) || 0;
-            if (bet <= 0 || bet > coins) {
-                showCustomResultDialog("Недостаточно монет или неверная ставка!");
-                return;
-            }
-
-            coins -= bet;
-            currentDoorsBet = bet;
-            miniGamesProfit -= bet;
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_games_profit', miniGamesProfit);
-            updateUI();
-            saveToFirebase();
-
-            doorsActive = true;
-            doorsRoom = 1;
-            
-            document.getElementById('doors-multiplier').innerText = "1.00";
-            document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
+            doorsRequestInFlight = true;
             document.getElementById('doors-btn-start').disabled = true;
-            document.getElementById('doors-btn-take').disabled = false;
-
-            generateDoorsLayout();
+            try {
+                const data = await apiRequest('doorsStart', { bet: Number(bInput.value) });
+                applyUser(data.user);
+                restoreActiveGame(data.user.activeGame);
+            } catch (error) {
+                document.getElementById('doors-btn-start').disabled = false;
+                showCustomResultDialog(error.message);
+            } finally {
+                doorsRequestInFlight = false;
+            }
         }
 
         function generateDoorsLayout() {
-            doorsWinningIndex = Math.floor(Math.random() * 3);
             const container = document.getElementById('doors-tiles-wrapper');
-            container.innerHTML = "";
+            container.replaceChildren();
             for (let i = 0; i < 3; i++) {
-                container.innerHTML += `<div class="door-element" id="door-${i}" onclick="chooseDoorElement(${i})">🚪 Дверь ${i+1}</div>`;
+                const door = document.createElement('div');
+                door.className = 'door-element';
+                door.id = 'door-' + i;
+                door.textContent = `🚪 Дверь ${i + 1}`;
+                door.onclick = () => chooseDoorElement(i);
+                container.appendChild(door);
             }
         }
 
-        function chooseDoorElement(idx) {
-            if (!doorsActive) return;
+        async function chooseDoorElement(idx) {
+            if (!doorsActive || doorsRequestInFlight) return;
             doorsActive = false;
-
+            doorsRequestInFlight = true;
             const dEl = document.getElementById('door-' + idx);
-            if (idx === doorsWinningIndex) {
-                dEl.classList.add('win');
-                dEl.innerText = "💎 Сокровища!";
-                
-                let curX = 1.4 * doorsRoom;
-                document.getElementById('doors-multiplier').innerText = curX.toFixed(2);
-
-                setTimeout(() => {
-                    doorsRoom++;
+            try {
+                const data = await apiRequest('doorsChoose', { index: idx });
+                applyUser(data.user);
+                if (data.wonRoom) {
+                    dEl.classList.add('win');
+                    dEl.textContent = "💎 Сокровища!";
+                    doorsRoom = data.user.activeGame.room;
+                    document.getElementById('doors-multiplier').innerText = data.user.activeGame.multiplier.toFixed(2);
                     document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
-                    doorsActive = true;
-                    generateDoorsLayout();
-                }, 1200);
-            } else {
-                dEl.classList.add('lose');
-                dEl.innerText = "👾 Монстр!";
-                document.getElementById('doors-btn-start').disabled = false;
-                document.getElementById('doors-btn-take').disabled = true;
-                showCustomResultDialog("О нет! За дверью оказался монстр. Комната проиграна.");
+                    document.getElementById('doors-btn-take').disabled = false;
+                    doorsRoomTimer = setTimeout(() => {
+                        doorsRoomTimer = null;
+                        if (!data.user.activeGame) return;
+                        doorsActive = true;
+                        generateDoorsLayout();
+                    }, 600);
+                } else {
+                    dEl.classList.add('lose');
+                    dEl.textContent = "👾 Монстр!";
+                    doorsActive = false;
+                    document.getElementById('doors-btn-start').disabled = false;
+                    document.getElementById('doors-btn-take').disabled = true;
+                    showCustomResultDialog("О нет! За дверью оказался монстр. Комната проиграна.");
+                }
+            } catch (error) {
+                doorsActive = true;
+                showCustomResultDialog(error.message);
+            } finally {
+                doorsRequestInFlight = false;
             }
         }
 
-        function takeDoorsPrize() {
-            if (doorsRoom <= 1) return;
+        async function takeDoorsPrize() {
+            if (doorsRoom <= 1 || doorsRequestInFlight) return;
+            if (doorsRoomTimer) {
+                clearTimeout(doorsRoomTimer);
+                doorsRoomTimer = null;
+            }
             doorsActive = false;
-            document.getElementById('doors-btn-start').disabled = false;
+            doorsRequestInFlight = true;
             document.getElementById('doors-btn-take').disabled = true;
-
-            const multi = parseFloat(document.getElementById('doors-multiplier').innerText);
-            const winAmt = Math.floor(currentDoorsBet * multi);
-
-            coins += winAmt;
-            miniGamesWon += winAmt;
-            miniGamesProfit += winAmt;
-
-            localStorage.setItem('cc_coins', coins);
-            localStorage.setItem('cc_games_won', miniGamesWon);
-            localStorage.setItem('cc_games_profit', miniGamesProfit);
-
-            updateUI();
-            saveToFirebase();
-            document.getElementById('doors-tiles-wrapper').innerHTML = "";
-
-            showCustomResultDialog(`Вы благополучно покинули замок! Награда: <span style="color:#22c55e;">+${winAmt.toLocaleString()}</span> <img src="assets/coin.jpg" onerror="this.src='coin.jpg'">!`);
+            try {
+                const data = await apiRequest('doorsCashout');
+                applyUser(data.user);
+                document.getElementById('doors-btn-start').disabled = false;
+                document.getElementById('doors-tiles-wrapper').replaceChildren();
+                showCustomResultDialog(`Вы благополучно покинули замок! Награда: <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="coin.png">!`);
+            } catch (error) {
+                doorsActive = true;
+                document.getElementById('doors-btn-take').disabled = false;
+                showCustomResultDialog(error.message);
+            } finally {
+                doorsRequestInFlight = false;
+            }
         }
 
         // АДМИН ОПЕРАЦИИ
-        function adminGive() {
+        async function adminGive() {
             if (!isAdmin) return;
-            const tId = document.getElementById('target-id').value;
-            const amt = parseInt(document.getElementById('amount-give').value) || 0;
-            if(!tId) return;
-
-            db.ref('users/' + tId).once('value', (s) => {
-                if (s.exists()) {
-                    const oldC = s.val().coins || 0;
-                    db.ref('users/' + tId).update({ coins: oldC + amt });
-                    showCustomResultDialog(`Ресурсы успешно отправлены пользователю ${tId}!`);
-                } else {
-                    showCustomResultDialog("Игрок с таким ID не обнаружен.");
-                }
-            });
+            try {
+                const data = await apiRequest('adminGive', {
+                    targetId: document.getElementById('target-id').value.trim(),
+                    amount: Number(document.getElementById('amount-give').value)
+                });
+                showCustomResultDialog(`Ресурсы успешно отправлены пользователю ${data.targetId}!`);
+            } catch (error) {
+                showCustomResultDialog(error.message);
+            }
         }
 
-        function adminWipe() {
+        async function adminWipe() {
             if (!isAdmin) return;
-            const tId = document.getElementById('target-id').value;
-            if(!tId) return;
+            const targetId = document.getElementById('target-id').value.trim();
+            if(!targetId) return;
 
             if (confirm("Вы действительно хотите полностью обнулить этого игрока?")) {
-                db.ref('users/' + tId).update({
-                    coins: 0, totalTaps: 0, miniGamesWon: 0, miniGamesProfit: 0, rewardStreak: 0, wheelSpins: 0
-                });
-                showCustomResultDialog(`Данные игрока ${tId} были успешно сброшены.`);
+                try {
+                    await apiRequest('adminWipe', { targetId });
+                    showCustomResultDialog(`Данные игрока ${targetId} были успешно сброшены.`);
+                } catch (error) {
+                    showCustomResultDialog(error.message);
+                }
             }
         }
 
         // ЛИДЕРБОРД ТОП 10
-        function loadLeaderboard() {
+        async function loadLeaderboard() {
             const lContainer = document.getElementById('leaderboard');
-            
-            db.ref('users').orderByChild('coins').limitToLast(50).once('value', (snapshot) => {
-                let list = [];
-                snapshot.forEach(child => {
-                    const userData = child.val();
-                    // Добавляем только тех, кто сделал хотя бы 1 тап
-                    if (userData.totalTaps && userData.totalTaps > 0) {
-                        list.push(userData);
-                    }
-                });
-                
-                list.reverse();
-                list = list.slice(0, 10); // Оставляем только топ-10
-
-                lContainer.innerHTML = "";
-                
-                if (list.length === 0) {
-                    lContainer.innerHTML = "<div style='color:#64748b; font-size:13px; text-align:center;'>В топе пока нет активных игроков</div>";
+            if (!isReady) return;
+            lContainer.textContent = 'Загрузка топа...';
+            try {
+                const data = await apiRequest('leaderboard');
+                lContainer.replaceChildren();
+                if (data.leaderboard.length === 0) {
+                    lContainer.textContent = 'В топе пока нет активных игроков';
                     return;
                 }
-
-                list.forEach((u, i) => {
-                    const uName = u.name || "Без имени";
-                    const uCoins = u.coins !== undefined ? u.coins : 0;
-                    
-                    let uHandle = u.username && u.username !== "none" ? ` (@${u.username})` : "";
-                    let uidHtml = "";
-                    
-                    // Показываем ID только если тот, кто смотрит топ — это админ (ты)
-                    if (isAdmin && u.uid) {
-                        uidHtml = `<div class="leaderboard-uid">ID: ${u.uid}</div>`;
+                data.leaderboard.forEach((player, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'leaderboard-card';
+                    const info = document.createElement('div');
+                    info.className = 'leaderboard-info';
+                    const name = document.createElement('div');
+                    name.className = 'leaderboard-name';
+                    name.textContent = `${index + 1}. ${player.name}${player.username !== 'none' ? ` (@${player.username})` : ''}`;
+                    info.appendChild(name);
+                    if (isAdmin && player.uid) {
+                        const uid = document.createElement('div');
+                        uid.className = 'leaderboard-uid';
+                        uid.textContent = `ID: ${player.uid}`;
+                        info.appendChild(uid);
                     }
-                    
-                    lContainer.innerHTML += `
-                        <div class="leaderboard-card">
-                            <div class="leaderboard-info">
-                                <div class="leaderboard-name">${i+1}. ${uName}${uHandle}</div>
-                                ${uidHtml}
-                            </div>
-                            <div class="leaderboard-score">${uCoins.toLocaleString()} <img src="assets/coin.jpg" class="coin-mini-icon" onerror="this.src='coin.jpg'"></div>
-                        </div>
-                    `;
+                    const score = document.createElement('div');
+                    score.className = 'leaderboard-score';
+                    score.append(document.createTextNode(player.coins.toLocaleString()));
+                    const icon = document.createElement('img');
+                    icon.src = 'coin.png';
+                    icon.className = 'coin-mini-icon';
+                    score.appendChild(icon);
+                    card.append(info, score);
+                    lContainer.appendChild(card);
                 });
-            });
+            } catch (error) {
+                lContainer.textContent = error.message;
+            }
         }
 
         // СМЕНА ЯЗЫКА
@@ -1389,20 +1379,19 @@
             initTelegramProfile();
         }
 
-        // РЕГЕНЕРАЦИЯ ЭНЕРГИИ (с сохранением времени)
+        // Отображаем восстановление энергии; сервер остаётся источником истины.
         setInterval(() => {
             if (energy < 100) {
                 energy++;
                 updateUI();
-                localStorage.setItem('cc_energy', energy);
             }
-            localStorage.setItem('cc_last_energy_time', Date.now());
         }, 1000);
         
         // Живой таймер бонуса
         setInterval(updateBonusButtonState, 1000);
 
         setLanguage(currentLang);
+        bootstrap();
     </script>
 </body>
 </html>

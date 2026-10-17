@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "users": {
+      ".indexOn": ["coins"]
+    },
+    ".read": false,
+    ".write": false
+  }
+}
