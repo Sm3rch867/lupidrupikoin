@@ -1,0 +1,58 @@
+name: Deploy Firebase
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools
+
+      - name: Configure Firebase parameters
+        env:
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          ADMIN_IDS: ${{ vars.ADMIN_IDS }}
+          APP_ORIGINS: ${{ vars.APP_ORIGINS }}
+          DATABASE_URL: ${{ vars.DATABASE_URL }}
+        run: |
+          test -n "$FIREBASE_PROJECT_ID"
+          test -n "$APP_ORIGINS"
+          test -n "$DATABASE_URL"
+          printf 'ADMIN_IDS=%s\nAPP_ORIGINS=%s\nDATABASE_URL=%s\n' \
+            "$ADMIN_IDS" "$APP_ORIGINS" "$DATABASE_URL" \
+            > "functions/.env.${FIREBASE_PROJECT_ID}"
+
+      - name: Install function dependencies
+        run: npm --prefix functions install --no-audit --no-fund
+
+      - name: Deploy database, functions, and hosting
+        env:
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: firebase deploy --project "$FIREBASE_PROJECT_ID" --only database,functions,hosting --non-interactive
+
