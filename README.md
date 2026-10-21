@@ -4,7 +4,7 @@ The main app is served through Firebase Hosting. Coin balances, tap rewards, bon
 
 ## Firebase setup
 
-Requirements: Node.js 22, npm, and the Firebase CLI.
+Requirements for command-line deployment: Node.js 22, npm, and the Firebase CLI.
 
 1. Select the Firebase project that owns the existing Realtime Database:
 
@@ -38,6 +38,22 @@ Requirements: Node.js 22, npm, and the Firebase CLI.
 The database rules deny all direct client reads and writes. Cloud Functions use the Admin SDK, verify Telegram's signed `initData`, and perform balance changes with Realtime Database transactions. The app's allowed browser origins must be configured before deployment.
 
 Existing balances are preserved during migration, but historical values were written by the old client and cannot be verified retroactively. Review them before treating them as trusted. These coins are still virtual; do not use this setup for real-money gambling or payouts.
+
+## Deploy through GitHub Actions (no local CLI)
+
+The `.github/workflows/firebase-deploy.yml` workflow can install the Firebase CLI and deploy from GitHub, so Node.js and the Firebase CLI are not required on your computer. This still requires access to the Firebase project and the GitHub repository settings.
+
+1. In Firebase Console, use the same project that owns the existing Realtime Database. Enable billing if Firebase requires it for Cloud Functions, and add `TELEGRAM_BOT_TOKEN` under **Build → Functions → Secrets**. The value must be the token for this bot; never put it in the repository.
+2. Create a Google Cloud service account for deployments, grant it the permissions needed to deploy Firebase Hosting, Realtime Database rules, and Cloud Functions, and create a JSON key. In the GitHub repository, open **Settings → Secrets and variables → Actions → Secrets** and add the complete JSON key as `FIREBASE_SERVICE_ACCOUNT`. Keep this key private and revoke it if exposed.
+3. In the same **Actions** settings, add these repository variables:
+   - `FIREBASE_PROJECT_ID`: the Firebase project ID.
+   - `ADMIN_IDS`: comma-separated Telegram user IDs for administrators (may be empty).
+   - `APP_ORIGINS`: the exact Hosting origin, for example `https://<project-id>.web.app` (no trailing slash).
+   - `DATABASE_URL`: the Realtime Database URL for that same project.
+4. Ensure this workflow file and the app are in the repository's `main` branch. A push to `main` starts the deployment; you can follow its status under the repository's **Actions** tab.
+5. In BotFather, change the Web App/menu button URL from GitHub Pages to `https://<project-id>.web.app`. The app must be opened through that Telegram bot to authenticate.
+
+Do not make the Realtime Database publicly writable to avoid deployment setup: that would let clients change their own or other users' balances.
 
 ## Local development
 
