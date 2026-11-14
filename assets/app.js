@@ -163,7 +163,7 @@
     $("#best-math").textContent = (progress.bests.math || 0) + " очков";
     $("#best-count").textContent = (progress.bests.count || 0) + " очков";
     ensureDaily();
-    const dailyCount = progress.daily.ids.length;
+    const dailyCount = Math.min(3, progress.daily.ids.length);
     $("#daily-progress-label").textContent = dailyCount + " из 3";
     $("#daily-progress-fill").style.width = Math.min(100, dailyCount / 3 * 100) + "%";
     $("#admin-panel").hidden = !user.isAdmin;
@@ -303,7 +303,7 @@
   function completeChallenge(id, score, xp, label) {
     ensureDaily();
     const previous = Number(progress.bests[id]) || 0;
-    const improved = previous === 0 || score > previous;
+    const improved = previous === 0 || (id === "reaction" ? score < previous : score > previous);
     if (improved) progress.bests[id] = score;
     if (!progress.daily.ids.includes(id)) progress.daily.ids.push(id);
     progress.completed += 1; progress.xp += xp; saveProgress(); render();

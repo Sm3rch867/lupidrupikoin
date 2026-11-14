@@ -243,6 +243,10 @@ async function updateUser(uid, action, payload, profile, admins) {
           return;
         }
         const accepted = Math.min(requested, user.energy);
+        if (user.coins > Number.MAX_SAFE_INTEGER - accepted || user.totalTaps > Number.MAX_SAFE_INTEGER - accepted) {
+          failure = ["resource-exhausted", "Достигнут максимальный лимит." ];
+          return;
+        }
         user.energy -= accepted;
         user.coins += accepted;
         user.totalTaps += accepted;
