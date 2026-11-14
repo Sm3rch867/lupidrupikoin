@@ -1,0 +1,37 @@
+name: Validate arcade app
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "redesign/**"
+  push:
+    branches:
+      - "redesign/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check frontend JavaScript
+        run: node --check assets/app.js
+
+      - name: Check Cloud Functions JavaScript
+        run: node --check functions/index.js
+
+      - name: Install backend dependencies
+        run: npm --prefix functions install --no-audit --no-fund
+
+      - name: Run backend syntax test
+        run: npm --prefix functions test

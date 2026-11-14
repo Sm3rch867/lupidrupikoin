@@ -1,33 +1,14 @@
 {
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default"
-    }
-  ],
-  "database": {
-    "rules": "database.rules.json"
-  },
+  "functions": [{"source": "functions", "codebase": "default"}],
+  "database": {"rules": "database.rules.json"},
   "hosting": {
     "public": ".",
     "ignore": [
-      "firebase.json",
-      "database.rules.json",
-      "README.md",
-      "main.py",
-      "functions/**",
-      "**/.env*",
-      "**/.*",
-      "**/node_modules/**"
+      "firebase.json", "database.rules.json", "README.md", "main.py",
+      "index.js", "package.json", "crypto.html", "dice.html", "doors.html",
+      "mines.html", "plinko.html", "lupi/**", "functions/**", ".github/**",
+      "**/.env*", "**/.*", "**/node_modules/**"
     ],
-    "rewrites": [
-      {
-        "source": "/api",
-        "function": {
-          "functionId": "api",
-          "region": "us-central1"
-        }
-      }
-    ]
+    "rewrites": [{"source": "/api", "function": {"functionId": "api", "region": "us-central1"}}]
   }
 }
