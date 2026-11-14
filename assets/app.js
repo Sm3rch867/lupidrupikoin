@@ -504,9 +504,22 @@
       $("#preview-banner").hidden = false;
       if (!user) { user = loadLocalUser(); applyUser(user); }
     }
-    window.setInterval(() => {
-      if (user && Date.now() < user.nextClaimAt && $("#bonus-dialog").open) updateBonusDialog();
-    }, 1000);
+    let energySyncBusy = false;
+  window.setInterval(async () => {
+    if (!user) return;
+    if (Date.now() < user.nextClaimAt && $("#bonus-dialog").open) updateBonusDialog();
+    if (user.energy < 100 && !tapBusy && !energySyncBusy) {
+      energySyncBusy = true;
+      try {
+        const result = await apiRequest("bootstrap", {});
+        applyUser(result.user);
+      } catch {
+        // A temporary network error should not interrupt an active challenge.
+      } finally {
+        energySyncBusy = false;
+      }
+    }
+  }, 15000);
   }
 
   bindEvents();
