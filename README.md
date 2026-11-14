@@ -33,7 +33,7 @@ Requirements for command-line deployment: Node.js 22, npm, and the Firebase CLI.
    firebase deploy --only database,functions,hosting
    ```
 
-5. Open the deployed Hosting URL from the Telegram bot. The app requires valid Telegram `initData`; opening the HTML directly is intentionally unsupported.
+5. Set the Telegram Web App/menu button URL to the deployed Firebase Hosting URL (`https://<project-id>.web.app`). The app requires valid Telegram `initData`. GitHub Pages is suitable only for a static preview: it has no `/api` Cloud Function route, so account loading, coin taps, and daily rewards will not work there.
 
 The database rules deny all direct client reads and writes. Cloud Functions use the Admin SDK, verify Telegram's signed `initData`, and perform balance changes with Realtime Database transactions. The app's allowed browser origins must be configured before deployment.
 
