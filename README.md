@@ -59,4 +59,13 @@ Do not make the Realtime Database publicly writable to avoid deployment setup: t
 
 Run the Firebase Hosting, Functions, and Database emulators with the Firebase CLI. For local Functions emulator use, create `functions/.secret.local` with `TELEGRAM_BOT_TOKEN=<your-token>` and add the emulator origin (for example, `http://127.0.0.1:5000`) to `APP_ORIGINS`. Keep that secret file private and untracked. Use a Telegram Web App launch to exercise authentication; a normal browser tab has no trusted Telegram `initData`.
 
-`crypto.html`, `dice.html`, `doors.html`, `mines.html`, and `plinko.html` are standalone prototype pages. The protected, persistent game implementation is the one embedded in `index.html`.
+## Repository layout
+
+- `index.html` — Telegram Web App entry point. Keep it in the repository root for Firebase Hosting.
+- `assets/css/app.css` — application styles.
+- `assets/js/app.js` — Telegram integration and client logic.
+- `assets/images/coin.png` — coin artwork.
+- `functions/` — Firebase Cloud Function and its dependencies.
+- `archive/` — old standalone prototypes and the duplicate legacy copy, kept for reference and excluded from Hosting.
+
+The standalone HTML files in `archive/prototypes/` are old experiments; the current app uses the embedded screens in the root `index.html`.
