@@ -51,7 +51,7 @@ jobs:
             }
           }
 
-          if (/<style(?:\\s|>)/i.test(html)) {
+          if (/<style(?:\s|>)/i.test(html)) {
             throw new Error('Move application CSS into assets/css/app.css.');
           }
 
