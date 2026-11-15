@@ -1,0 +1,14 @@
+# Node dependencies and Firebase local state
+node_modules/
+functions/node_modules/
+.firebase/
+
+# Firebase project settings and local secrets
+functions/.env.*
+!functions/.env.example
+functions/.secret.local
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.log

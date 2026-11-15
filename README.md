@@ -1,6 +1,6 @@
 # LUPI DRUPI COIN
 
-The main app is served through Firebase Hosting. Coin balances, tap rewards, bonuses, game outcomes, and admin actions are handled by the `api` Cloud Function; the browser is not allowed to write Realtime Database data.
+The main app is served through Firebase Hosting. Coin balances, tap rewards, daily bonuses, skill-puzzle rewards, daily task rewards, and admin actions are handled by the `api` Cloud Function; the browser is not allowed to write Realtime Database data.
 
 ## Firebase setup
 
@@ -33,11 +33,13 @@ Requirements for command-line deployment: Node.js 22, npm, and the Firebase CLI.
    firebase deploy --only database,functions,hosting
    ```
 
-5. Open the deployed Hosting URL from the Telegram bot. The app requires valid Telegram `initData`; opening the HTML directly is intentionally unsupported.
+5. Set the Telegram Web App/menu button URL to the deployed Firebase Hosting URL (`https://<project-id>.web.app`). The app requires valid Telegram `initData`. GitHub Pages is suitable only for a static preview: it has no `/api` Cloud Function route, so account loading, coin taps, and daily rewards will not work there.
+
+The five mini-games are skill puzzles with fixed rewards. They never ask for coins, never deduct balances, and never use random payouts. Existing player balances are kept; any unfinished legacy round is refunded once when the account is next updated. Admin statistics reset actions also preserve the coin balance. Daily tasks award additional coins for taps and solved puzzles. The server checks puzzle answers and limits each puzzle and task reward to once per day.
 
 The database rules deny all direct client reads and writes. Cloud Functions use the Admin SDK, verify Telegram's signed `initData`, and perform balance changes with Realtime Database transactions. The app's allowed browser origins must be configured before deployment.
 
-Existing balances are preserved during migration, but historical values were written by the old client and cannot be verified retroactively. Review them before treating them as trusted. These coins are still virtual; do not use this setup for real-money gambling or payouts.
+Existing balances are preserved during migration, but historical values were written by the old client and cannot be verified retroactively. Review them before treating them as trusted. These coins are virtual arcade points. They cannot be withdrawn or exchanged for money.
 
 ## Deploy through GitHub Actions (no local CLI)
 
@@ -59,4 +61,13 @@ Do not make the Realtime Database publicly writable to avoid deployment setup: t
 
 Run the Firebase Hosting, Functions, and Database emulators with the Firebase CLI. For local Functions emulator use, create `functions/.secret.local` with `TELEGRAM_BOT_TOKEN=<your-token>` and add the emulator origin (for example, `http://127.0.0.1:5000`) to `APP_ORIGINS`. Keep that secret file private and untracked. Use a Telegram Web App launch to exercise authentication; a normal browser tab has no trusted Telegram `initData`.
 
-`crypto.html`, `dice.html`, `doors.html`, `mines.html`, and `plinko.html` are standalone prototype pages. The protected, persistent game implementation is the one embedded in `index.html`.
+## Repository layout
+
+- `index.html` — Telegram Web App entry point. Keep it in the repository root for Firebase Hosting.
+- `assets/css/app.css` — application styles.
+- `assets/js/app.js` — Telegram integration and client logic.
+- `assets/images/coin.png` — coin artwork.
+- `functions/` — Firebase Cloud Function and its dependencies.
+- `archive/` — old standalone prototypes and the duplicate legacy copy, kept for reference and excluded from Hosting.
+
+The standalone HTML files in `archive/prototypes/` are old experiments; the current app uses the embedded screens in the root `index.html`.

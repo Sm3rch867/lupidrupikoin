@@ -1,0 +1,59 @@
+name: Validate App
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/app.js
+          node --check functions/index.js
+
+      - name: Validate Firebase configuration
+        run: node -e "JSON.parse(require('node:fs').readFileSync('firebase.json', 'utf8'))"
+
+      - name: Validate frontend asset paths
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const required = [
+            'assets/css/app.css',
+            'assets/js/app.js',
+            'assets/images/coin.png',
+          ];
+
+          for (const file of required) {
+            if (!fs.existsSync(file)) {
+              throw new Error(`Missing frontend asset: ${file}`);
+            }
+            if (!html.includes(file)) {
+              throw new Error(`index.html does not reference: ${file}`);
+            }
+          }
+
+          if (/<style(?:\s|>)/i.test(html)) {
+            throw new Error('Move application CSS into assets/css/app.css.');
+          }
+
+          console.log('Frontend asset paths are valid.');
+          NODE
