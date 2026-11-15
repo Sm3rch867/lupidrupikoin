@@ -122,6 +122,7 @@
                 isReady = true;
                 document.getElementById('coin-clicker').disabled = false;
                 updateBonusButtonState();
+                updateTasksUI();
             } catch (error) {
                 isReady = false;
                 bootstrapError = error && error.message
