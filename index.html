@@ -60,122 +60,70 @@
         </div>
     </div>
 
+    
     <div class="screen" id="tasks-scr">
-        <div class="page-placeholder">
-            <div class="page-placeholder-icon">📋</div>
-            <div class="page-placeholder-title">Задания скоро появятся</div>
-            <div class="page-placeholder-desc">Ежедневные и особые задания будут собраны здесь.</div>
+        <div class="tasks-page">
+            <div class="tasks-page-title">Ежедневные задания</div>
+            <div class="tasks-page-desc">Выполняй небольшие цели и забирай монеты. Баланс не тратится.</div>
+            <div class="task-card">
+                <div class="task-card-icon">👆</div><div class="task-card-main">
+                    <div class="task-card-title">Активный игрок</div><div class="task-card-desc">Сделай 50 нажатий по монете</div>
+                    <div class="task-progress-text" id="task-progress-tap50">0 / 50</div></div>
+                <div class="task-card-action"><div class="task-reward">+50 🪙</div>
+                    <button class="task-claim-btn" id="task-claim-tap50" onclick="claimTask('tap50')" disabled>ЗАБРАТЬ</button></div>
+            </div>
+            <div class="task-card">
+                <div class="task-card-icon">🧩</div><div class="task-card-main">
+                    <div class="task-card-title">Первая победа</div><div class="task-card-desc">Реши одну мини-игру</div>
+                    <div class="task-progress-text" id="task-progress-game1">0 / 1</div></div>
+                <div class="task-card-action"><div class="task-reward">+50 🪙</div>
+                    <button class="task-claim-btn" id="task-claim-game1" onclick="claimTask('game1')" disabled>ЗАБРАТЬ</button></div>
+            </div>
+            <div class="task-card">
+                <div class="task-card-icon">🏆</div><div class="task-card-main">
+                    <div class="task-card-title">Любитель головоломок</div><div class="task-card-desc">Реши три разные мини-игры</div>
+                    <div class="task-progress-text" id="task-progress-game3">0 / 3</div></div>
+                <div class="task-card-action"><div class="task-reward">+100 🪙</div>
+                    <button class="task-claim-btn" id="task-claim-game3" onclick="claimTask('game3')" disabled>ЗАБРАТЬ</button></div>
+            </div>
+            <div class="tasks-safety-note">Задания обновляются каждый день. Монеты начисляются за выполнение — ставки и списания отсутствуют.</div>
         </div>
     </div>
 
+    
     <div class="screen" id="games-scr">
         <div class="games-menu-grid" id="games-selection-grid">
-            <div class="game-preview-card" onclick="openEmbeddedGame('mines')">
-                <div class="game-icon-visual">💣</div>
-                <div class="game-title-lbl">Сапёр</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
-            </div>
-            <div class="game-preview-card" onclick="openEmbeddedGame('crypto')">
-                <div class="game-icon-visual">📈</div>
-                <div class="game-title-lbl">Крипто-Интуит</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
-            </div>
-            <div class="game-preview-card" onclick="openEmbeddedGame('dice')">
-                <div class="game-icon-visual">🎲</div>
-                <div class="game-title-lbl">Dice Кости</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
-            </div>
-            <div class="game-preview-card" onclick="openEmbeddedGame('plinko')">
-                <div class="game-icon-visual">🔺</div>
-                <div class="game-title-lbl">Plinko</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
-            </div>
-            <div class="game-preview-card" onclick="openEmbeddedGame('doors')">
-                <div class="game-icon-visual">🚪</div>
-                <div class="game-title-lbl">Двери</div>
-                <button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button>
-            </div>
+            <div class="game-preview-card" onclick="openEmbeddedGame('mines')"><div class="game-icon-visual">💎</div><div class="game-title-lbl">Сапёр: логика</div><button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button></div>
+            <div class="game-preview-card" onclick="openEmbeddedGame('crypto')"><div class="game-icon-visual">📈</div><div class="game-title-lbl">Крипто-график</div><button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button></div>
+            <div class="game-preview-card" onclick="openEmbeddedGame('dice')"><div class="game-icon-visual">🧠</div><div class="game-title-lbl">Быстрый счёт</div><button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button></div>
+            <div class="game-preview-card" onclick="openEmbeddedGame('plinko')"><div class="game-icon-visual">🔺</div><div class="game-title-lbl">Числовая цепочка</div><button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button></div>
+            <div class="game-preview-card" onclick="openEmbeddedGame('doors')"><div class="game-icon-visual">🚪</div><div class="game-title-lbl">Загадка дверей</div><button class="action-btn buy" style="pointer-events:none;">ИГРАТЬ</button></div>
         </div>
-
-        <div class="embedded-game-view" id="view-game-mines">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-mines-b">Ставка:</span><input type="number" id="mines-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell"><span id="lbl-mines-m">Мины:</span> 
-                    <select id="mines-count" class="mines-select">
-                        <option value="2">2</option><option value="3" selected>3</option><option value="5">5</option><option value="10">10</option>
-                    </select>
-                </div>
-                <div class="capsule-cell">X<span id="mines-multiplier">1.00</span></div>
-            </div>
-            <div class="crypto-buttons" style="margin-bottom:5px;">
-                <button class="btn" style="background:#22c55e;" id="mines-btn-start" onclick="startMinesGame()">Старт</button>
-                <button class="btn" style="background:#eab308;" id="mines-btn-cashout" onclick="cashoutMinesGame()" disabled>Забрать</button>
-            </div>
-            <div class="mines-grid" id="mines-grid-board"></div>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('mines')">← Назад в меню</button>
-        </div>
-
-        <div class="embedded-game-view" id="view-game-crypto">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-crypto-b">Ставка:</span><input type="number" id="crypto-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell"><span id="lbl-crypto-status">Ожидание...</span></div>
-            </div>
-            <div class="crypto-canvas-container"><canvas id="crypto-canvas-el" class="crypto-canvas"></canvas></div>
-            <div class="crypto-buttons" id="crypto-actions-row">
-                <button class="btn" style="background:#22c55e;" onclick="playCrypto('up')">Вверх ▲</button>
-                <button class="btn" style="background:#ef4444;" onclick="playCrypto('down')">Вниз ▼</button>
-            </div>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('crypto')">← Назад в меню</button>
-        </div>
-
-        <div class="embedded-game-view" id="view-game-dice">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-dice-b">Ставка:</span><input type="number" id="dice-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell">Коэф: <span id="dice-current-k">1.90</span>x</div>
-            </div>
-            <div class="dice-modes-tabs">
-                <div class="dice-tab active" id="dice-tab-gt" onclick="setDiceMode('gt')">Больше 3</div>
-                <div class="dice-tab" id="dice-tab-lt" onclick="setDiceMode('lt')">Меньше 4</div>
-                <div class="dice-tab" id="dice-tab-eq" onclick="setDiceMode('eq')">Точное число</div>
-            </div>
-            <div class="dice-options-box" id="dice-options-wrapper" style="display:none;">
-                <div class="dice-num-grid">
-                    <button class="dice-num-btn active" onclick="selectDiceNum(1)">1</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(2)">2</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(3)">3</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(4)">4</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(5)">5</button>
-                    <button class="dice-num-btn" onclick="selectDiceNum(6)">6</button>
-                </div>
-            </div>
-            <div class="dice-display-result" id="dice-visual-box">—</div>
-            <button class="btn" style="width:100%; padding:14px; background:#2563eb;" id="dice-roll-btn" onclick="rollDiceGame()">БРОСИТЬ КУБИК</button>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('dice')">← Назад в меню</button>
-        </div>
-
-        <div class="embedded-game-view" id="view-game-plinko">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-plinko-b">Ставка:</span><input type="number" id="plinko-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell">Pyramid: 7 Rows</div>
-            </div>
-            <div class="plinko-canvas-container"><canvas id="plinko-canvas-el" class="plinko-canvas"></canvas></div>
-            <button class="btn" style="width:100%; background:#2563eb;" id="plinko-drop-btn" onclick="startPlinkoBall()">ПУСТИТЬ ШАР</button>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('plinko')">← Назад в меню</button>
-        </div>
-
-        <div class="embedded-game-view" id="view-game-doors">
-            <div class="game-top-capsule">
-                <div class="capsule-cell"><span id="lbl-doors-b">Ставка:</span><input type="number" id="doors-bet" class="game-input-bet" value="10" min="1"></div>
-                <div class="capsule-cell"><span id="lbl-doors-room">Комната: 0</span></div>
-                <div class="capsule-cell">X<span id="doors-multiplier">1.00</span></div>
-            </div>
-            <div class="crypto-buttons" style="margin-bottom:5px;">
-                <button class="btn" style="background:#22c55e;" id="doors-btn-start" onclick="startDoorsGame()">Старт</button>
-                <button class="btn" style="background:#eab308;" id="doors-btn-take" onclick="takeDoorsPrize()" disabled>Забрать</button>
-            </div>
-            <div class="doors-container" id="doors-tiles-wrapper"></div>
-            <button class="back-to-menu-btn" onclick="closeEmbeddedGame('doors')">← Назад в меню</button>
-        </div>
+        <div class="embedded-game-view" id="view-game-mines"><div class="arcade-game-panel">
+            <div class="arcade-reward-label">Награда за решение: +25 🪙</div><div class="arcade-prompt" id="arcade-prompt-mines">Загрузка задания...</div>
+            <div class="arcade-game-body" id="arcade-body-mines"></div><div class="arcade-feedback" id="arcade-feedback-mines"></div>
+            <button class="btn arcade-submit" id="arcade-submit-mines" onclick="submitArcadeGame()" disabled>ПРОВЕРИТЬ</button>
+        </div><button class="back-to-menu-btn" onclick="closeEmbeddedGame('mines')">← Назад в меню</button></div>
+        <div class="embedded-game-view" id="view-game-crypto"><div class="arcade-game-panel">
+            <div class="arcade-reward-label">Награда за решение: +30 🪙</div><div class="arcade-prompt" id="arcade-prompt-crypto">Загрузка задания...</div>
+            <div class="arcade-game-body" id="arcade-body-crypto"></div><div class="arcade-feedback" id="arcade-feedback-crypto"></div>
+            <button class="btn arcade-submit" id="arcade-submit-crypto" onclick="submitArcadeGame()" disabled>ПРОВЕРИТЬ</button>
+        </div><button class="back-to-menu-btn" onclick="closeEmbeddedGame('crypto')">← Назад в меню</button></div>
+        <div class="embedded-game-view" id="view-game-dice"><div class="arcade-game-panel">
+            <div class="arcade-reward-label">Награда за решение: +20 🪙</div><div class="arcade-prompt" id="arcade-prompt-dice">Загрузка задания...</div>
+            <div class="arcade-game-body" id="arcade-body-dice"></div><div class="arcade-feedback" id="arcade-feedback-dice"></div>
+            <button class="btn arcade-submit" id="arcade-submit-dice" onclick="submitArcadeGame()" disabled>ПРОВЕРИТЬ</button>
+        </div><button class="back-to-menu-btn" onclick="closeEmbeddedGame('dice')">← Назад в меню</button></div>
+        <div class="embedded-game-view" id="view-game-plinko"><div class="arcade-game-panel">
+            <div class="arcade-reward-label">Награда за решение: +35 🪙</div><div class="arcade-prompt" id="arcade-prompt-plinko">Загрузка задания...</div>
+            <div class="arcade-game-body" id="arcade-body-plinko"></div><div class="arcade-feedback" id="arcade-feedback-plinko"></div>
+            <button class="btn arcade-submit" id="arcade-submit-plinko" onclick="submitArcadeGame()" disabled>ПРОВЕРИТЬ</button>
+        </div><button class="back-to-menu-btn" onclick="closeEmbeddedGame('plinko')">← Назад в меню</button></div>
+        <div class="embedded-game-view" id="view-game-doors"><div class="arcade-game-panel">
+            <div class="arcade-reward-label">Награда за решение: +25 🪙</div><div class="arcade-prompt" id="arcade-prompt-doors">Загрузка задания...</div>
+            <div class="arcade-game-body" id="arcade-body-doors"></div><div class="arcade-feedback" id="arcade-feedback-doors"></div>
+            <button class="btn arcade-submit" id="arcade-submit-doors" onclick="submitArcadeGame()" disabled>ПРОВЕРИТЬ</button>
+        </div><button class="back-to-menu-btn" onclick="closeEmbeddedGame('doors')">← Назад в меню</button></div>
     </div>
 
     <div class="screen" id="profile-scr">
@@ -197,10 +145,10 @@
             <div class="stats-list">
                 <div class="stats-row"><span id="st-coins">Количество монет</span><span><span id="stat-coins-val">0</span><img src="assets/images/coin.png" class="coin-mini-icon"></span></div>
                 <div class="stats-row"><span id="st-taps">Количество тапов</span><span id="stat-taps-val">0</span></div>
-                <div class="stats-row"><span id="st-won">Выиграно в мини играх</span><span><span id="stat-won-val" class="win-color">0</span><img src="assets/images/coin.png" class="coin-mini-icon"></span></div>
-                <div class="stats-row"><span id="st-profit">Прибыль</span><span><span id="stat-profit-val" class="win-color">+0</span><img src="assets/images/coin.png" class="coin-mini-icon"></span></div>
+                <div class="stats-row"><span id="st-won">Заработано в мини-играх</span><span><span id="stat-won-val" class="win-color">0</span><img src="assets/images/coin.png" class="coin-mini-icon"></span></div>
+                <div class="stats-row"><span id="st-profit">Награды за игры</span><span><span id="stat-profit-val" class="win-color">+0</span><img src="assets/images/coin.png" class="coin-mini-icon"></span></div>
                 <div class="stats-row"><span id="st-streak">Стрик наград</span><span><span id="stat-streak-val">0</span> дней</span></div>
-                <div class="stats-row"><span id="st-wheel">Прокрутил колесо фортуны</span><span id="stat-wheel-val">0</span></div>
+                <div class="stats-row"><span id="st-wheel">Игры пройдены сегодня</span><span id="stat-wheel-val">0</span></div>
             </div>
         </div>
 
