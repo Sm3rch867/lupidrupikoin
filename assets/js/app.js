@@ -571,10 +571,10 @@
             const targetId = document.getElementById('target-id').value.trim();
             if(!targetId) return;
 
-            if (confirm("Вы действительно хотите полностью обнулить этого игрока?")) {
+            if (confirm("Сбросить статистику игрока? Баланс монет сохранится.")) {
                 try {
                     await apiRequest('adminWipe', { targetId });
-                    showCustomResultDialog(`Данные игрока ${targetId} были успешно сброшены.`);
+                    showCustomResultDialog(`Статистика игрока ${targetId} сброшена. Баланс монет сохранён.`);
                 } catch (error) {
                     showCustomResultDialog(error.message);
                 }
