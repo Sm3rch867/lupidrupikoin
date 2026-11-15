@@ -359,10 +359,10 @@
 .arcade-number-cell{min-height:48px;border:1px solid rgba(148,163,184,.22);border-radius:10px;background:#17243a;color:#e2e8f0;font-size:15px;font-weight:800}
 .arcade-number-cell.selected,.arcade-option.selected{border-color:#60a5fa;background:#1d4ed8;color:#fff}
 .arcade-options-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-.arcade-options-row{display:flex;justify-content:center;gap:10px;width:100%}
+.arcade-options-row{display:flex;flex-basis:100%;justify-content:center;gap:10px;width:100%}
 .arcade-option{min-height:46px;padding:10px 14px;border:1px solid rgba(148,163,184,.24);border-radius:11px;background:#17243a;color:#f8fafc;font-size:14px;font-weight:700}
 .arcade-options-grid .arcade-option{width:100%}
-.arcade-chart{display:flex;flex-wrap:nowrap;align-items:flex-end;justify-content:center;gap:8px;min-height:145px;padding:10px;border-radius:12px;background:rgba(2,6,23,.45)}
+.arcade-chart{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:8px;min-height:145px;padding:10px;border-radius:12px;background:rgba(2,6,23,.45)}
 .arcade-chart-bar{display:flex;align-items:flex-start;justify-content:center;width:12%;min-height:24px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:10px;font-weight:800;padding-top:5px;box-sizing:border-box}
 .arcade-feedback{min-height:22px;margin:13px 0 8px;color:#93c5fd;text-align:center;font-size:13px;line-height:1.4}
 .arcade-submit{width:100%;padding:13px}
