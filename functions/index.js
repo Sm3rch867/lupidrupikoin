@@ -1,6 +1,6 @@
 "use strict";
 
-const { createHmac, randomInt, timingSafeEqual } = require("node:crypto");
+const { createHmac, timingSafeEqual } = require("node:crypto");
 const { initializeApp } = require("firebase-admin/app");
 const { getDatabase } = require("firebase-admin/database");
 const { defineSecret, defineString } = require("firebase-functions/params");
@@ -20,10 +20,10 @@ function database() {
 }
 
 const MAX_INIT_DATA_AGE_SECONDS = 60 * 60 * 24;
-const MAX_BET = 1_000_000;
-const MIN_BET = 1;
+const MAX_ADMIN_GRANT = 1_000_000;
 const MINE_REWARDS = [1_000, 2_500, 5_000, 10_000, 25_000, 50_000, 100_000];
-const PLINKO_MULTIPLIERS = [5, 2, 0.5, 0.2, 0.5, 2, 5];
+const ARCADE_REWARDS = { mines: 25, crypto: 30, dice: 20, plinko: 35, doors: 25 };
+const TASK_REWARDS = { tap50: 50, game1: 50, game3: 100 };
 
 function fail(code, message) {
   throw new HttpsError(code, message);
@@ -92,6 +92,8 @@ function newUser(profile, admins) {
     lastEnergyAt: Date.now(),
     nextClaimAt: 0,
     lastClaimAt: 0,
+    arcadeDaily: {},
+    taskClaims: {},
     isAdmin: admins.has(String(profile.id)),
   };
   return user;
@@ -109,29 +111,16 @@ function refreshEnergy(user, now) {
   user.lastEnergyAt = user.energy === 100 ? now : lastEnergyAt + restored * 1000;
 }
 
-function publicGameState(activeGame) {
-  if (!activeGame) return null;
-  if (activeGame.type === "mines") {
-    return {
-      type: "mines",
-      bet: activeGame.bet,
-      mineCount: activeGame.mineCount,
-      opened: activeGame.opened,
-      multiplier: activeGame.multiplier,
-    };
-  }
-  if (activeGame.type === "doors") {
-    return {
-      type: "doors",
-      bet: activeGame.bet,
-      room: activeGame.room,
-      multiplier: activeGame.multiplier,
-    };
-  }
-  return null;
+function todayKey(now = Date.now()) {
+  return new Date(now).toISOString().slice(0, 10);
 }
 
 function publicUser(user, admins) {
+  const dayKey = todayKey();
+  const arcadeToday = user.arcadeDaily && user.arcadeDaily[dayKey] && typeof user.arcadeDaily[dayKey] === "object"
+    ? user.arcadeDaily[dayKey] : {};
+  const tasksToday = user.taskClaims && user.taskClaims[dayKey] && typeof user.taskClaims[dayKey] === "object"
+    ? user.taskClaims[dayKey] : {};
   return {
     uid: String(user.uid),
     name: String(user.name || "Игрок"),
@@ -139,30 +128,94 @@ function publicUser(user, admins) {
     coins: Math.max(0, Number(user.coins) || 0),
     totalTaps: Math.max(0, Number(user.totalTaps) || 0),
     miniGamesWon: Math.max(0, Number(user.miniGamesWon) || 0),
-    miniGamesProfit: Number(user.miniGamesProfit) || 0,
+    miniGamesProfit: Math.max(0, Number(user.miniGamesProfit) || 0),
     rewardStreak: Math.max(0, Number(user.rewardStreak) || 0),
     wheelSpins: Math.max(0, Number(user.wheelSpins) || 0),
     energy: Math.max(0, Math.min(100, Number(user.energy) || 0)),
     nextClaimAt: Math.max(0, Number(user.nextClaimAt) || 0),
     revision: Math.max(0, Number(user.revision) || 0),
     isAdmin: admins.has(String(user.uid)),
-    activeGame: publicGameState(user.activeGame),
+    arcadeCompletedToday: Object.keys(arcadeToday),
+    taskClaimsToday: Object.keys(tasksToday),
   };
 }
 
-function validateBet(value) {
-  const bet = Number(value);
-  if (!Number.isSafeInteger(bet) || bet < MIN_BET || bet > MAX_BET) {
-    fail("invalid-argument", `Bet must be an integer between ${MIN_BET} and ${MAX_BET}.`);
+function stableSeed(value) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
   }
-  return bet;
+  return hash >>> 0;
 }
 
-function validateIndex(value, max) {
-  if (!Number.isInteger(value) || value < 0 || value >= max) {
-    fail("invalid-argument", "Invalid game selection.");
+function buildArcadeChallenge(uid, game, dayKey) {
+  const seed = stableSeed(uid + ":" + dayKey + ":" + game);
+  if (game === "mines") {
+    return {
+      type: "grid",
+      prompt: "Выбери все числа, которые делятся на 4 без остатка.",
+      cells: Array.from({ length: 25 }, (_, index) => index + 1),
+      required: 6,
+      answer: [4, 8, 12, 16, 20, 24],
+    };
   }
-  return value;
+  if (game === "crypto") {
+    const rising = seed % 2 === 0;
+    const start = 100 + (seed % 7);
+    const values = rising
+      ? [start, start + 2, start + 1, start + 4, start + 3, start + 8]
+      : [start + 8, start + 6, start + 7, start + 3, start + 4, start];
+    return {
+      type: "trend",
+      prompt: "Посмотри на график. Цена в конце выше или ниже начальной?",
+      values,
+      answer: values[values.length - 1] > values[0] ? "up" : "down",
+    };
+  }
+  if (game === "dice") {
+    const first = 3 + (seed % 8);
+    const second = 2 + (Math.floor(seed / 11) % 9);
+    const answer = first + second;
+    return {
+      type: "choice",
+      prompt: "Реши пример: " + first + " + " + second + " = ?",
+      options: [answer - 2, answer - 1, answer, answer + 2],
+      answer,
+    };
+  }
+  if (game === "plinko") {
+    const base = 2 + (seed % 3);
+    const answer = base * 16;
+    return {
+      type: "choice",
+      prompt: "Продолжи цепочку: " + [base, base * 2, base * 4, base * 8].join(", ") + ", ...",
+      options: [base * 12, base * 14, answer, base * 18],
+      answer,
+    };
+  }
+  if (game === "doors") {
+    return {
+      type: "riddle",
+      prompt: "Выбери правильный ответ: что становится мокрым, пока сушит?",
+      options: ["Зонт", "Полотенце", "Книга"],
+      answer: 1,
+    };
+  }
+  fail("invalid-argument", "Неизвестная мини-игра.");
+}
+
+function isCorrectArcadeAnswer(challenge, answer) {
+  if (challenge.type === "grid") {
+    if (!Array.isArray(answer) || answer.length !== challenge.answer.length) return false;
+    const selected = answer.map(Number);
+    if (selected.some((value) => !Number.isInteger(value))) return false;
+    const sorted = [...new Set(selected)].sort((a, b) => a - b);
+    return sorted.length === challenge.answer.length &&
+      sorted.every((value, index) => value === challenge.answer[index]);
+  }
+  if (challenge.type === "trend") return answer === challenge.answer;
+  return Number(answer) === challenge.answer;
 }
 
 async function updateUser(uid, action, payload, profile, admins) {
@@ -180,7 +233,13 @@ async function updateUser(uid, action, payload, profile, admins) {
     user.coins = Number.isSafeInteger(user.coins) && user.coins >= 0 ? user.coins : 0;
     user.totalTaps = Number.isSafeInteger(user.totalTaps) && user.totalTaps >= 0 ? user.totalTaps : 0;
     user.miniGamesWon = Number.isSafeInteger(user.miniGamesWon) && user.miniGamesWon >= 0 ? user.miniGamesWon : 0;
-    user.miniGamesProfit = Number.isSafeInteger(user.miniGamesProfit) ? user.miniGamesProfit : 0;
+    user.miniGamesProfit = Number.isSafeInteger(user.miniGamesProfit) ? Math.max(0, user.miniGamesProfit) : 0;
+    user.arcadeDaily = user.arcadeDaily && typeof user.arcadeDaily === "object" ? user.arcadeDaily : {};
+    user.taskClaims = user.taskClaims && typeof user.taskClaims === "object" ? user.taskClaims : {};
+    if (user.activeGame && Number.isSafeInteger(user.activeGame.bet) && user.activeGame.bet > 0) {
+      user.coins += user.activeGame.bet;
+    }
+    user.activeGame = null;
     user.rewardStreak = Number.isSafeInteger(user.rewardStreak) && user.rewardStreak >= 0 ? user.rewardStreak : 0;
     user.wheelSpins = Number.isSafeInteger(user.wheelSpins) && user.wheelSpins >= 0 ? user.wheelSpins : 0;
     user.nextClaimAt = Number.isFinite(user.nextClaimAt) ? Math.max(0, user.nextClaimAt) : 0;
@@ -192,21 +251,6 @@ async function updateUser(uid, action, payload, profile, admins) {
       user.revision += 1;
       result = { ...data, user: publicUser(user, admins) };
     };
-    const chargeBet = (bet) => {
-      if (user.coins < bet) {
-        failure = ["failed-precondition", "Недостаточно монет."];
-        return false;
-      }
-      user.coins -= bet;
-      user.miniGamesProfit -= bet;
-      return true;
-    };
-    const payPrize = (amount) => {
-      user.coins += amount;
-      user.miniGamesWon += amount;
-      user.miniGamesProfit += amount;
-    };
-
     switch (action) {
       case "bootstrap":
         setResult();
@@ -240,140 +284,75 @@ async function updateUser(uid, action, payload, profile, admins) {
         setResult({ reward });
         break;
       }
-      case "minesStart": {
-        const bet = validateBet(payload.bet);
-        const mineCount = Number(payload.mineCount);
-        if (![2, 3, 5, 10].includes(mineCount)) {
-          failure = ["invalid-argument", "Invalid mine count."];
+      case "arcadeChallenge": {
+        const game = String(payload.game || "");
+        if (!Object.prototype.hasOwnProperty.call(ARCADE_REWARDS, game)) {
+          failure = ["invalid-argument", "Неизвестная мини-игра."];
           return;
         }
-        if (user.activeGame) {
-          failure = ["failed-precondition", "Заверши текущую игру перед началом новой."];
-          return;
-        }
-        if (!chargeBet(bet)) return;
-        const mines = new Set();
-        while (mines.size < mineCount) mines.add(randomInt(25));
-        user.activeGame = { type: "mines", bet, mineCount, mines: [...mines], opened: [], multiplier: 1 };
-        setResult();
+        const dayKey = todayKey(now);
+        const completed = Boolean(user.arcadeDaily[dayKey] && user.arcadeDaily[dayKey][game]);
+        const fullChallenge = buildArcadeChallenge(uid, game, dayKey);
+        const { answer, ...challenge } = fullChallenge;
+        setResult({ challenge, completed });
         break;
       }
-      case "minesOpen": {
-        const game = user.activeGame;
-        if (!game || game.type !== "mines") {
-          failure = ["failed-precondition", "Активная игра «Сапёр» не найдена."];
+      case "arcadeComplete": {
+        const game = String(payload.game || "");
+        if (!Object.prototype.hasOwnProperty.call(ARCADE_REWARDS, game)) {
+          failure = ["invalid-argument", "Неизвестная мини-игра."];
           return;
         }
-        const index = validateIndex(Number(payload.index), 25);
-        if (game.opened.includes(index)) {
-          failure = ["failed-precondition", "Эта клетка уже открыта."];
+        const dayKey = todayKey(now);
+        user.arcadeDaily[dayKey] = user.arcadeDaily[dayKey] && typeof user.arcadeDaily[dayKey] === "object"
+          ? user.arcadeDaily[dayKey] : {};
+        if (user.arcadeDaily[dayKey][game]) {
+          failure = ["already-exists", "Награда за эту мини-игру уже получена сегодня."];
           return;
         }
-        if (game.mines.includes(index)) {
-          user.activeGame = null;
-          setResult({ hitMine: true, mines: game.mines });
+        const challenge = buildArcadeChallenge(uid, game, dayKey);
+        if (!isCorrectArcadeAnswer(challenge, payload.answer)) {
+          setResult({ correct: false, game });
           break;
         }
-        game.opened.push(index);
-        game.multiplier = Number((game.multiplier * (25 - game.opened.length + 1) / (25 - game.mineCount - game.opened.length + 1)).toFixed(8));
-        setResult({ hitMine: false, index });
+        const reward = ARCADE_REWARDS[game];
+        user.arcadeDaily[dayKey][game] = now;
+        user.coins += reward;
+        user.miniGamesWon += reward;
+        user.miniGamesProfit += reward;
+        setResult({ correct: true, game, reward });
         break;
       }
-      case "minesCashout": {
-        const game = user.activeGame;
-        if (!game || game.type !== "mines" || game.opened.length === 0) {
-          failure = ["failed-precondition", "Сначала открой безопасную клетку."];
+      case "claimTask": {
+        const task = String(payload.task || "");
+        if (!Object.prototype.hasOwnProperty.call(TASK_REWARDS, task)) {
+          failure = ["invalid-argument", "Неизвестное задание."];
           return;
         }
-        const prize = Math.floor(game.bet * game.multiplier);
-        user.activeGame = null;
-        payPrize(prize);
-        setResult({ prize, mines: game.mines });
-        break;
-      }
-      case "dice": {
-        const bet = validateBet(payload.bet);
-        const mode = payload.mode;
-        const selected = Number(payload.number);
-        if (!["gt", "lt", "eq"].includes(mode) || (mode === "eq" && (!Number.isInteger(selected) || selected < 1 || selected > 6))) {
-          failure = ["invalid-argument", "Invalid dice selection."];
+        const dayKey = todayKey(now);
+        user.arcadeDaily[dayKey] = user.arcadeDaily[dayKey] && typeof user.arcadeDaily[dayKey] === "object"
+          ? user.arcadeDaily[dayKey] : {};
+        user.taskClaims[dayKey] = user.taskClaims[dayKey] && typeof user.taskClaims[dayKey] === "object"
+          ? user.taskClaims[dayKey] : {};
+        if (user.taskClaims[dayKey][task]) {
+          failure = ["already-exists", "Награда за это задание уже получена сегодня."];
           return;
         }
-        if (!chargeBet(bet)) return;
-        const roll = randomInt(1, 7);
-        const won = mode === "gt" ? roll > 3 : mode === "lt" ? roll < 4 : roll === selected;
-        const multiplier = mode === "eq" ? 5 : 1.9;
-        const prize = won ? Math.floor(bet * multiplier) : 0;
-        if (prize) payPrize(prize);
-        setResult({ roll, won, prize });
-        break;
-      }
-      case "crypto": {
-        const bet = validateBet(payload.bet);
-        if (!["up", "down"].includes(payload.direction)) {
-          failure = ["invalid-argument", "Invalid market direction."];
+        const completedGames = Object.keys(user.arcadeDaily[dayKey]).length;
+        const eligible = task === "tap50" ? user.totalTaps >= 50
+          : task === "game1" ? completedGames >= 1
+            : completedGames >= 3;
+        if (!eligible) {
+          failure = ["failed-precondition", "Сначала выполни условие задания."];
           return;
         }
-        if (!chargeBet(bet)) return;
-        const wentUp = randomInt(0, 2) === 1;
-        const won = (payload.direction === "up") === wentUp;
-        const prize = won ? Math.floor(bet * 1.9) : 0;
-        if (prize) payPrize(prize);
-        setResult({ wentUp, won, prize });
+        const reward = TASK_REWARDS[task];
+        user.taskClaims[dayKey][task] = now;
+        user.coins += reward;
+        setResult({ task, reward });
         break;
       }
-      case "plinko": {
-        const bet = validateBet(payload.bet);
-        if (!chargeBet(bet)) return;
-        let slot = 0;
-        for (let row = 0; row < 6; row += 1) slot += randomInt(0, 2);
-        const multiplier = PLINKO_MULTIPLIERS[slot];
-        const prize = Math.floor(bet * multiplier);
-        if (prize) payPrize(prize);
-        setResult({ slot, multiplier, prize });
-        break;
-      }
-      case "doorsStart": {
-        const bet = validateBet(payload.bet);
-        if (user.activeGame) {
-          failure = ["failed-precondition", "Заверши текущую игру перед началом новой."];
-          return;
-        }
-        if (!chargeBet(bet)) return;
-        user.activeGame = { type: "doors", bet, room: 1, multiplier: 1, winningIndex: randomInt(3) };
-        setResult();
-        break;
-      }
-      case "doorsChoose": {
-        const game = user.activeGame;
-        if (!game || game.type !== "doors") {
-          failure = ["failed-precondition", "Активная игра «Двери» не найдена."];
-          return;
-        }
-        const index = validateIndex(Number(payload.index), 3);
-        if (index !== game.winningIndex) {
-          user.activeGame = null;
-          setResult({ wonRoom: false, selected: index });
-          break;
-        }
-        game.room += 1;
-        game.multiplier = Number((1.4 * (game.room - 1)).toFixed(2));
-        game.winningIndex = randomInt(3);
-        setResult({ wonRoom: true, selected: index });
-        break;
-      }
-      case "doorsCashout": {
-        const game = user.activeGame;
-        if (!game || game.type !== "doors" || game.room <= 1) {
-          failure = ["failed-precondition", "Сначала пройди хотя бы одну комнату."];
-          return;
-        }
-        const prize = Math.floor(game.bet * game.multiplier);
-        user.activeGame = null;
-        payPrize(prize);
-        setResult({ prize });
-        break;
-      }
+      case "adminGive": {
       case "adminGive": {
         if (!admins.has(uid)) {
           failure = ["permission-denied", "Недостаточно прав."];
@@ -381,7 +360,7 @@ async function updateUser(uid, action, payload, profile, admins) {
         }
         const targetId = String(payload.targetId || "");
         const amount = Number(payload.amount);
-        if (!/^\d+$/.test(targetId) || !Number.isSafeInteger(amount) || amount < 1 || amount > MAX_BET) {
+        if (!/^\d+$/.test(targetId) || !Number.isSafeInteger(amount) || amount < 1 || amount > MAX_ADMIN_GRANT) {
           failure = ["invalid-argument", "Invalid player ID or amount."];
           return;
         }
@@ -438,6 +417,8 @@ async function updateUser(uid, action, payload, profile, admins) {
         target.rewardStreak = 0;
         target.wheelSpins = 0;
         target.activeGame = null;
+        target.arcadeDaily = {};
+        target.taskClaims = {};
         target.adminWipedAt = now;
         return target;
       });
