@@ -287,9 +287,7 @@
             let currentDayIndex = rewardStreak % 7;
             
             for(let i=0; i<7; i++) {
-                let imgFile = "stopka1.jpg";
-                if(i === 3 || i === 4) imgFile = "stopka2.jpg";
-                if(i === 5 || i === 6) imgFile = "stopka3.jpg";
+                const imgFile = "assets/images/coin.png";
 
                 let boxClass = "day-box";
                 if(i < currentDayIndex) boxClass += " completed";
