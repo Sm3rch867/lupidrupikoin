@@ -335,3 +335,36 @@
         .plus-one { position: absolute; color: white; font-size: 26px; font-weight: bold; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 10px var(--primary); z-index: 1000; }
         @keyframes floatUp { to { transform: translateY(-100px); opacity: 0; } }
     
+
+/* Safe arcade puzzles and daily tasks */
+.tasks-page{width:100%;max-width:620px;margin:0 auto;padding:22px 16px 100px;box-sizing:border-box}
+.tasks-page-title{color:#fff;font-size:24px;font-weight:800;margin:4px 0 8px}
+.tasks-page-desc{color:#94a3b8;font-size:14px;line-height:1.5;margin-bottom:18px}
+.task-card{display:flex;align-items:center;gap:12px;padding:15px;margin-bottom:12px;background:rgba(13,22,38,.92);border:1px solid rgba(96,165,250,.16);border-radius:16px}
+.task-card-icon{font-size:27px;flex:0 0 34px;text-align:center}
+.task-card-main{min-width:0;flex:1}
+.task-card-title{color:#f8fafc;font-size:15px;font-weight:800;margin-bottom:4px}
+.task-card-desc{color:#94a3b8;font-size:12px;line-height:1.4}
+.task-progress-text{color:#60a5fa;font-size:12px;font-weight:700;margin-top:7px}
+.task-card-action{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.task-reward{color:#fbbf24;font-size:13px;font-weight:800;white-space:nowrap}
+.task-claim-btn{border:0;border-radius:9px;padding:8px 10px;background:#2563eb;color:#fff;font-size:10px;font-weight:800}
+.task-claim-btn:disabled{opacity:.42;cursor:not-allowed}
+.tasks-safety-note{color:#64748b;font-size:12px;text-align:center;line-height:1.5;padding:12px 8px 24px}
+.arcade-game-panel{width:100%;max-width:520px;margin:12px auto;padding:18px;box-sizing:border-box;background:rgba(13,22,38,.96);border:1px solid rgba(96,165,250,.18);border-radius:18px}
+.arcade-reward-label{color:#fbbf24;font-size:13px;font-weight:800;text-align:center;margin-bottom:14px}
+.arcade-prompt{color:#f8fafc;text-align:center;font-size:16px;font-weight:700;line-height:1.5;margin:8px 0 18px}
+.arcade-game-body{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:9px;min-height:90px}
+.arcade-number-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.arcade-number-cell{min-height:48px;border:1px solid rgba(148,163,184,.22);border-radius:10px;background:#17243a;color:#e2e8f0;font-size:15px;font-weight:800}
+.arcade-number-cell.selected,.arcade-option.selected{border-color:#60a5fa;background:#1d4ed8;color:#fff}
+.arcade-options-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.arcade-options-row{display:flex;justify-content:center;gap:10px;width:100%}
+.arcade-option{min-height:46px;padding:10px 14px;border:1px solid rgba(148,163,184,.24);border-radius:11px;background:#17243a;color:#f8fafc;font-size:14px;font-weight:700}
+.arcade-options-grid .arcade-option{width:100%}
+.arcade-chart{display:flex;flex-wrap:nowrap;align-items:flex-end;justify-content:center;gap:8px;min-height:145px;padding:10px;border-radius:12px;background:rgba(2,6,23,.45)}
+.arcade-chart-bar{display:flex;align-items:flex-start;justify-content:center;width:12%;min-height:24px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:10px;font-weight:800;padding-top:5px;box-sizing:border-box}
+.arcade-feedback{min-height:22px;margin:13px 0 8px;color:#93c5fd;text-align:center;font-size:13px;line-height:1.4}
+.arcade-submit{width:100%;padding:13px}
+.arcade-submit:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:420px){.task-card{gap:8px;padding:12px}.task-card-icon{flex-basis:27px;font-size:23px}.task-card-title{font-size:13px}.task-card-desc{font-size:11px}.arcade-game-panel{padding:14px}}
