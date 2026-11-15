@@ -163,7 +163,7 @@ function buildArcadeChallenge(uid, game, dayKey) {
   if (game === "mines") {
     return {
       type: "grid",
-      prompt: "Выбери все числа, которые делятся на 4 без остатка.",
+      prompt: "Отметь все числа, кратные 4.",
       cells: Array.from({ length: 25 }, (_, index) => index + 1),
       required: 6,
       answer: [4, 8, 12, 16, 20, 24],
@@ -177,7 +177,7 @@ function buildArcadeChallenge(uid, game, dayKey) {
       : [start + 8, start + 6, start + 7, start + 3, start + 4, start];
     return {
       type: "trend",
-      prompt: "Посмотри на график. Цена в конце выше или ниже начальной?",
+      prompt: "Посмотри на график. Значение в конце выше или ниже начального?",
       values,
       answer: values[values.length - 1] > values[0] ? "up" : "down",
     };
