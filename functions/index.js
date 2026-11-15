@@ -353,7 +353,6 @@ async function updateUser(uid, action, payload, profile, admins) {
         break;
       }
       case "adminGive": {
-      case "adminGive": {
         if (!admins.has(uid)) {
           failure = ["permission-denied", "Недостаточно прав."];
           return;
