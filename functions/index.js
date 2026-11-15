@@ -421,7 +421,10 @@ async function updateUser(uid, action, payload, profile, admins) {
       const targetTransaction = await targetRef.transaction((target) => {
         if (!target) return;
         existed = true;
-        // A statistics reset must never remove the player's saved coin balance.
+        // A statistics reset must never remove saved coins. Refund a legacy active round once before clearing it.
+        if (target.activeGame && Number.isSafeInteger(target.activeGame.bet) && target.activeGame.bet > 0) {
+          target.coins += target.activeGame.bet;
+        }
         target.totalTaps = 0;
         target.miniGamesWon = 0;
         target.miniGamesProfit = 0;
