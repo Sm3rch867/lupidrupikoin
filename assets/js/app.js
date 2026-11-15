@@ -4,14 +4,14 @@
             ru: {
                 nv_game: "Главная", nv_shop: "Магазин", nv_tasks: "Задания", nv_games: "Игры", nv_profile: "Профиль",
                 top_title: "ТОП ИГРОКОВ 🏆", day: "День",
-                st_1: "Количество монет", st_2: "Количество тапов", st_3: "Выиграно в мини играх",
-                st_4: "Прибыль", st_5: "Стрик наград", st_6: "Прокрутил колесо фортуны"
+                st_1: "Количество монет", st_2: "Количество тапов", st_3: "Заработано в мини-играх",
+                st_4: "Награды за игры", st_5: "Стрик наград", st_6: "Игры пройдены сегодня"
             },
             en: {
                 nv_game: "Main", nv_shop: "Shop", nv_tasks: "Tasks", nv_games: "Games", nv_profile: "Profile",
                 top_title: "TOP PLAYERS 🏆", day: "Day",
-                st_1: "Coins balance", st_2: "Total taps", st_3: "Won in mini games",
-                st_4: "Net profit", st_5: "Reward streak", st_6: "Wheel spins completed"
+                st_1: "Coins balance", st_2: "Total taps", st_3: "Earned in mini-games",
+                st_4: "Game rewards", st_5: "Reward streak", st_6: "Games completed today"
             }
         };
 
@@ -23,6 +23,8 @@
         let miniGamesProfit = 0;
         let rewardStreak = 0;
         let wheelSpins = 0;
+        let arcadeCompletedToday = [];
+        let taskClaimsToday = [];
         let energy = 0;
         let nextClaimAt = 0;
         let isAdmin = false;
@@ -95,6 +97,8 @@
             miniGamesProfit = user.miniGamesProfit;
             rewardStreak = user.rewardStreak;
             wheelSpins = user.wheelSpins;
+            arcadeCompletedToday = Array.isArray(user.arcadeCompletedToday) ? user.arcadeCompletedToday : [];
+            taskClaimsToday = Array.isArray(user.taskClaimsToday) ? user.taskClaimsToday : [];
             energy = user.energy;
             nextClaimAt = user.nextClaimAt;
             isAdmin = user.isAdmin;
@@ -102,7 +106,7 @@
             document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
             updateUI();
             initTelegramProfile();
-            if (!isReady) restoreActiveGame(user.activeGame);
+
         }
 
         async function bootstrap() {
@@ -164,12 +168,13 @@
             document.getElementById('top-streak-lbl').innerText = rewardStreak;
             
             const statsWheel = document.getElementById('stat-wheel-val');
-            if(statsWheel) statsWheel.innerText = wheelSpins;
+            if(statsWheel) statsWheel.innerText = arcadeCompletedToday.length;
 
             document.getElementById('energy-num').innerText = `${energy} / 100`;
             document.getElementById('energy-fill').style.width = `${energy}%`;
 
             checkBonusDotNotification();
+            updateTasksUI();
         }
 
         // КЛИКЕР ТАПЫ
@@ -237,36 +242,15 @@
 
         // НАВИГАЦИЯ СТРАНИЦ
         function show(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
+            document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach((item) => item.classList.remove('active'));
             document.getElementById(screenId + '-scr').classList.add('active');
             document.getElementById('n-' + screenId).classList.add('active');
-
-            if (screenId !== 'games') {
-                if (cryptoInterval) {
-                    clearInterval(cryptoInterval);
-                    cryptoInterval = null;
-                }
-                if (plinkoFrameId) {
-                    cancelAnimationFrame(plinkoFrameId);
-                    plinkoFrameId = null;
-                }
-            } else {
-                const cryptoView = document.getElementById('view-game-crypto');
-                if (cryptoView.style.display === 'flex' && !cryptoInterval) initCryptoGame();
-                const plinkoView = document.getElementById('view-game-plinko');
-                if (plinkoView.style.display === 'flex' && plinkoCanvas) {
-                    updatePlinkoFrame();
-                }
-            }
-
-            if(screenId === 'profile') {
-                loadLeaderboard();
-            }
+            if (screenId === 'profile') loadLeaderboard();
+            if (screenId === 'tasks') updateTasksUI();
         }
 
-        // КАСТОМНЫЕ ОКНА РЕЗУЛЬТАТОВ
+                // КАСТОМНЫЕ ОКНА РЕЗУЛЬТАТОВ
         function showCustomResultDialog(htmlText) {
             document.getElementById('result-dialog-msg').innerHTML = htmlText;
             document.getElementById('result-dialog').classList.add('open');
@@ -358,512 +342,214 @@
             }
         }
 
-        // ВХОД В МИНИ-ИГРЫ
+        // БЕЗОПАСНЫЕ МИНИ-ИГРЫ: головоломки с фиксированной наградой.
+        const arcadeGameNames = { mines:"Сапёр: логика", crypto:"Крипто-график", dice:"Быстрый счёт", plinko:"Числовая цепочка", doors:"Загадка дверей" };
+        let currentArcadeGame = null;
+        let currentArcadeChallenge = null;
+        let arcadeSelectedAnswer = null;
+        let arcadeSelectedNumbers = new Set();
+        let arcadeRequestInFlight = false;
+
         function openEmbeddedGame(gameKey) {
+            if (!Object.prototype.hasOwnProperty.call(arcadeGameNames, gameKey)) return;
             document.getElementById('games-selection-grid').style.display = 'none';
+            document.querySelectorAll('.embedded-game-view').forEach((view) => { view.style.display = 'none'; });
             document.getElementById('view-game-' + gameKey).style.display = 'flex';
-            if(gameKey === 'crypto') initCryptoGame();
-            if(gameKey === 'plinko') initPlinkoGame();
+            currentArcadeGame = gameKey;
+            loadArcadeChallenge(gameKey);
         }
 
         function closeEmbeddedGame(gameKey) {
-            document.getElementById('view-game-' + gameKey).style.display = 'none';
+            const view = document.getElementById('view-game-' + gameKey);
+            if (view) view.style.display = 'none';
             document.getElementById('games-selection-grid').style.display = 'grid';
-            if(gameKey === 'crypto' && cryptoInterval) {
-                clearInterval(cryptoInterval);
-                cryptoInterval = null;
-            }
-            if(gameKey === 'plinko' && plinkoFrameId) {
-                cancelAnimationFrame(plinkoFrameId);
-                plinkoFrameId = null;
-            }
+            currentArcadeGame = null;
+            currentArcadeChallenge = null;
+            arcadeSelectedAnswer = null;
+            arcadeSelectedNumbers.clear();
         }
 
-        // САПЁР МЕХАНИКА
-        let minesBoard = [];
-        let minesOpened = 0;
-        let minesActive = false;
-        let currentMinesBet = 0;
-        let minesRequestInFlight = false;
-
-        function renderMinesBoard(opened = []) {
-            const grid = document.getElementById('mines-grid-board');
-            grid.replaceChildren();
-            for (let i = 0; i < 25; i++) {
-                const tile = document.createElement('div');
-                tile.className = 'mines-tile';
-                tile.id = 'tile-' + i;
-                tile.textContent = '?';
-                tile.onclick = () => clickMinesTile(i);
-                if (opened.includes(i)) {
-                    tile.classList.add('opened');
-                    tile.textContent = '💎';
-                }
-                grid.appendChild(tile);
-            }
-        }
-
-        function restoreActiveGame(activeGame) {
-            if (!activeGame) {
-                minesActive = false;
-                doorsActive = false;
-                document.getElementById('mines-btn-start').disabled = false;
-                document.getElementById('mines-btn-cashout').disabled = true;
-                document.getElementById('doors-btn-start').disabled = false;
-                document.getElementById('doors-btn-take').disabled = true;
+        async function loadArcadeChallenge(gameKey) {
+            const prompt = document.getElementById('arcade-prompt-' + gameKey);
+            const body = document.getElementById('arcade-body-' + gameKey);
+            const feedback = document.getElementById('arcade-feedback-' + gameKey);
+            const submit = document.getElementById('arcade-submit-' + gameKey);
+            body.replaceChildren();
+            feedback.textContent = '';
+            submit.disabled = true;
+            prompt.textContent = 'Загружаем головоломку...';
+            if (!isReady) {
+                prompt.textContent = bootstrapError || 'Сначала дождись подключения аккаунта.';
                 return;
             }
-            if (activeGame.type === 'mines' && !minesActive) {
-                minesActive = true;
-                currentMinesBet = activeGame.bet;
-                minesOpened = activeGame.opened.length;
-                minesBoard = Array(25).fill(false);
-                document.getElementById('mines-count').value = activeGame.mineCount;
-                document.getElementById('mines-multiplier').innerText = activeGame.multiplier.toFixed(2);
-                document.getElementById('mines-btn-start').disabled = true;
-                document.getElementById('mines-btn-cashout').disabled = minesOpened === 0;
-                renderMinesBoard(activeGame.opened);
-            } else if (activeGame.type === 'doors' && !doorsActive) {
-                doorsActive = true;
-                doorsRoom = activeGame.room;
-                currentDoorsBet = activeGame.bet;
-                document.getElementById('doors-multiplier').innerText = activeGame.multiplier.toFixed(2);
-                document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
-                document.getElementById('doors-btn-start').disabled = true;
-                document.getElementById('doors-btn-take').disabled = doorsRoom <= 1;
-                generateDoorsLayout();
+            try {
+                const data = await apiRequest('arcadeChallenge', { game: gameKey });
+                applyUser(data.user);
+                currentArcadeChallenge = data.challenge;
+                if (data.completed || arcadeCompletedToday.includes(gameKey)) {
+                    prompt.textContent = 'Эта головоломка уже пройдена сегодня.';
+                    feedback.textContent = 'Награда за сегодня уже получена. Новые задания появятся завтра.';
+                    return;
+                }
+                renderArcadeChallenge(gameKey, data.challenge);
+            } catch (error) {
+                prompt.textContent = 'Не удалось загрузить задание.';
+                feedback.textContent = error.message;
             }
         }
 
-        async function startMinesGame() {
-            if (!isReady || minesRequestInFlight) return;
-            const bInput = document.getElementById('mines-bet');
-            const bet = Number(bInput.value);
-            const startButton = document.getElementById('mines-btn-start');
-            minesRequestInFlight = true;
-            startButton.disabled = true;
-            try {
-                const data = await apiRequest('minesStart', {
-                    bet,
-                    mineCount: Number(document.getElementById('mines-count').value)
+        function addArcadeOption(gameKey, label, value) {
+            const body = document.getElementById('arcade-body-' + gameKey);
+            const container = body.querySelector('.arcade-options-row') || body;
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'arcade-option';
+            option.textContent = String(label);
+            option.dataset.value = String(value);
+            option.addEventListener('click', () => {
+                container.querySelectorAll('.arcade-option').forEach((item) => item.classList.remove('selected'));
+                option.classList.add('selected');
+                arcadeSelectedAnswer = option.dataset.value;
+                document.getElementById('arcade-submit-' + gameKey).disabled = false;
+            });
+            container.appendChild(option);
+        }
+
+        function renderArcadeChallenge(gameKey, challenge) {
+            const prompt = document.getElementById('arcade-prompt-' + gameKey);
+            const body = document.getElementById('arcade-body-' + gameKey);
+            const submit = document.getElementById('arcade-submit-' + gameKey);
+            prompt.textContent = challenge.prompt;
+            body.replaceChildren();
+            body.classList.remove('arcade-number-grid', 'arcade-chart', 'arcade-options-grid');
+            arcadeSelectedAnswer = null;
+            arcadeSelectedNumbers = new Set();
+
+            if (challenge.type === 'grid') {
+                body.classList.add('arcade-number-grid');
+                challenge.cells.forEach((number) => {
+                    const cell = document.createElement('button');
+                    cell.type = 'button';
+                    cell.className = 'arcade-number-cell';
+                    cell.textContent = String(number);
+                    cell.addEventListener('click', () => {
+                        if (arcadeSelectedNumbers.has(number)) {
+                            arcadeSelectedNumbers.delete(number);
+                            cell.classList.remove('selected');
+                        } else if (arcadeSelectedNumbers.size < challenge.required) {
+                            arcadeSelectedNumbers.add(number);
+                            cell.classList.add('selected');
+                        }
+                        document.getElementById('arcade-feedback-' + gameKey).textContent =
+                            'Выбрано: ' + arcadeSelectedNumbers.size + ' из ' + challenge.required;
+                        submit.disabled = arcadeSelectedNumbers.size !== challenge.required;
+                    });
+                    body.appendChild(cell);
                 });
-                applyUser(data.user);
-                restoreActiveGame(data.user.activeGame);
-            } catch (error) {
-                startButton.disabled = false;
-                showCustomResultDialog(error.message);
-            } finally {
-                minesRequestInFlight = false;
-            }
-        }
-
-        async function clickMinesTile(idx) {
-            if (!minesActive || minesRequestInFlight) return;
-            const tile = document.getElementById('tile-' + idx);
-            if (!tile || tile.classList.contains('opened') || tile.classList.contains('mine')) return;
-            minesRequestInFlight = true;
-            try {
-                const data = await apiRequest('minesOpen', { index: idx });
-                if (data.hitMine) {
-                    minesBoard = Array(25).fill(false);
-                    data.mines.forEach((mine) => { minesBoard[mine] = true; });
-                    tile.classList.add('mine');
-                    tile.textContent = '💣';
-                    applyUser(data.user);
-                    minesActive = false;
-                    document.getElementById('mines-btn-start').disabled = false;
-                    document.getElementById('mines-btn-cashout').disabled = true;
-                    revealMinesBoard();
-                    showCustomResultDialog("Бум! Вы попали на мину. Ставка проиграна.");
-                } else {
-                    applyUser(data.user);
-                    tile.classList.add('opened');
-                    tile.textContent = '💎';
-                    minesOpened += 1;
-                    const game = data.user.activeGame;
-                    document.getElementById('mines-multiplier').innerText = game.multiplier.toFixed(2);
-                    document.getElementById('mines-btn-cashout').disabled = false;
-                }
-            } catch (error) {
-                showCustomResultDialog(error.message);
-            } finally {
-                minesRequestInFlight = false;
-            }
-        }
-
-        function revealMinesBoard() {
-            for(let i=0; i<25; i++) {
-                const tile = document.getElementById('tile-' + i);
-                if(tile && minesBoard[i]) {
-                    tile.classList.add('mine');
-                    tile.innerText = "💣";
-                }
-            }
-        }
-
-        async function cashoutMinesGame() {
-            if (!minesActive || minesOpened === 0 || minesRequestInFlight) return;
-            minesRequestInFlight = true;
-            try {
-                const data = await apiRequest('minesCashout');
-                minesBoard = Array(25).fill(false);
-                data.mines.forEach((mine) => { minesBoard[mine] = true; });
-                applyUser(data.user);
-                minesActive = false;
-                document.getElementById('mines-btn-start').disabled = false;
-                document.getElementById('mines-btn-cashout').disabled = true;
-                revealMinesBoard();
-                showCustomResultDialog(`Отлично! Вы забрали куш: <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="assets/images/coin.png">!`);
-            } catch (error) {
-                showCustomResultDialog(error.message);
-            } finally {
-                minesRequestInFlight = false;
-            }
-        }
-
-        // КРИПТО-ИНТУИТ МЕХАНИКА
-        let cryptoCanvas, cryptoCtx, cryptoInterval;
-        let cryptoPoints = [];
-        let cryptoCurrentVal = 100;
-        let cryptoRequestInFlight = false;
-
-        function initCryptoGame() {
-            if (cryptoInterval) clearInterval(cryptoInterval);
-            cryptoCanvas = document.getElementById('crypto-canvas-el');
-            cryptoCtx = cryptoCanvas.getContext('2d');
-            cryptoPoints = [100, 102, 99, 101, 105, 103, 106];
-            cryptoCurrentVal = 106;
-            drawCryptoChart();
-
-            cryptoInterval = setInterval(() => {
-                cryptoCurrentVal += (Math.random() - 0.49) * 4;
-                cryptoPoints.push(cryptoCurrentVal);
-                if(cryptoPoints.length > 25) cryptoPoints.shift();
-                drawCryptoChart();
-            }, 800);
-        }
-
-        function drawCryptoChart() {
-            const w = cryptoCanvas.width = cryptoCanvas.parentElement.clientWidth;
-            const h = cryptoCanvas.height = 150;
-            cryptoCtx.clearRect(0,0,w,h);
-
-            cryptoCtx.strokeStyle = "#2563eb";
-            cryptoCtx.lineWidth = 3;
-            cryptoCtx.beginPath();
-
-            const step = w / 25;
-            const min = Math.min(...cryptoPoints) - 5;
-            const maxValue = Math.max(...cryptoPoints) + 5;
-            const max = maxValue > min ? maxValue : min + 1;
-
-            cryptoPoints.forEach((p, i) => {
-                const x = i * step;
-                const y = h - ((p - min) / (max - min)) * h;
-                if(i === 0) cryptoCtx.moveTo(x,y);
-                else cryptoCtx.lineTo(x,y);
-            });
-            cryptoCtx.stroke();
-        }
-
-        function playCrypto(direction) {
-            if (!isReady || cryptoRequestInFlight) return;
-            const betInput = document.getElementById('crypto-bet');
-            const bet = Number(betInput.value);
-            const initialPrice = cryptoCurrentVal;
-            cryptoRequestInFlight = true;
-            document.getElementById('lbl-crypto-status').innerText = "Анализ рынка (3с)...";
-            document.getElementById('crypto-actions-row').style.pointerEvents = 'none';
-            setTimeout(async () => {
-                try {
-                    const data = await apiRequest('crypto', { bet, direction });
-                    applyUser(data.user);
-                    cryptoCurrentVal = initialPrice + (data.wentUp ? 5 : -5);
-                    cryptoPoints.push(cryptoCurrentVal);
-                    if (cryptoPoints.length > 25) cryptoPoints.shift();
-                    drawCryptoChart();
-                    const trend = data.wentUp ? 'вверх' : 'вниз';
-                    showCustomResultDialog(data.won
-                        ? `График пошёл ${trend}. Вы угадали! <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="assets/images/coin.png">`
-                        : `График пошёл ${trend}. Ставка проиграна.`);
-                } catch (error) {
-                    showCustomResultDialog(error.message);
-                } finally {
-                    cryptoRequestInFlight = false;
-                    document.getElementById('lbl-crypto-status').innerText = "Ожидание...";
-                    document.getElementById('crypto-actions-row').style.pointerEvents = 'auto';
-                }
-            }, 3000);
-        }
-
-        // DICE МЕХАНИКА
-        let currentDiceMode = 'gt'; 
-        let selectedDiceExact = 1;
-
-        function setDiceMode(mode) {
-            currentDiceMode = mode;
-            document.querySelectorAll('.dice-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('dice-tab-' + mode).classList.add('active');
-
-            const wrapper = document.getElementById('dice-options-wrapper');
-            const kLbl = document.getElementById('dice-current-k');
-
-            if(mode === 'eq') {
-                wrapper.style.display = 'block';
-                kLbl.innerText = "5.50";
-            } else {
-                wrapper.style.display = 'none';
-                kLbl.innerText = "1.90";
-            }
-        }
-
-        function selectDiceNum(num) {
-            selectedDiceExact = num;
-            document.querySelectorAll('.dice-num-btn').forEach((b, i) => {
-                b.classList.toggle('active', (i+1) === num);
-            });
-        }
-
-        function rollDiceGame() {
-            if (!isReady) return;
-            const betInput = document.getElementById('dice-bet');
-            const bet = Number(betInput.value);
-            const mode = currentDiceMode;
-            const selectedNumber = selectedDiceExact;
-            const rollBtn = document.getElementById('dice-roll-btn');
-            rollBtn.disabled = true;
-
-            let ticks = 0;
-            const visual = document.getElementById('dice-visual-box');
-            
-            const timer = setInterval(() => {
-                visual.innerText = Math.floor(Math.random() * 6) + 1;
-                ticks++;
-                if(ticks > 8) {
-                    clearInterval(timer);
-                    apiRequest('dice', { bet, mode, number: selectedNumber })
-                        .then((data) => {
-                            applyUser(data.user);
-                            visual.innerText = data.roll;
-                            showCustomResultDialog(data.won
-                                ? `Выпало число ${data.roll}. Победа! <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="assets/images/coin.png">`
-                                : `Выпало число ${data.roll}. Повезёт в следующий раз!`);
-                        })
-                        .catch((error) => showCustomResultDialog(error.message))
-                        .finally(() => { rollBtn.disabled = false; });
-                }
-            }, 100);
-        }
-
-        // PLINKO МЕХАНИКА
-        let plinkoCanvas, plinkoCtx, plinkoBalls = [];
-        let plinkoFrameId = null;
-        let plinkoRequestInFlight = false;
-        const plinkoPins = [];
-        const plinkoRows = 7;
-        const plinkoBuckets = [5, 2, 0.5, 0.2, 0.5, 2, 5];
-
-        function initPlinkoGame() {
-            plinkoCanvas = document.getElementById('plinko-canvas-el');
-            plinkoCtx = plinkoCanvas.getContext('2d');
-            
-            plinkoPins.length = 0;
-            const h = 260;
-            const startY = 40;
-            const rowSpacing = 22;
-
-            for (let r = 0; r < plinkoRows; r++) {
-                const count = r + 3;
-                const rowY = startY + r * rowSpacing;
-                for (let i = 0; i < count; i++) {
-                    plinkoPins.push({ r: r, i: i, count: count, y: rowY });
-                }
-            }
-            updatePlinkoFrame();
-        }
-
-        function updatePlinkoFrame() {
-            if (!plinkoCanvas || !plinkoCtx) return;
-            const w = plinkoCanvas.width = plinkoCanvas.parentElement.clientWidth;
-            const h = plinkoCanvas.height = 260;
-            plinkoCtx.clearRect(0, 0, w, h);
-
-            plinkoCtx.fillStyle = "#475467";
-            plinkoPins.forEach(p => {
-                const rowW = (p.count - 1) * 24;
-                const startX = (w - rowW) / 2;
-                p.x = startX + p.i * 24;
-                plinkoCtx.beginPath();
-                plinkoCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-                plinkoCtx.fill();
-            });
-
-            const bY = h - 20;
-            const bW = w / plinkoBuckets.length;
-            plinkoCtx.font = "bold 10px Arial";
-            plinkoCtx.textAlign = "center";
-
-            plinkoBuckets.forEach((b, idx) => {
-                const bx = idx * bW;
-                plinkoCtx.fillStyle = b >= 2 ? "#7f1d1d" : (b < 1 ? "#1e293b" : "#14532d");
-                plinkoCtx.fillRect(bx + 2, bY, bW - 4, 16);
-                plinkoCtx.fillStyle = "white";
-                plinkoCtx.fillText(b + "x", bx + bW/2, bY + 12);
-            });
-
-            plinkoCtx.fillStyle = "#ffb020";
-            for (let i = plinkoBalls.length - 1; i >= 0; i--) {
-                const ball = plinkoBalls[i];
-                ball.frames += 1;
-                ball.y += ball.vy;
-                ball.x += (ball.targetX - ball.x) * 0.045;
-                ball.vy += 0.18;
-
-                plinkoCtx.beginPath();
-                plinkoCtx.arc(ball.x, ball.y, 5, 0, Math.PI * 2);
-                plinkoCtx.fill();
-
-                if (ball.y >= bY || ball.frames >= 180) {
-                    showCustomResultDialog(`Шар упал в ячейку ${ball.multiplier}x. Выигрыш: <span style="color:#22c55e;">+${ball.prize.toLocaleString()}</span> <img src="assets/images/coin.png">!`);
-                    plinkoBalls.splice(i, 1);
-                }
-            }
-
-            if (plinkoBalls.length) {
-                plinkoFrameId = requestAnimationFrame(updatePlinkoFrame);
-            } else {
-                plinkoFrameId = null;
-                document.getElementById('plinko-drop-btn').disabled = false;
-            }
-        }
-
-        async function startPlinkoBall() {
-            if (!isReady || plinkoRequestInFlight || plinkoBalls.length) return;
-            const betInput = document.getElementById('plinko-bet');
-            const bet = Number(betInput.value);
-            plinkoRequestInFlight = true;
-            document.getElementById('plinko-drop-btn').disabled = true;
-            try {
-                const data = await apiRequest('plinko', { bet });
-                applyUser(data.user);
-                const bucketWidth = plinkoCanvas.width / plinkoBuckets.length;
-                plinkoBalls.push({
-                    x: plinkoCanvas.width / 2,
-                    targetX: (data.slot + 0.5) * bucketWidth,
-                    y: 10,
-                    vy: 1.5,
-                    frames: 0,
-                    multiplier: data.multiplier,
-                    prize: data.prize
+            } else if (challenge.type === 'trend') {
+                body.classList.add('arcade-chart');
+                const min = Math.min(...challenge.values);
+                const max = Math.max(...challenge.values);
+                const range = Math.max(1, max - min);
+                challenge.values.forEach((value) => {
+                    const bar = document.createElement('div');
+                    bar.className = 'arcade-chart-bar';
+                    bar.style.height = (24 + ((value - min) / range) * 90) + 'px';
+                    const label = document.createElement('span');
+                    label.textContent = String(value);
+                    bar.appendChild(label);
+                    body.appendChild(bar);
                 });
-                if (!plinkoFrameId) plinkoFrameId = requestAnimationFrame(updatePlinkoFrame);
-            } catch (error) {
-                document.getElementById('plinko-drop-btn').disabled = false;
-                showCustomResultDialog(error.message);
-            } finally {
-                plinkoRequestInFlight = false;
+                const options = document.createElement('div');
+                options.className = 'arcade-options-row';
+                body.appendChild(options);
+                addArcadeOption(gameKey, 'Вверх ▲', 'up');
+                addArcadeOption(gameKey, 'Вниз ▼', 'down');
+            } else {
+                body.classList.add('arcade-options-grid');
+                challenge.options.forEach((option, index) => {
+                    const isRiddle = challenge.type === 'riddle';
+                    addArcadeOption(gameKey, isRiddle ? option : String(option), isRiddle ? index : option);
+                });
             }
+            submit.disabled = true;
         }
 
-        // ДВЕРИ МЕХАНИКА
-        let doorsActive = false;
-        let doorsRoom = 0;
-        let currentDoorsBet = 0;
-        let doorsRequestInFlight = false;
-        let doorsRoomTimer = null;
-
-        async function startDoorsGame() {
-            if (!isReady || doorsRequestInFlight) return;
-            const bInput = document.getElementById('doors-bet');
-            doorsRequestInFlight = true;
-            document.getElementById('doors-btn-start').disabled = true;
+        async function submitArcadeGame() {
+            const gameKey = currentArcadeGame;
+            if (!gameKey || !currentArcadeChallenge || arcadeRequestInFlight) return;
+            const submit = document.getElementById('arcade-submit-' + gameKey);
+            const feedback = document.getElementById('arcade-feedback-' + gameKey);
+            if (currentArcadeChallenge.type === 'grid' && arcadeSelectedNumbers.size !== currentArcadeChallenge.required) return;
+            if (currentArcadeChallenge.type !== 'grid' && arcadeSelectedAnswer === null) return;
+            const answer = currentArcadeChallenge.type === 'grid'
+                ? Array.from(arcadeSelectedNumbers)
+                : arcadeSelectedAnswer;
+            arcadeRequestInFlight = true;
+            submit.disabled = true;
+            submit.textContent = 'ПРОВЕРЯЕМ...';
             try {
-                const data = await apiRequest('doorsStart', { bet: Number(bInput.value) });
+                const data = await apiRequest('arcadeComplete', { game: gameKey, answer });
                 applyUser(data.user);
-                restoreActiveGame(data.user.activeGame);
-            } catch (error) {
-                document.getElementById('doors-btn-start').disabled = false;
-                showCustomResultDialog(error.message);
-            } finally {
-                doorsRequestInFlight = false;
-            }
-        }
-
-        function generateDoorsLayout() {
-            const container = document.getElementById('doors-tiles-wrapper');
-            container.replaceChildren();
-            for (let i = 0; i < 3; i++) {
-                const door = document.createElement('div');
-                door.className = 'door-element';
-                door.id = 'door-' + i;
-                door.textContent = `🚪 Дверь ${i + 1}`;
-                door.onclick = () => chooseDoorElement(i);
-                container.appendChild(door);
-            }
-        }
-
-        async function chooseDoorElement(idx) {
-            if (!doorsActive || doorsRequestInFlight) return;
-            doorsActive = false;
-            doorsRequestInFlight = true;
-            const dEl = document.getElementById('door-' + idx);
-            try {
-                const data = await apiRequest('doorsChoose', { index: idx });
-                applyUser(data.user);
-                if (data.wonRoom) {
-                    dEl.classList.add('win');
-                    dEl.textContent = "💎 Сокровища!";
-                    doorsRoom = data.user.activeGame.room;
-                    document.getElementById('doors-multiplier').innerText = data.user.activeGame.multiplier.toFixed(2);
-                    document.getElementById('lbl-doors-room').innerText = `Комната: ${doorsRoom}`;
-                    document.getElementById('doors-btn-take').disabled = false;
-                    doorsRoomTimer = setTimeout(() => {
-                        doorsRoomTimer = null;
-                        if (!data.user.activeGame) return;
-                        doorsActive = true;
-                        generateDoorsLayout();
-                    }, 600);
+                if (data.correct) {
+                    feedback.textContent = 'Правильно! Награда начислена: +' + data.reward + ' монет.';
+                    submit.textContent = 'ПРОЙДЕНО СЕГОДНЯ';
+                    submit.disabled = true;
+                    showCustomResultDialog('Отлично! Ты решил головоломку и получил <span style="color:#22c55e;">+' +
+                        data.reward.toLocaleString() + '</span> <img src="assets/images/coin.png">.');
                 } else {
-                    dEl.classList.add('lose');
-                    dEl.textContent = "👾 Монстр!";
-                    doorsActive = false;
-                    document.getElementById('doors-btn-start').disabled = false;
-                    document.getElementById('doors-btn-take').disabled = true;
-                    showCustomResultDialog("О нет! За дверью оказался монстр. Комната проиграна.");
+                    feedback.textContent = 'Не совсем. Попробуй ещё раз — монеты не списываются.';
+                    submit.textContent = 'ПРОВЕРИТЬ';
+                    submit.disabled = currentArcadeChallenge.type === 'grid'
+                        ? arcadeSelectedNumbers.size !== currentArcadeChallenge.required
+                        : arcadeSelectedAnswer === null;
                 }
             } catch (error) {
-                doorsActive = true;
-                showCustomResultDialog(error.message);
+                feedback.textContent = error.message;
+                submit.textContent = 'ПРОВЕРИТЬ';
+                submit.disabled = false;
             } finally {
-                doorsRequestInFlight = false;
+                arcadeRequestInFlight = false;
             }
         }
 
-        async function takeDoorsPrize() {
-            if (doorsRoom <= 1 || doorsRequestInFlight) return;
-            if (doorsRoomTimer) {
-                clearTimeout(doorsRoomTimer);
-                doorsRoomTimer = null;
+        async function claimTask(taskKey) {
+            if (!isReady) {
+                showCustomResultDialog(bootstrapError || 'Приложение ещё подключается к серверу.');
+                return;
             }
-            doorsActive = false;
-            doorsRequestInFlight = true;
-            document.getElementById('doors-btn-take').disabled = true;
+            const button = document.getElementById('task-claim-' + taskKey);
+            if (button) button.disabled = true;
             try {
-                const data = await apiRequest('doorsCashout');
+                const data = await apiRequest('claimTask', { task: taskKey });
                 applyUser(data.user);
-                document.getElementById('doors-btn-start').disabled = false;
-                document.getElementById('doors-tiles-wrapper').replaceChildren();
-                showCustomResultDialog(`Вы благополучно покинули замок! Награда: <span style="color:#22c55e;">+${data.prize.toLocaleString()}</span> <img src="assets/images/coin.png">!`);
+                showCustomResultDialog('Задание выполнено! Начислено <span style="color:#22c55e;">+' +
+                    data.reward.toLocaleString() + '</span> <img src="assets/images/coin.png">.');
             } catch (error) {
-                doorsActive = true;
-                document.getElementById('doors-btn-take').disabled = false;
+                updateTasksUI();
                 showCustomResultDialog(error.message);
-            } finally {
-                doorsRequestInFlight = false;
             }
         }
 
-        // АДМИН ОПЕРАЦИИ
+        function updateTasksUI() {
+            const completedGames = arcadeCompletedToday.length;
+            const tasks = [
+                { key: 'tap50', progress: Math.min(totalTaps, 50), target: 50, ready: totalTaps >= 50 },
+                { key: 'game1', progress: Math.min(completedGames, 1), target: 1, ready: completedGames >= 1 },
+                { key: 'game3', progress: Math.min(completedGames, 3), target: 3, ready: completedGames >= 3 }
+            ];
+            tasks.forEach((task) => {
+                const progress = document.getElementById('task-progress-' + task.key);
+                const button = document.getElementById('task-claim-' + task.key);
+                if (!progress || !button) return;
+                const claimed = taskClaimsToday.includes(task.key);
+                progress.textContent = task.progress + ' / ' + task.target;
+                button.textContent = claimed ? 'ЗАБРАНО' : 'ЗАБРАТЬ';
+                button.disabled = !isReady || claimed || !task.ready;
+            });
+        }
+
+                // АДМИН ОПЕРАЦИИ
         async function adminGive() {
             if (!isAdmin) return;
             try {
@@ -962,12 +648,6 @@
                 "Заходите каждый день и собирайте горы монет! Не пропускайте дни, иначе стрик сбросится." : 
                 "Claim rewards every single day! Don't skip a day, otherwise your streak will be reset.";
 
-            document.getElementById('lbl-mines-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            document.getElementById('lbl-mines-m').innerText = lang === 'ru' ? "Мины:" : "Mines:";
-            document.getElementById('lbl-crypto-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            document.getElementById('lbl-dice-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            document.getElementById('lbl-plinko-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
-            document.getElementById('lbl-doors-b').innerText = lang === 'ru' ? "Ставка:" : "Bet:";
 
             updateUI();
             initTelegramProfile();
