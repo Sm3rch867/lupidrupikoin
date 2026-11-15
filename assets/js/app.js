@@ -346,7 +346,7 @@
         }
 
         // БЕЗОПАСНЫЕ МИНИ-ИГРЫ: головоломки с фиксированной наградой.
-        const arcadeGameNames = { mines:"Сапёр: логика", crypto:"Крипто-график", dice:"Быстрый счёт", plinko:"Числовая цепочка", doors:"Загадка дверей" };
+        const arcadeGameNames = { mines:"Числовая сетка", crypto:"Анализ графика", dice:"Быстрый счёт", plinko:"Числовая цепочка", doors:"Загадка дверей" };
         let currentArcadeGame = null;
         let currentArcadeChallenge = null;
         let arcadeSelectedAnswer = null;
