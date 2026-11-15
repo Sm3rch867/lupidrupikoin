@@ -35,7 +35,7 @@ Requirements for command-line deployment: Node.js 22, npm, and the Firebase CLI.
 
 5. Set the Telegram Web App/menu button URL to the deployed Firebase Hosting URL (`https://<project-id>.web.app`). The app requires valid Telegram `initData`. GitHub Pages is suitable only for a static preview: it has no `/api` Cloud Function route, so account loading, coin taps, and daily rewards will not work there.
 
-The five mini-games are skill puzzles with fixed rewards. They never ask for coins, never deduct balances, and never use random payouts. Daily tasks award additional coins for taps and solved puzzles. The server checks puzzle answers and limits each puzzle and task reward to once per day.
+The five mini-games are skill puzzles with fixed rewards. They never ask for coins, never deduct balances, and never use random payouts. Existing player balances are kept; any unfinished legacy round is refunded once when the account is next updated. Admin statistics reset actions also preserve the coin balance. Daily tasks award additional coins for taps and solved puzzles. The server checks puzzle answers and limits each puzzle and task reward to once per day.
 
 The database rules deny all direct client reads and writes. Cloud Functions use the Admin SDK, verify Telegram's signed `initData`, and perform balance changes with Realtime Database transactions. The app's allowed browser origins must be configured before deployment.
 
