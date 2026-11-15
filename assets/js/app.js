@@ -25,6 +25,7 @@
         let wheelSpins = 0;
         let arcadeCompletedToday = [];
         let taskClaimsToday = [];
+        let tapsToday = 0;
         let energy = 0;
         let nextClaimAt = 0;
         let isAdmin = false;
@@ -99,6 +100,7 @@
             wheelSpins = user.wheelSpins;
             arcadeCompletedToday = Array.isArray(user.arcadeCompletedToday) ? user.arcadeCompletedToday : [];
             taskClaimsToday = Array.isArray(user.taskClaimsToday) ? user.taskClaimsToday : [];
+            tapsToday = Number.isSafeInteger(user.tapsToday) ? user.tapsToday : 0;
             energy = user.energy;
             nextClaimAt = user.nextClaimAt;
             isAdmin = user.isAdmin;
@@ -534,7 +536,7 @@
         function updateTasksUI() {
             const completedGames = arcadeCompletedToday.length;
             const tasks = [
-                { key: 'tap50', progress: Math.min(totalTaps, 50), target: 50, ready: totalTaps >= 50 },
+                { key: 'tap50', progress: Math.min(tapsToday, 50), target: 50, ready: tapsToday >= 50 },
                 { key: 'game1', progress: Math.min(completedGames, 1), target: 1, ready: completedGames >= 1 },
                 { key: 'game3', progress: Math.min(completedGames, 3), target: 3, ready: completedGames >= 3 }
             ];
