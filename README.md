@@ -1,6 +1,6 @@
 # LUPI DRUPI COIN
 
-The main app is served through Firebase Hosting. Coin balances, tap rewards, bonuses, game outcomes, and admin actions are handled by the `api` Cloud Function; the browser is not allowed to write Realtime Database data.
+The main app is served through Firebase Hosting. Coin balances, tap rewards, daily bonuses, skill-puzzle rewards, daily task rewards, and admin actions are handled by the `api` Cloud Function; the browser is not allowed to write Realtime Database data.
 
 ## Firebase setup
 
@@ -35,9 +35,11 @@ Requirements for command-line deployment: Node.js 22, npm, and the Firebase CLI.
 
 5. Set the Telegram Web App/menu button URL to the deployed Firebase Hosting URL (`https://<project-id>.web.app`). The app requires valid Telegram `initData`. GitHub Pages is suitable only for a static preview: it has no `/api` Cloud Function route, so account loading, coin taps, and daily rewards will not work there.
 
+The five mini-games are skill puzzles with fixed rewards. They never ask for coins, never deduct balances, and never use random payouts. Daily tasks award additional coins for taps and solved puzzles. The server checks puzzle answers and limits each puzzle and task reward to once per day.
+
 The database rules deny all direct client reads and writes. Cloud Functions use the Admin SDK, verify Telegram's signed `initData`, and perform balance changes with Realtime Database transactions. The app's allowed browser origins must be configured before deployment.
 
-Existing balances are preserved during migration, but historical values were written by the old client and cannot be verified retroactively. Review them before treating them as trusted. These coins are still virtual; do not use this setup for real-money gambling or payouts.
+Existing balances are preserved during migration, but historical values were written by the old client and cannot be verified retroactively. Review them before treating them as trusted. These coins are virtual arcade points. They cannot be withdrawn or exchanged for money.
 
 ## Deploy through GitHub Actions (no local CLI)
 
