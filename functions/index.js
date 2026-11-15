@@ -94,6 +94,7 @@ function newUser(profile, admins) {
     lastClaimAt: 0,
     arcadeDaily: {},
     taskClaims: {},
+    dailyTaps: {},
     isAdmin: admins.has(String(profile.id)),
   };
   return user;
@@ -137,6 +138,7 @@ function publicUser(user, admins) {
     isAdmin: admins.has(String(user.uid)),
     arcadeCompletedToday: Object.keys(arcadeToday),
     taskClaimsToday: Object.keys(tasksToday),
+    tapsToday: Math.max(0, Number(user.dailyTaps && user.dailyTaps[dayKey]) || 0),
   };
 }
 
@@ -236,6 +238,7 @@ async function updateUser(uid, action, payload, profile, admins) {
     user.miniGamesProfit = Number.isSafeInteger(user.miniGamesProfit) ? Math.max(0, user.miniGamesProfit) : 0;
     user.arcadeDaily = user.arcadeDaily && typeof user.arcadeDaily === "object" ? user.arcadeDaily : {};
     user.taskClaims = user.taskClaims && typeof user.taskClaims === "object" ? user.taskClaims : {};
+    user.dailyTaps = user.dailyTaps && typeof user.dailyTaps === "object" ? user.dailyTaps : {};
     if (user.activeGame && Number.isSafeInteger(user.activeGame.bet) && user.activeGame.bet > 0) {
       user.coins += user.activeGame.bet;
     }
@@ -265,6 +268,8 @@ async function updateUser(uid, action, payload, profile, admins) {
         user.energy -= accepted;
         user.coins += accepted;
         user.totalTaps += accepted;
+        const dayKey = todayKey(now);
+        user.dailyTaps[dayKey] = (Number(user.dailyTaps[dayKey]) || 0) + accepted;
         setResult({ accepted });
         break;
       }
@@ -339,7 +344,7 @@ async function updateUser(uid, action, payload, profile, admins) {
           return;
         }
         const completedGames = Object.keys(user.arcadeDaily[dayKey]).length;
-        const eligible = task === "tap50" ? user.totalTaps >= 50
+        const eligible = task === "tap50" ? (Number(user.dailyTaps[dayKey]) || 0) >= 50
           : task === "game1" ? completedGames >= 1
             : completedGames >= 3;
         if (!eligible) {
@@ -418,6 +423,7 @@ async function updateUser(uid, action, payload, profile, admins) {
         target.activeGame = null;
         target.arcadeDaily = {};
         target.taskClaims = {};
+        target.dailyTaps = {};
         target.adminWipedAt = now;
         return target;
       });
