@@ -113,7 +113,14 @@ function refreshEnergy(user, now) {
 }
 
 function todayKey(now = Date.now()) {
-  return new Date(now).toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Kyiv",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(now));
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return values.year + "-" + values.month + "-" + values.day;
 }
 
 function publicUser(user, admins) {
@@ -414,7 +421,7 @@ async function updateUser(uid, action, payload, profile, admins) {
       const targetTransaction = await targetRef.transaction((target) => {
         if (!target) return;
         existed = true;
-        target.coins = 0;
+        // A statistics reset must never remove the player's saved coin balance.
         target.totalTaps = 0;
         target.miniGamesWon = 0;
         target.miniGamesProfit = 0;
